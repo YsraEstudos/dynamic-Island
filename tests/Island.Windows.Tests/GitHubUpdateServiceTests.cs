@@ -129,6 +129,23 @@ public sealed class GitHubUpdateServiceTests : IDisposable
         Assert.Empty(_seen);
     }
 
+    [Fact]
+    public void Clean_up_removes_old_downloads_but_keeps_the_folder()
+    {
+        Directory.CreateDirectory(Path.Combine(_dir, "DynamicIsland-0.2.0.0", "sub"));
+        File.WriteAllText(Path.Combine(_dir, "DynamicIsland-0.2.0.0", "sub", "a.dll"), "x");
+        File.WriteAllText(Path.Combine(_dir, "DynamicIsland-0.2.0.0.zip"), "x");
+        File.WriteAllText(Path.Combine(_dir, "install-update.ps1"), "x");
+
+        Service().CleanUp();
+
+        Assert.True(Directory.Exists(_dir));
+        Assert.Empty(Directory.EnumerateFileSystemEntries(_dir));
+    }
+
+    [Fact]
+    public void Clean_up_does_nothing_when_there_is_no_updates_folder() => Service().CleanUp();
+
     private sealed class Recorder(List<double> values) : IProgress<double>
     {
         public void Report(double value) => values.Add(value);

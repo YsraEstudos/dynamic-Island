@@ -86,6 +86,23 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         _ = RunInBackgroundAsync(_stop.Token);
     }
 
+    /// <summary>Deletes what earlier updates left in the updates folder (zips, unpacked files, the helper script). Best-effort.</summary>
+    public void CleanUp()
+    {
+        if (!Directory.Exists(_downloadDirectory)) return;
+
+        foreach (string entry in Directory.EnumerateFileSystemEntries(_downloadDirectory))
+        {
+            try
+            {
+                if (Directory.Exists(entry)) Directory.Delete(entry, recursive: true);
+                else File.Delete(entry);
+            }
+            catch (IOException) { /* Still in use: the next start tries again. */ }
+            catch (UnauthorizedAccessException) { /* Same. */ }
+        }
+    }
+
     /// <summary>Stops the background checks. An install already under way is left alone.</summary>
     public void Dispose() => _stop.Cancel();
 
@@ -190,6 +207,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         try
         {
             await Task.Delay(StartupDelay, ct).ConfigureAwait(false);
+            CleanUp();
             using var timer = new PeriodicTimer(CheckInterval);
             do
             {

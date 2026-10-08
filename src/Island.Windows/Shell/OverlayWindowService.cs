@@ -38,33 +38,10 @@ public static class StartupRegistration
 {
     private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string ValueName = "DynamicIsland";
-    /// <summary>Must match the windows.startupTask TaskId in packaging/Package.appxmanifest.</summary>
-    private const string StartupTaskId = "DynamicIslandStartup";
 
-    private const int AppModelErrorNoPackage = 15700;
-
-    [System.Runtime.InteropServices.DllImport("kernel32.dll")]
-    private static extern int GetCurrentPackageFullName(ref uint length, System.Text.StringBuilder? name);
-
-    /// <summary>True when running with MSIX package identity. There the registry Run key is not used; the manifest's startupTask is.</summary>
-    public static bool IsPackaged()
-    {
-        uint length = 0;
-        return GetCurrentPackageFullName(ref length, null) != AppModelErrorNoPackage;
-    }
-
-    /// <summary>
-    /// Enables or disables start-with-Windows: the manifest startupTask when packaged, the per-user Run entry otherwise.
-    /// Throws on failure so the caller can report it. A packaged task the user disabled in Task Manager cannot be re-enabled from code.
-    /// </summary>
+    /// <summary>Enables or disables start-with-Windows through the per-user Run entry. Throws on failure so the caller can report it.</summary>
     public static void Set(bool enabled)
     {
-        if (IsPackaged())
-        {
-            SetPackaged(enabled);
-            return;
-        }
-
         if (enabled)
         {
             string exe = Environment.ProcessPath
@@ -79,41 +56,19 @@ public static class StartupRegistration
         }
     }
 
-    /// <summary>True when start-with-Windows is on (startupTask state when packaged, Run entry otherwise). Never throws.</summary>
+    /// <summary>True when the Run entry exists. Never throws.</summary>
     public static bool IsEnabled()
     {
         try
         {
-            if (IsPackaged()) return IsPackagedEnabled();
             using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: false);
             return key?.GetValue(ValueName) is string value && value.Length > 0;
         }
         catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or System.Security.SecurityException
-                                       or InvalidOperationException or System.Runtime.InteropServices.COMException)
+                                       or InvalidOperationException)
         {
             return false;
         }
-    }
-
-    private static void SetPackaged(bool enabled)
-    {
-        var task = global::Windows.ApplicationModel.StartupTask.GetAsync(StartupTaskId).AsTask().GetAwaiter().GetResult();
-        if (enabled)
-        {
-            var state = task.RequestEnableAsync().AsTask().GetAwaiter().GetResult();
-            if (state is not (global::Windows.ApplicationModel.StartupTaskState.Enabled or global::Windows.ApplicationModel.StartupTaskState.EnabledByPolicy))
-                throw new InvalidOperationException($"Startup task is {state}; enable it in Settings > Apps > Startup.");
-        }
-        else
-        {
-            task.Disable();
-        }
-    }
-
-    private static bool IsPackagedEnabled()
-    {
-        var task = global::Windows.ApplicationModel.StartupTask.GetAsync(StartupTaskId).AsTask().GetAwaiter().GetResult();
-        return task.State is global::Windows.ApplicationModel.StartupTaskState.Enabled or global::Windows.ApplicationModel.StartupTaskState.EnabledByPolicy;
     }
 }
 

@@ -123,7 +123,7 @@ public sealed class UpdateRulesTests
         Assert.False(UpdateRules.IsValidRepository(repository));
 
     [Fact]
-    public void An_msix_must_start_with_the_zip_signature()
+    public void A_package_must_start_with_the_zip_signature()
     {
         string dir = Path.Combine(Path.GetTempPath(), "island-zip-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(dir);
