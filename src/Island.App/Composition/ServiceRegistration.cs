@@ -11,7 +11,9 @@ using Island.Core.Fakes;
 using Island.Windows.Audio;
 using Island.Windows.Configuration;
 using Island.Windows.Display;
+using Island.Windows.Devices;
 using Island.Windows.Focus;
+using Island.Windows.Input;
 using Island.Windows.Media;
 using Island.Windows.Phone;
 using Island.Windows.Updates;
@@ -70,6 +72,8 @@ public static class ServiceRegistration
         }
         else
         {
+            s.AddSingleton<ISystemNoticeSource, WindowsCapsLockNoticeSource>();
+            s.AddSingleton<ISystemNoticeSource, WindowsDeviceNoticeSource>();
             s.AddSingleton<IMediaService, WindowsMediaService>();
             s.AddSingleton<IVolumeService, WindowsVolumeService>();
             s.AddSingleton<IDisplayService>(sp => new FullscreenDetector(

@@ -260,6 +260,12 @@ public partial class IslandWindow : System.Windows.Window
                 // The compact capsule widens while a pomodoro runs.
                 if (_vm.Mode == IslandMode.Compact) ApplyShape(IslandMode.Compact, _settings(), instant: false);
                 break;
+            case nameof(IslandViewModel.Notice):
+                // Notice is bound through a snapshot: update it during the same layer transition, after the old
+                // toast has faded out. This keeps back-to-back notices visually legible.
+                if (_vm.Mode == IslandMode.Notice)
+                    _transitions.ShowLayer(NoticeLayer, instant: false, beforeIn: () => NoticeLayer.SetNotice(_vm.Notice));
+                break;
         }
     }
 
@@ -279,7 +285,9 @@ public partial class IslandWindow : System.Windows.Window
         System.Windows.UIElement layer = LayerFor(mode);
         Action? beforeIn = ReferenceEquals(layer, ShelfLayer)
             ? ShelfPresentation(mode == IslandMode.Customize)
-            : null;
+            : ReferenceEquals(layer, NoticeLayer)
+                ? () => NoticeLayer.SetNotice(_vm.Notice)
+                : null;
         _transitions.ShowLayer(layer, instant, beforeIn);
 
         UpdateInteraction(mode);

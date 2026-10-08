@@ -15,19 +15,34 @@ public partial class NoticeView : System.Windows.Controls.UserControl
     private const string CheckGlyph = "check";
     private const string TimerGlyph = "timer";
 
+    public static readonly System.Windows.DependencyProperty DisplayedNoticeProperty =
+        System.Windows.DependencyProperty.Register(nameof(DisplayedNotice), typeof(Notice), typeof(NoticeView));
+
+    public Notice? DisplayedNotice
+    {
+        get => (Notice?)GetValue(DisplayedNoticeProperty);
+        private set => SetValue(DisplayedNoticeProperty, value);
+    }
+
     public NoticeView()
     {
         InitializeComponent();
     }
 
-    /// <summary>Follows the notice so the glyph updates when a new notice arrives while this view is shown.</summary>
+    /// <summary>Seeds the snapshot used when the layer is first shown.</summary>
     public void Attach(IslandViewModel vm)
     {
-        vm.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(IslandViewModel.Notice)) ShowGlyph(vm.Notice);
-        };
-        ShowGlyph(vm.Notice);
+        SetNotice(vm.Notice);
+    }
+
+    /// <summary>
+    /// Updates the displayed snapshot. IslandWindow calls this from the transition hook, after the old toast has
+    /// faded out, so a consecutive notice never changes its text underneath the outgoing animation.
+    /// </summary>
+    public void SetNotice(Notice? notice)
+    {
+        DisplayedNotice = notice;
+        ShowGlyph(notice);
     }
 
     private void ShowGlyph(Notice? notice)
@@ -39,6 +54,24 @@ public partial class NoticeView : System.Windows.Controls.UserControl
                 break;
             case TimerGlyph:
                 SetGlyph("UiIconTimer", "AccentOrangeBrush");
+                break;
+            case "caps-on":
+                SetGlyph("NoticeIconCapsOn", "AccentGreenBrush");
+                break;
+            case "caps-off":
+                SetGlyph("NoticeIconCapsOff", "TextSecondaryBrush");
+                break;
+            case "bluetooth-on":
+                SetGlyph("NoticeIconBluetoothOn", "AccentBlueBrush");
+                break;
+            case "bluetooth-off":
+                SetGlyph("NoticeIconBluetoothOff", "TextSecondaryBrush");
+                break;
+            case "usb-on":
+                SetGlyph("NoticeIconUsbOn", "AccentBlueBrush");
+                break;
+            case "usb-off":
+                SetGlyph("NoticeIconUsbOff", "TextSecondaryBrush");
                 break;
             default:
                 GlyphBox.Visibility = System.Windows.Visibility.Collapsed;

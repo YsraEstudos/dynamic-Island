@@ -36,6 +36,8 @@ public partial class App : System.Windows.Application
     private GlobalHotkey? _hotkey;
     private AngryPomodoro? _angry;
     private SoakRunner? _soak;
+    private ISystemNoticeSource[] _systemNoticeSources = [];
+    private IslandCoordinator? _noticeCoordinator;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -96,6 +98,15 @@ public partial class App : System.Windows.Application
             });
         };
         coordinator.Start();
+
+        _noticeCoordinator = coordinator;
+        _systemNoticeSources = sp.GetServices<ISystemNoticeSource>().ToArray();
+        foreach (var source in _systemNoticeSources)
+        {
+            source.NoticeRaised += OnSystemNoticeRaised;
+            try { source.Start(); }
+            catch (Exception ex) { Log.Warning(ex, "System notice source failed to start"); }
+        }
 
         // Angry pomodoro: while locked, browsers on distracting sites are minimized; a blocked site raises a notice.
         var angry = sp.GetRequiredService<AngryPomodoro>();
@@ -177,6 +188,10 @@ public partial class App : System.Windows.Application
             _soak.Start();
         }
     }
+
+    /// <summary>Routes passive Windows signals through the coordinator's shared priorities and timer.</summary>
+    private void OnSystemNoticeRaised(object? sender, Notice notice) =>
+        _noticeCoordinator?.Post(new IslandEvent.NoticeRaised(notice));
 
     /// <summary>Fire-and-forget: the notifier never throws, and a failure only raises a toast. Angry keeps running either way.</summary>
     private static async Task BlockPhoneAsync(IPhoneBlockNotifier phone, IslandCoordinator coordinator, TimeSpan remaining, string token)
@@ -300,10 +315,19 @@ public partial class App : System.Windows.Application
         {
             n++;
             media.Tick(TimeSpan.FromSeconds(1));
+            if (n % 30 == 5) coordinatorNotice("Caps Lock ativado", "Letras maiúsculas", "caps-on");
+            if (n % 30 == 10) coordinatorNotice("Caps Lock desativado", "Letras minúsculas", "caps-off");
+            if (n % 30 == 15) coordinatorNotice("Bluetooth conectado", "Fones de ouvido", "bluetooth-on");
+            if (n % 30 == 20) coordinatorNotice("Bluetooth desconectado", "Fones de ouvido", "bluetooth-off");
+            if (n % 30 == 25) coordinatorNotice("USB conectado", "Dispositivo de armazenamento", "usb-on");
+            if (n % 30 == 0) coordinatorNotice("USB removido", "Dispositivo de armazenamento", "usb-off");
             if (n % 12 == 0) vol.SetLevel(vol.Current.Level >= 90 ? 30 : vol.Current.Level + 15);
             if (n % 40 == 0) _ = media.NextAsync();
         };
         _demoTimer.Start();
+
+        void coordinatorNotice(string title, string subtitle, string glyph) =>
+            sp.GetRequiredService<IslandCoordinator>().Post(new IslandEvent.NoticeRaised(new Notice(title, subtitle, glyph)));
     }
 
     /// <summary>Parses <c>--soak</c> (10 minutes) or <c>--soak=minutes</c>. Returns null when no soak run is requested.</summary>
@@ -330,6 +354,12 @@ public partial class App : System.Windows.Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        foreach (var source in _systemNoticeSources)
+        {
+            source.NoticeRaised -= OnSystemNoticeRaised;
+            source.Dispose();
+        }
+        _noticeCoordinator = null;
         SystemEvents.DisplaySettingsChanged -= OnDisplayChanged;
         SystemEvents.SessionSwitch -= OnSessionSwitch;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;

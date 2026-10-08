@@ -3,6 +3,13 @@
 Ilha flutuante inspirada na Dynamic Island, nativa (C# / .NET 10 / WPF), centralizada no topo do monitor.
 Mostra volume, música em reprodução (qualquer player que exponha sessão de mídia ao Windows) e controles.
 
+Também expande suavemente para avisar quando o Caps Lock é ativado/desativado e quando dispositivos Bluetooth
+ou USB conectam/desconectam. O aviso mostra um ícone e o nome do dispositivo por 3 segundos (configuração
+`noticeSeconds`), depois recolhe. A enumeração inicial é silenciosa e interfaces do mesmo dispositivo são agrupadas
+para evitar avisos repetidos. Bluetooth pareado sem conexão não gera aviso. Como os demais avisos normais, esses
+eventos respeitam pausa, tela cheia, Mini e painéis abertos; a opção de reduzir animações continua sendo respeitada.
+O modo `--demo` mostra exemplos desses avisos sem alterar teclado ou dispositivos.
+
 ## Executar
 ```
 dotnet run --project src/Island.App            # integração real (mídia + volume)
