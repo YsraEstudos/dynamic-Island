@@ -155,6 +155,7 @@ public sealed class UpdateRulesTests
         int relaunch = script.IndexOf("explorer.exe", StringComparison.Ordinal);
         Assert.True(install >= 0, "package path must be quoted for PowerShell");
         Assert.True(relaunch > install, "the app is reopened only after the install command");
+        Assert.Contains("-ForceApplicationShutdown", script);
         Assert.Contains("Get-AppxPackage -Name 'DynamicIsland'", script);
         Assert.Contains("PackageFamilyName", script);
         Assert.Contains("'!' + 'DynamicIsland'", script);

@@ -99,7 +99,7 @@ internal static class UpdateRules
             "$ErrorActionPreference = 'Stop'",
             $"function Log($m) {{ Add-Content -LiteralPath {Quote(logPath)} -Value ((Get-Date -Format o) + ' ' + $m) }}",
             "try {",
-            $"  Add-AppxPackage -Path {Quote(package)} -ForceUpdateFromAnyVersion",
+            $"  Add-AppxPackage -Path {Quote(package)} -ForceUpdateFromAnyVersion -ForceApplicationShutdown",
             "  Log 'installed'",
             $"  $pkg = Get-AppxPackage -Name {Quote(packageName)} | Select-Object -First 1",
             $"  if ($pkg) {{ Start-Process explorer.exe -ArgumentList ('shell:AppsFolder\\' +$pkg.PackageFamilyName + '!' + {Quote(appId)}); Log 'relaunched' }}",
