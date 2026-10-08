@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -25,6 +26,7 @@ public partial class IslandWindow : System.Windows.Window
     private readonly Func<IslandSettings> _settings;
     private readonly IslandTransitions _transitions;
     private readonly IslandContextMenu _menu;
+    private readonly OutsideClickWatcher _menuOutsideClicks;
     private readonly Action<IslandSettings>? _saveSettings;
     private readonly Func<UpdateInfo?> _availableUpdate;
     private System.Windows.Interop.HwndSource? _hwndSource;
@@ -109,6 +111,8 @@ public partial class IslandWindow : System.Windows.Window
         _menu.CheckUpdateRequested += () => CheckUpdateRequested?.Invoke();
         _menu.Opened += (_, _) => SetMenuOpen(true);
         _menu.Closed += (_, _) => SetMenuOpen(false);
+        // The overlay never activates, so WPF cannot dismiss the menu on a click elsewhere; watch for those clicks.
+        _menuOutsideClicks = new OutsideClickWatcher(Dispatcher, MenuScreenBounds, () => _menu.IsOpen = false);
 
         // The saved dock is aligned first, so the first mode is shown already in its docked form.
         ApplyDock(DockFrom(initial));
@@ -426,9 +430,32 @@ public partial class IslandWindow : System.Windows.Window
         e.Handled = true;
     }
 
+    /// <summary>Screen rectangle (physical pixels) of the open context menu's popup window.</summary>
+    private (int Left, int Top, int Right, int Bottom)? MenuScreenBounds()
+    {
+        if (PresentationSource.FromVisual(_menu) is not HwndSource source) return null;
+        if (!GetWindowRect(source.Handle, out RectStruct r)) return null;
+        return (r.Left, r.Top, r.Right, r.Bottom);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RectStruct
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetWindowRect(IntPtr hwnd, out RectStruct rect);
+
     private void SetMenuOpen(bool open)
     {
         _menuOpen = open;
+        if (open) _menuOutsideClicks.Start();
+        else _menuOutsideClicks.Stop();
         UpdateInteraction(_vm.Mode);
         // Closing the menu with the pointer outside (e.g. by clicking elsewhere) should also close the island.
         if (!open) ScheduleLeaveCollapse();
@@ -783,6 +810,7 @@ public partial class IslandWindow : System.Windows.Window
         ShelfLayer.LayoutChanged -= OnShelfLayoutChanged;
         ShelfLayer.DragActiveChanged -= OnShelfDragActiveChanged;
         _menu.IsOpen = false;
+        _menuOutsideClicks.Dispose();
         _leaveTimer.Stop();
         CancelHold();
         _hwndSource?.RemoveHook(WndProc);

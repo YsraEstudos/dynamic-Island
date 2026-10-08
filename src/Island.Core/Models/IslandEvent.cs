@@ -5,8 +5,8 @@ namespace Island.Core.Models;
 /// <summary>Input to the reducer/coordinator. Adapters convert OS signals into these.</summary>
 public abstract record IslandEvent
 {
-    /// <summary>Volume or mute changed.</summary>
-    public sealed record VolumeChanged(VolumeInfo Volume) : IslandEvent;
+    /// <summary>Volume or mute changed. <paramref name="Silent"/>: the audio device changed rather than the user, so the value updates without showing the volume indicator.</summary>
+    public sealed record VolumeChanged(VolumeInfo Volume, bool Silent = false) : IslandEvent;
 
     /// <summary>Media session changed (null = no session). TrackChanged is true only when TrackKey differs from the previous one.</summary>
     public sealed record MediaChanged(MediaInfo? Media, bool TrackChanged) : IslandEvent;

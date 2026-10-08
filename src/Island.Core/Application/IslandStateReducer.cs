@@ -41,7 +41,7 @@ public static class IslandStateReducer
         {
             case IslandEvent.VolumeChanged v:
                 volume = v.Volume;
-                if (s.ShowVolume) Request(ref mode, ref restart, IslandMode.Volume);
+                if (s.ShowVolume && !v.Silent) Request(ref mode, ref restart, IslandMode.Volume);
                 break;
 
             case IslandEvent.MediaChanged m:

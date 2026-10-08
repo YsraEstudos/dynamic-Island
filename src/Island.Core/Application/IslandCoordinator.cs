@@ -66,6 +66,7 @@ public sealed class IslandCoordinator : IDisposable
 
         _media.MediaChanged += OnMediaChanged;
         _volume.VolumeChanged += OnVolumeChanged;
+        _volume.DeviceVolumeChanged += OnDeviceVolumeChanged;
         _display.FullscreenChanged += OnFullscreenChanged;
 
         // Read service values and settings before taking our lock: services may hold their own locks while raising events.
@@ -127,6 +128,7 @@ public sealed class IslandCoordinator : IDisposable
 
         _media.MediaChanged -= OnMediaChanged;
         _volume.VolumeChanged -= OnVolumeChanged;
+        _volume.DeviceVolumeChanged -= OnDeviceVolumeChanged;
         _display.FullscreenChanged -= OnFullscreenChanged;
     }
 
@@ -145,13 +147,17 @@ public sealed class IslandCoordinator : IDisposable
         if (drain) Drain();
     }
 
-    private void OnVolumeChanged(object? sender, VolumeInfo volume)
+    private void OnVolumeChanged(object? sender, VolumeInfo volume) => ApplyVolume(volume, silent: false);
+
+    private void OnDeviceVolumeChanged(object? sender, VolumeInfo volume) => ApplyVolume(volume, silent: true);
+
+    private void ApplyVolume(VolumeInfo volume, bool silent)
     {
         var settings = _settings();
         bool drain;
         lock (_gate)
         {
-            drain = ApplyLocked(new IslandEvent.VolumeChanged(volume), settings);
+            drain = ApplyLocked(new IslandEvent.VolumeChanged(volume, silent), settings);
         }
 
         if (drain) Drain();

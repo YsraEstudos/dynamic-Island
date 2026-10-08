@@ -42,6 +42,8 @@ public sealed class WindowsVolumeService : IVolumeService, IMMNotificationClient
 
     public event EventHandler<VolumeInfo>? VolumeChanged;
 
+    public event EventHandler<VolumeInfo>? DeviceVolumeChanged;
+
     public VolumeInfo Current
     {
         get { lock (_stateGate) return _current; }
@@ -127,7 +129,7 @@ public sealed class WindowsVolumeService : IVolumeService, IMMNotificationClient
             device = null;
             endpoint = null;
 
-            Publish(gen, info, force: true);
+            Publish(gen, info, force: true, deviceChange: true);
         }
         catch (Exception ex)
         {
@@ -136,7 +138,7 @@ public sealed class WindowsVolumeService : IVolumeService, IMMNotificationClient
             if (endpoint is not null && handler is not null) endpoint.OnVolumeNotification -= handler;
             SafeDispose(endpoint);
             SafeDispose(device);
-            Publish(gen, new VolumeInfo(0, false), force: true);
+            Publish(gen, new VolumeInfo(0, false), force: true, deviceChange: true);
         }
     }
 
@@ -159,7 +161,7 @@ public sealed class WindowsVolumeService : IVolumeService, IMMNotificationClient
     {
         try
         {
-            Publish(gen, ToVolumeInfo(data.MasterVolume, data.Muted), force: false);
+            Publish(gen, ToVolumeInfo(data.MasterVolume, data.Muted), force: false, deviceChange: false);
         }
         catch (Exception ex)
         {
@@ -169,9 +171,10 @@ public sealed class WindowsVolumeService : IVolumeService, IMMNotificationClient
 
     /// <summary>
     /// Updates <see cref="Current"/> and raises <see cref="VolumeChanged"/> when the value differs,
-    /// or always when <paramref name="force"/> is set. Stale generations are dropped.
+    /// or always when <paramref name="force"/> is set. Stale generations are dropped. A change that comes from
+    /// (re)attaching to an endpoint raises <see cref="DeviceVolumeChanged"/> instead: the device moved, nobody touched the volume.
     /// </summary>
-    private void Publish(int gen, VolumeInfo info, bool force)
+    private void Publish(int gen, VolumeInfo info, bool force, bool deviceChange)
     {
         lock (_stateGate)
         {
@@ -179,14 +182,14 @@ public sealed class WindowsVolumeService : IVolumeService, IMMNotificationClient
             if (!force && info == _current) return;
             _current = info;
         }
-        RaiseVolumeChanged(info);
+        RaiseVolumeChanged(info, deviceChange);
     }
 
-    private void RaiseVolumeChanged(VolumeInfo info)
+    private void RaiseVolumeChanged(VolumeInfo info, bool deviceChange)
     {
         try
         {
-            VolumeChanged?.Invoke(this, info);
+            (deviceChange ? DeviceVolumeChanged : VolumeChanged)?.Invoke(this, info);
         }
         catch (Exception ex)
         {

@@ -38,6 +38,16 @@ public class ReducerTests
     }
 
     [Fact]
+    public void Silent_volume_update_stores_the_value_without_showing_the_indicator()
+    {
+        var result = IslandStateReducer.Reduce(IslandState.Initial, NoFlags,
+            new IslandEvent.VolumeChanged(new VolumeInfo(80, false), Silent: true), Settings);
+
+        Assert.Equal(IslandMode.Compact, result.State.Mode);
+        Assert.Equal(new VolumeInfo(80, false), result.State.Volume);
+    }
+
+    [Fact]
     public void Playback_tick_keeps_timer_and_mode()
     {
         var preview = IslandStateReducer.Reduce(IslandState.Initial, NoFlags,
