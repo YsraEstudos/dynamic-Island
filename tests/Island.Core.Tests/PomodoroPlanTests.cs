@@ -230,7 +230,7 @@ public class PomodoroPlanTests
         Assert.Equal((1, 1), (rig.Timer.Cycle, rig.Timer.TotalCycles));
 
         rig.Timer.StartPlan(99);
-        Assert.Equal((1, 12), (rig.Timer.Cycle, rig.Timer.TotalCycles));
+        Assert.Equal((1, 24), (rig.Timer.Cycle, rig.Timer.TotalCycles));
     }
 
     [Fact]

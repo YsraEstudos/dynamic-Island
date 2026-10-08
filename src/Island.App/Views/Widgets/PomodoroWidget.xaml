@@ -10,32 +10,56 @@
         <SolidColorBrush x:Key="PomodoroRedBrush" Color="#FF453A" />
         <SolidColorBrush x:Key="PomodoroRedSoftBrush" Color="#33FF453A" />
         <SolidColorBrush x:Key="PomodoroChipBrush" Color="#2C2C2E" />
+        <SolidColorBrush x:Key="PomodoroGreyBrush" Color="#A1A1A6" />
     </UserControl.Resources>
 
     <Grid Margin="14,12,14,12">
         <Grid.RowDefinitions>
             <RowDefinition Height="26" />
-            <RowDefinition Height="6" />
-            <RowDefinition Height="50" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="4" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="44" />
+            <RowDefinition Height="38" />
         </Grid.RowDefinitions>
 
-        <!-- Phase pills (Pré, Focus, Break, Angry), then the pomodoro count (xN while stopped, progress N/M while a plan runs). -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-            <wid:ShelfButton x:Name="PrepPill" Width="50" Height="26" CornerRadius="13" />
-            <wid:ShelfButton x:Name="FocusPill" Width="50" Height="26" CornerRadius="13" Margin="5,0,0,0" />
-            <wid:ShelfButton x:Name="BreakPill" Width="50" Height="26" CornerRadius="13" Margin="5,0,0,0" />
-            <wid:ShelfButton x:Name="AngryPill" Width="50" Height="26" CornerRadius="13" Margin="5,0,0,0" />
-            <wid:ShelfButton x:Name="CyclesPill" Width="50" Height="26" CornerRadius="13" Margin="5,0,0,0" />
-        </StackPanel>
+        <!-- Row 0: phase pills (Pré, Focus, Break, Angry) on the left, the pomodoro stepper on the right. -->
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <wid:ShelfButton x:Name="PrepPill" Width="44" Height="26" CornerRadius="13" />
+                <wid:ShelfButton x:Name="FocusPill" Width="44" Height="26" CornerRadius="13" Margin="4,0,0,0" />
+                <wid:ShelfButton x:Name="BreakPill" Width="44" Height="26" CornerRadius="13" Margin="4,0,0,0" />
+                <wid:ShelfButton x:Name="AngryPill" Width="44" Height="26" CornerRadius="13" Margin="4,0,0,0" />
+            </StackPanel>
 
-        <!-- Minute ruler: drag to change the duration (only while stopped). -->
-        <wid:MinuteRuler x:Name="Ruler" Grid.Row="2" Height="50" HorizontalAlignment="Stretch" />
+            <wid:CycleStepper x:Name="Stepper" Width="76" Height="26" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        </Grid>
 
-        <!-- Controls and remaining time. -->
-        <Grid Grid.Row="3">
+        <!-- Row 2: plan track (one segment per pomodoro) and the forecast of when the plan ends. -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <wid:PlanTrack x:Name="Track" Grid.Column="0" Height="4" VerticalAlignment="Center" Margin="0,0,10,0" />
+
+            <TextBlock x:Name="ForecastText"
+                       Grid.Column="1"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       FontSize="11"
+                       TextWrapping="NoWrap"
+                       Foreground="{StaticResource PomodoroGreyBrush}" />
+        </Grid>
+
+        <!-- Row 4: minute ruler, drag to change the duration (only while stopped). -->
+        <wid:MinuteRuler x:Name="Ruler" Grid.Row="4" Height="44" HorizontalAlignment="Stretch" />
+
+        <!-- Row 5: controls on the left, remaining time on the right. -->
+        <Grid Grid.Row="5">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <wid:ShelfButton x:Name="PlayButton" Width="40" Height="40" CornerRadius="20"
+                <wid:ShelfButton x:Name="PlayButton" Width="38" Height="38" CornerRadius="19"
                                  Background="{StaticResource PomodoroOrangeSoftBrush}"
                                  IconBrush="{StaticResource PomodoroOrangeBrush}"
                                  Icon="{StaticResource IconPlay}" AltIcon="{StaticResource IconPause}"
@@ -55,7 +79,7 @@
                        Text="25:00"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
-                       FontSize="34"
+                       FontSize="32"
                        FontWeight="SemiBold"
                        Foreground="{StaticResource PomodoroOrangeBrush}"
                        Typography.NumeralAlignment="Tabular" />

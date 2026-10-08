@@ -105,13 +105,24 @@ public partial class App : System.Windows.Application
         siteGuard.SiteBlocked += site => coordinator.Post(new IslandEvent.NoticeRaised(
             new Notice($"{site} bloqueado", "Pomodoro raivoso ativo", "timer")));
 
-        // Angry engaged -> ask the phone to block for the time left. Leaving Angry early sends nothing: the phone
-        // keeps its block until the original end (or until the phrase is typed on the phone).
+        // Each locked focus of an angry plan -> ask the phone to block for the time left of that focus. Breaks are free,
+        // so the phone is released when the block expires. Leaving Angry early sends nothing: the phone keeps its block
+        // until the original end (or until the phrase is typed on the phone). LockChanged also fires for session changes
+        // that are not a new lock, so only a false -> true edge of IsLocked sends; the lock guards the edge state.
         var phone = sp.GetRequiredService<IPhoneBlockNotifier>();
         var focusTimer = sp.GetRequiredService<PomodoroTimer>();
+        bool wasLocked = false;
+        object phoneEdgeGate = new();
         angry.LockChanged += () =>
         {
-            if (!angry.IsLocked || !holder.Current.PhoneBlockEnabled) return;
+            bool sendBlock;
+            lock (phoneEdgeGate)
+            {
+                bool locked = angry.IsLocked;
+                sendBlock = locked && !wasLocked && holder.Current.PhoneBlockEnabled;
+                wasLocked = locked;
+            }
+            if (!sendBlock) return;
             _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, holder.Current.PhoneFcmToken);
         };
 
@@ -238,7 +249,7 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>True when no angry session is locked, or when the unlock phrase was typed (which releases the lock).</summary>
-    private bool ConfirmNotLocked() => _angry is not { IsLocked: true } || UnlockWindow.ShowFor(_angry);
+    private bool ConfirmNotLocked() => _angry is not { IsSessionActive: true } || UnlockWindow.ShowFor(_angry);
 
     private void OpenSettings(SettingsHolder holder, SettingsApplier applier, MonitorService monitors)
     {

@@ -87,15 +87,16 @@ public partial class UnlockWindow : Window
     }
 
     /// <summary>
-    /// Shows the dialog modally. Returns true when the lock is gone (phrase typed, or the focus timer ended meanwhile),
-    /// false when the user keeps the session. Returns true at once when no lock is active. When the dialog is already
-    /// open it is activated and false is returned.
+    /// Shows the dialog modally. It is for leaving the whole angry session, so it also covers a free break between
+    /// focus locks. Returns true when the session is over (phrase typed, or the plan ended meanwhile), false when the
+    /// user keeps the session. Returns true at once when no session is active. When the dialog is already open it is
+    /// activated and false is returned.
     /// </summary>
     public static bool ShowFor(AngryPomodoro angry)
     {
         ArgumentNullException.ThrowIfNull(angry);
 
-        if (!angry.IsLocked)
+        if (!angry.IsSessionActive)
         {
             return true;
         }
@@ -118,7 +119,7 @@ public partial class UnlockWindow : Window
             _open = null;
         }
 
-        return result == true || !angry.IsLocked;
+        return result == true || !angry.IsSessionActive;
     }
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -147,10 +148,11 @@ public partial class UnlockWindow : Window
         }
     }
 
-    // Raised on an arbitrary thread each time IsLocked flips; the close happens on the UI thread.
+    // Raised on an arbitrary thread when the lock or the session changes; the close happens on the UI thread.
+    // Only the end of the session closes the dialog: a free break between focus locks keeps it open.
     private void OnLockChanged()
     {
-        if (!_angry.IsLocked)
+        if (!_angry.IsSessionActive)
         {
             Dispatcher.BeginInvoke(new Action(CloseWhenUnlocked));
         }
@@ -158,7 +160,7 @@ public partial class UnlockWindow : Window
 
     private void CloseWhenUnlocked()
     {
-        if (!_closed && !_angry.IsLocked)
+        if (!_closed && !_angry.IsSessionActive)
         {
             DialogResult = true;
         }

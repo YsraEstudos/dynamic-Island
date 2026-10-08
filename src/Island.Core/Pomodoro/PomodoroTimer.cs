@@ -18,7 +18,7 @@ public sealed class PomodoroTimer : IDisposable
     public const int MinMinutes = 1;
     public const int MaxMinutes = 120;
     public const int MinCycles = 1;
-    public const int MaxCycles = 12;
+    public const int MaxCycles = 24;
     /// <summary>Length of the Pré phase. Fixed: it is not a setting.</summary>
     public const int PrepMinutes = 5;
 
@@ -217,6 +217,50 @@ public sealed class PomodoroTimer : IDisposable
         if (running) Pause();
         else if (freshFocus) StartPlan(cycles);
         else Start();
+    }
+
+    /// <summary>
+    /// Changes the number of pomodoros of the active plan, clamped to the current pomodoro..<see cref="MaxCycles"/>.
+    /// Allowed while controls are locked: the countdown is never touched. Returns false, with no event, when no plan
+    /// is active or the value did not change.
+    /// </summary>
+    public bool SetPlanTotal(int total)
+    {
+        lock (_gate)
+        {
+            if (_disposed || _planTotal == 0) return false;
+            var clamped = Math.Clamp(total, Math.Max(MinCycles, _planCycle), MaxCycles);
+            if (clamped == _planTotal) return false;
+            _planTotal = clamped;
+        }
+
+        RaiseChanged();
+        return true;
+    }
+
+    /// <summary>
+    /// Time until everything the Play button would run is done: the rest of the active plan; a fresh focus with no
+    /// plan, as a plan of <paramref name="idleCycles"/> pomodoros; otherwise just the remaining time of the current phase.
+    /// </summary>
+    public TimeSpan TimeToFinish(int idleCycles)
+    {
+        var settings = _settings();
+        lock (_gate)
+        {
+            var remaining = RemainingLocked(_clock());
+            if (_planTotal > 0)
+            {
+                return PomodoroForecast.Remaining(_phase, remaining, _planCycle, _planTotal, FocusDuration(settings), BreakDuration(settings));
+            }
+
+            var freshFocus = !_running && _phase == PomodoroPhase.Focus && _remainingAtStart == _phaseDuration;
+            if (freshFocus)
+            {
+                return PomodoroForecast.ForNewPlan(Math.Clamp(idleCycles, MinCycles, MaxCycles), FocusDuration(settings), BreakDuration(settings));
+            }
+
+            return remaining;
+        }
     }
 
     /// <summary>Stops and restores the full duration of the current phase. With a plan active, clears it and returns to a fresh focus.</summary>

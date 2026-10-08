@@ -1,25 +1,30 @@
+using System.Globalization;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Island.App.Shell;
 using Island.App.Widgets;
 using Island.Core.Configuration;
 using Island.Core.Pomodoro;
 using Brush = System.Windows.Media.Brush;
-using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace Island.App.Views.Widgets;
 
 /// <summary>
-/// Pomodoro widget (300 x 152). Phase pills (Pré, Focus, Break and Angry), a count pill (xN while stopped, N/M progress while
-/// a plan runs), a minute ruler (editable only while stopped, without a plan and outside Pré), play/pause, sound toggle, reset and the
-/// remaining time. Pré is a fixed 5-minute preparation before studying; it is started alone, never as part of a plan.
-/// The Angry pill starts a locked focus session: while locked the other controls dim, the timer ignores
-/// changes, and clicking Angry opens the unlock dialog instead. A plan (Play with N pomodoros) owns the phase, so the
-/// Focus and Break pills and the ruler dim until it ends or is reset.
-/// Everything reads the core timer; the widget adds no timer of its own. Timer changes arrive on arbitrary threads and
-/// are coalesced onto the UI thread, where the text is updated only when it changed.
+/// Pomodoro widget (300 x 152). Phase pills (Pré, Focus, Break and Angry) on the left and a stepper on the right
+/// (− N + pomodoros, 1 to 24, usable while stopped, running or locked; a running plan changes its total live). Below
+/// them a plan track (one segment per pomodoro, filled as the plan advances) and a forecast of when the plan ends
+/// ("até 15:30 · 1h30"). Then a minute ruler (editable only while stopped, without a plan and outside Pré), play/pause,
+/// sound toggle, reset and the remaining time. Pré is a fixed 5-minute preparation before studying; it is started alone,
+/// never as part of a plan. The Angry pill starts a locked focus plan of the chosen pomodoros: each focus is locked and
+/// each break is free. While locked the other controls dim, the timer ignores changes, and clicking Angry opens the
+/// unlock dialog instead. A plan (Play with N pomodoros) owns the phase, so the Focus and Break pills and the ruler dim
+/// until it ends or is reset. The forecast clock refreshes every 15 s while the timer is stopped.
+/// Everything reads the core timer; the widget adds only the forecast ticker. Timer changes arrive on arbitrary threads
+/// and are coalesced onto the UI thread, where the text is updated only when it changed.
 /// </summary>
 public partial class PomodoroWidget : UserControl
 {
@@ -29,14 +34,18 @@ public partial class PomodoroWidget : UserControl
     private static readonly Brush RedSoft = Frozen(0xFF, 0x45, 0x3A, 0x33);
     private static readonly Brush Chip = Frozen(0x2C, 0x2C, 0x2E, 0xFF);
     private static readonly Brush Grey = Frozen(0xA1, 0xA1, 0xA6, 0xFF);
+    private static readonly Brush White = Frozen(0xF2, 0xF2, 0xF7, 0xFF);
+    private static readonly CultureInfo PtBr = CultureInfo.GetCultureInfo("pt-BR");
+    private static readonly TimeSpan ForecastInterval = TimeSpan.FromSeconds(15);
 
     private readonly ShelfContext _ctx;
     private readonly UiSignal _signal;
     private string _shownTime = string.Empty;
     private bool _subscribed;
     private bool? _shownLocked;
-    private string _shownCycles = string.Empty;
-    private bool? _shownPlanActive;
+    private int _shownCycles = -1;
+    private string _shownForecast = string.Empty;
+    private DispatcherTimer? _forecastTimer;
 
     public PomodoroWidget(ShelfContext ctx)
     {
@@ -62,10 +71,7 @@ public partial class PomodoroWidget : UserControl
         AngryPill.Background = Chip;
         AngryPill.Click += OnAngryClicked;
 
-        CyclesPill.Background = Chip;
-        CyclesPill.LabelBrush = Grey;
-        CyclesPill.Click += CycleCount;
-        CyclesPill.MouseWheel += OnCyclesWheel;
+        Stepper.Stepped += OnStepped;
 
         PlayButton.Click += () => _ctx.Pomodoro.Play(_ctx.Settings().PomodoroCycles);
         ResetButton.Click += () => _ctx.Pomodoro.Reset();
@@ -86,6 +92,7 @@ public partial class PomodoroWidget : UserControl
         _ctx.Pomodoro.Changed += OnPomodoroChanged;
         _ctx.Angry.LockChanged += OnLockChanged;
         _subscribed = true;
+        _forecastTimer ??= CreateForecastTimer();
         Refresh();
     }
 
@@ -96,6 +103,7 @@ public partial class PomodoroWidget : UserControl
         _ctx.Pomodoro.Changed -= OnPomodoroChanged;
         _ctx.Angry.LockChanged -= OnLockChanged;
         _subscribed = false;
+        _forecastTimer?.Stop();
     }
 
     /// <summary>Arbitrary thread.</summary>
@@ -104,12 +112,21 @@ public partial class PomodoroWidget : UserControl
     /// <summary>Arbitrary thread.</summary>
     private void OnLockChanged() => _signal.Signal();
 
+    /// <summary>Ticks the forecast clock while the timer is stopped; a running timer already refreshes on every change.</summary>
+    private DispatcherTimer CreateForecastTimer()
+    {
+        var timer = new DispatcherTimer { Interval = ForecastInterval };
+        timer.Tick += (_, _) => Refresh();
+        return timer;
+    }
+
     private void Refresh()
     {
         PomodoroTimer timer = _ctx.Pomodoro;
         IslandSettings settings = _ctx.Settings();
         bool running = timer.IsRunning;
         bool locked = _ctx.Angry.IsLocked;
+        bool sessionActive = _ctx.Angry.IsSessionActive;
         bool planActive = timer.PlanActive;
         PomodoroPhase phase = timer.Phase;
 
@@ -126,33 +143,37 @@ public partial class PomodoroWidget : UserControl
             TimeText.Foreground = locked ? Red : Orange;
         }
 
-        string cycles = planActive ? $"{timer.Cycle}/{timer.TotalCycles}" : $"×{settings.PomodoroCycles}";
+        // The stepper and the track share the count: the plan's total while it runs, otherwise the setting.
+        bool reduce = settings.ReduceAnimations;
+        int cycles = planActive ? timer.TotalCycles : settings.PomodoroCycles;
+        Stepper.Accent = planActive;
+        Stepper.ReduceMotion = reduce;
+        Stepper.CanDecrease = planActive ? timer.TotalCycles > timer.Cycle : cycles > PomodoroTimer.MinCycles;
+        Stepper.CanIncrease = cycles < PomodoroTimer.MaxCycles;
+        Track.Accent = planActive;
+        Track.Angry = sessionActive;
+        Track.ReduceMotion = reduce;
         if (cycles != _shownCycles)
         {
             _shownCycles = cycles;
-            CyclesPill.LabelText = cycles;
+            Stepper.Value = cycles;
+            Track.Total = cycles;
         }
+        Track.Progress = planActive ? PlanProgress(timer, settings) : 0.0;
 
-        if (planActive != _shownPlanActive)
-        {
-            _shownPlanActive = planActive;
-            CyclesPill.Background = planActive ? OrangeSoft : Chip;
-            CyclesPill.LabelBrush = planActive ? Orange : Grey;
-        }
+        RefreshForecast(timer, settings, planActive);
 
         ApplyPill(PrepPill, phase == PomodoroPhase.Prep && !locked);
         ApplyPill(FocusPill, phase == PomodoroPhase.Focus && !locked);
         ApplyPill(BreakPill, phase == PomodoroPhase.Break && !locked);
-        ApplyAngryPill(locked);
+        ApplyAngryPill(locked, sessionActive);
 
         // Locked: the controls are dimmed. The timer itself ignores pause, reset, phase and duration changes.
-        // A plan owns the phase, so the phase pills dim as well.
+        // A plan owns the phase, so the phase pills dim as well. The stepper stays enabled: the count can change while locked.
         bool phaseLocked = locked || planActive;
         PrepPill.Opacity = phaseLocked ? 0.4 : 1.0;
         FocusPill.Opacity = phaseLocked ? 0.4 : 1.0;
         BreakPill.Opacity = phaseLocked ? 0.4 : 1.0;
-        // The count can only change while stopped and unlocked; during a plan it shows progress at full strength.
-        CyclesPill.Opacity = planActive || (!running && !locked) ? 1.0 : 0.4;
         double dim = locked ? 0.4 : 1.0;
         PlayButton.Opacity = dim;
         ResetButton.Opacity = dim;
@@ -166,6 +187,78 @@ public partial class PomodoroWidget : UserControl
         bool rulerFixed = running || locked || planActive || phase == PomodoroPhase.Prep;
         Ruler.Editable = !rulerFixed;
         Ruler.Opacity = rulerFixed ? 0.4 : 1.0;
+
+        // The forecast clock only needs ticking while the timer is stopped; a running timer refreshes on every change.
+        if (_forecastTimer is not null)
+        {
+            bool wantTicks = _subscribed && !running;
+            if (wantTicks && !_forecastTimer.IsEnabled) _forecastTimer.Start();
+            else if (!wantTicks && _forecastTimer.IsEnabled) _forecastTimer.Stop();
+        }
+    }
+
+    /// <summary>Completed pomodoros plus the fraction of the current one (a pomodoro is focus plus break).</summary>
+    private static double PlanProgress(PomodoroTimer timer, IslandSettings settings)
+    {
+        double cycle = Math.Max(1, settings.PomodoroFocusMinutes) + Math.Max(1, settings.PomodoroBreakMinutes);
+        double focus = Math.Max(1, settings.PomodoroFocusMinutes);
+        double elapsed = Math.Clamp((timer.PhaseDuration - timer.Remaining).TotalMinutes, 0.0, timer.PhaseDuration.TotalMinutes);
+
+        double within = timer.Phase switch
+        {
+            PomodoroPhase.Focus => elapsed,
+            PomodoroPhase.Break => focus + elapsed,
+            _ => 0.0,
+        };
+        return Math.Clamp((timer.Cycle - 1) + within / cycle, 0.0, timer.TotalCycles);
+    }
+
+    /// <summary>
+    /// "até 15:30 · 1h30": the clock time the remaining work ends and its length. Rebuilt only when the text changes.
+    /// Shows "—" when there is no work left.
+    /// </summary>
+    private void RefreshForecast(PomodoroTimer timer, IslandSettings settings, bool planActive)
+    {
+        TimeSpan rest = timer.TimeToFinish(settings.PomodoroCycles);
+        string key;
+        if (rest <= TimeSpan.Zero)
+        {
+            key = "—";
+        }
+        else
+        {
+            string clock = (DateTime.Now + rest).ToString("HH:mm", PtBr);
+            key = $"{clock}|{FormatDuration(rest)}|{planActive}";
+        }
+
+        if (key == _shownForecast) return;
+        _shownForecast = key;
+
+        ForecastText.Inlines.Clear();
+        if (rest <= TimeSpan.Zero)
+        {
+            ForecastText.Inlines.Add(new Run("—") { Foreground = Grey });
+            return;
+        }
+
+        string[] parts = key.Split('|');
+        ForecastText.Inlines.Add(new Run("até ") { Foreground = Grey });
+        ForecastText.Inlines.Add(new Run(parts[0])
+        {
+            Foreground = planActive ? Orange : White,
+            FontWeight = System.Windows.FontWeights.SemiBold,
+        });
+        ForecastText.Inlines.Add(new Run(" · " + parts[1]) { Foreground = Grey });
+    }
+
+    /// <summary>"45 min" under an hour, "2h" on the hour, otherwise "1h30".</summary>
+    private static string FormatDuration(TimeSpan span)
+    {
+        int minutes = Math.Max(1, (int)Math.Round(span.TotalMinutes));
+        int hours = minutes / 60;
+        int rest = minutes % 60;
+        if (hours == 0) return $"{rest} min";
+        return rest == 0 ? $"{hours}h" : $"{hours}h{rest:00}";
     }
 
     /// <summary>Phase pills are ignored during a plan: the plan decides the phase.</summary>
@@ -174,45 +267,36 @@ public partial class PomodoroWidget : UserControl
         if (!_ctx.Pomodoro.PlanActive) _ctx.Pomodoro.SetPhase(phase);
     }
 
-    /// <summary>Locked: opens the unlock dialog. Otherwise starts a locked focus session.</summary>
+    /// <summary>
+    /// Session active (locked or on a free break): opens the unlock dialog that leaves the whole session.
+    /// Otherwise starts a locked plan of the chosen pomodoros.
+    /// </summary>
     private void OnAngryClicked()
     {
-        if (_ctx.Angry.IsLocked) UnlockWindow.ShowFor(_ctx.Angry);
-        else _ctx.Angry.Engage();
+        if (_ctx.Angry.IsSessionActive) UnlockWindow.ShowFor(_ctx.Angry);
+        else _ctx.Angry.Engage(_ctx.Settings().PomodoroCycles);
     }
 
-    /// <summary>Click: +1, wrapping from the maximum back to the minimum.</summary>
-    private void CycleCount()
-    {
-        if (!CanEditCycles()) return;
-
-        int current = _ctx.Settings().PomodoroCycles;
-        SetCycles(current >= PomodoroTimer.MaxCycles ? PomodoroTimer.MinCycles : current + 1);
-    }
-
-    /// <summary>Wheel up +1, wheel down -1, limited to the range. Always handled so the wheel does not reach the island.</summary>
-    private void OnCyclesWheel(object sender, MouseWheelEventArgs e)
-    {
-        e.Handled = true;
-        if (!CanEditCycles()) return;
-
-        int step = e.Delta > 0 ? 1 : -1;
-        SetCycles(_ctx.Settings().PomodoroCycles + step);
-    }
-
-    private bool CanEditCycles()
+    /// <summary>
+    /// − / + (and the wheel): during a plan the plan's total changes live and the setting follows it. Otherwise the
+    /// setting changes within 1 to 24. Allowed while running and while locked.
+    /// </summary>
+    private void OnStepped(int delta)
     {
         PomodoroTimer timer = _ctx.Pomodoro;
-        return !timer.IsRunning && !timer.PlanActive && !_ctx.Angry.IsLocked;
-    }
-
-    private void SetCycles(int cycles)
-    {
         IslandSettings settings = _ctx.Settings();
-        int clamped = Math.Clamp(cycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles);
-        if (clamped == settings.PomodoroCycles) return;
-
-        _ctx.ApplySettings(settings with { PomodoroCycles = clamped });
+        if (timer.PlanActive)
+        {
+            if (timer.SetPlanTotal(timer.TotalCycles + delta))
+            {
+                _ctx.ApplySettings(settings with { PomodoroCycles = timer.TotalCycles });
+            }
+        }
+        else
+        {
+            int cycles = Math.Clamp(settings.PomodoroCycles + delta, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles);
+            if (cycles != settings.PomodoroCycles) _ctx.ApplySettings(settings with { PomodoroCycles = cycles });
+        }
         Refresh();
     }
 
@@ -238,10 +322,11 @@ public partial class PomodoroWidget : UserControl
         pill.LabelBrush = selected ? Orange : Grey;
     }
 
-    private void ApplyAngryPill(bool selected)
+    /// <summary>Locked: red soft background and red label. A free break inside the session: chip with a red label. Otherwise grey.</summary>
+    private void ApplyAngryPill(bool locked, bool sessionActive)
     {
-        AngryPill.Background = selected ? RedSoft : Chip;
-        AngryPill.LabelBrush = selected ? Red : Grey;
+        AngryPill.Background = locked ? RedSoft : Chip;
+        AngryPill.LabelBrush = sessionActive ? Red : Grey;
     }
 
     /// <summary>mm:ss, rounded up so the display reads 00:00 only when the phase has ended.</summary>
