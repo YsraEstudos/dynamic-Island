@@ -12,9 +12,10 @@ using UserControl = System.Windows.Controls.UserControl;
 namespace Island.App.Views.Widgets;
 
 /// <summary>
-/// Pomodoro widget (300 x 152). Phase pills (Focus, Break and Angry), a count pill (xN while stopped, N/M progress while
-/// a plan runs), a minute ruler (editable only while stopped and without a plan), play/pause, sound toggle, reset and the
-/// remaining time. The Angry pill starts a locked focus session: while locked the other controls dim, the timer ignores
+/// Pomodoro widget (300 x 152). Phase pills (Pré, Focus, Break and Angry), a count pill (xN while stopped, N/M progress while
+/// a plan runs), a minute ruler (editable only while stopped, without a plan and outside Pré), play/pause, sound toggle, reset and the
+/// remaining time. Pré is a fixed 5-minute preparation before studying; it is started alone, never as part of a plan.
+/// The Angry pill starts a locked focus session: while locked the other controls dim, the timer ignores
 /// changes, and clicking Angry opens the unlock dialog instead. A plan (Play with N pomodoros) owns the phase, so the
 /// Focus and Break pills and the ruler dim until it ends or is reset.
 /// Everything reads the core timer; the widget adds no timer of its own. Timer changes arrive on arbitrary threads and
@@ -43,12 +44,16 @@ public partial class PomodoroWidget : UserControl
         _ctx = ctx;
         _signal = new UiSignal(Dispatcher, Refresh);
 
+        PrepPill.LabelText = "Pré";
         FocusPill.LabelText = "Focus";
         BreakPill.LabelText = "Break";
+        PrepPill.LabelBrush = Grey;
         FocusPill.LabelBrush = Grey;
         BreakPill.LabelBrush = Grey;
+        PrepPill.Background = Chip;
         FocusPill.Background = Chip;
         BreakPill.Background = Chip;
+        PrepPill.Click += () => SelectPhase(PomodoroPhase.Prep);
         FocusPill.Click += () => SelectPhase(PomodoroPhase.Focus);
         BreakPill.Click += () => SelectPhase(PomodoroPhase.Break);
 
@@ -135,6 +140,7 @@ public partial class PomodoroWidget : UserControl
             CyclesPill.LabelBrush = planActive ? Orange : Grey;
         }
 
+        ApplyPill(PrepPill, phase == PomodoroPhase.Prep && !locked);
         ApplyPill(FocusPill, phase == PomodoroPhase.Focus && !locked);
         ApplyPill(BreakPill, phase == PomodoroPhase.Break && !locked);
         ApplyAngryPill(locked);
@@ -142,6 +148,7 @@ public partial class PomodoroWidget : UserControl
         // Locked: the controls are dimmed. The timer itself ignores pause, reset, phase and duration changes.
         // A plan owns the phase, so the phase pills dim as well.
         bool phaseLocked = locked || planActive;
+        PrepPill.Opacity = phaseLocked ? 0.4 : 1.0;
         FocusPill.Opacity = phaseLocked ? 0.4 : 1.0;
         BreakPill.Opacity = phaseLocked ? 0.4 : 1.0;
         // The count can only change while stopped and unlocked; during a plan it shows progress at full strength.
@@ -155,8 +162,10 @@ public partial class PomodoroWidget : UserControl
 
         int minutes = (int)Math.Round(timer.PhaseDuration.TotalMinutes);
         Ruler.Value = Math.Clamp(minutes, MinuteRuler.MinMinutes, MinuteRuler.MaxMinutes);
-        Ruler.Editable = !running && !locked && !planActive;
-        Ruler.Opacity = running || locked || planActive ? 0.4 : 1.0;
+        // Pré has its fixed length, so the ruler must not write to the break setting through PersistMinutes.
+        bool rulerFixed = running || locked || planActive || phase == PomodoroPhase.Prep;
+        Ruler.Editable = !rulerFixed;
+        Ruler.Opacity = rulerFixed ? 0.4 : 1.0;
     }
 
     /// <summary>Phase pills are ignored during a plan: the plan decides the phase.</summary>

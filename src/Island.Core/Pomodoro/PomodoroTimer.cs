@@ -3,10 +3,11 @@ using Island.Core.Configuration;
 
 namespace Island.Core.Pomodoro;
 
-public enum PomodoroPhase { Focus, Break }
+public enum PomodoroPhase { Focus, Break, Prep }
 
 /// <summary>
-/// Focus/break countdown. One scheduler timer is live only while running; it is re-armed after every tick so that
+/// Focus/break countdown, plus a fixed <see cref="PrepMinutes"/> preparation phase before studying.
+/// One scheduler timer is live only while running; it is re-armed after every tick so that
 /// ticks land on whole-second boundaries of the remaining time. Remaining time is derived from the clock
 /// (start instant plus remaining-at-start), so it never drifts with timer jitter. Thread-safe.
 /// A plan (<see cref="StartPlan"/>) runs a number of focus/break pairs back to back: each natural phase end starts
@@ -18,6 +19,8 @@ public sealed class PomodoroTimer : IDisposable
     public const int MaxMinutes = 120;
     public const int MinCycles = 1;
     public const int MaxCycles = 12;
+    /// <summary>Length of the Pré phase. Fixed: it is not a setting.</summary>
+    public const int PrepMinutes = 5;
 
     private readonly IIslandScheduler _scheduler;
     private readonly Func<IslandSettings> _settings;
@@ -417,8 +420,12 @@ public sealed class PomodoroTimer : IDisposable
 
     private static TimeSpan BreakDuration(IslandSettings s) => TimeSpan.FromMinutes(ClampSettingMinutes(s.PomodoroBreakMinutes));
 
-    private static TimeSpan DurationFor(PomodoroPhase phase, IslandSettings s) =>
-        phase == PomodoroPhase.Focus ? FocusDuration(s) : BreakDuration(s);
+    private static TimeSpan DurationFor(PomodoroPhase phase, IslandSettings s) => phase switch
+    {
+        PomodoroPhase.Focus => FocusDuration(s),
+        PomodoroPhase.Break => BreakDuration(s),
+        _ => TimeSpan.FromMinutes(PrepMinutes),
+    };
 
     // A zero or negative setting would complete immediately; clamp to the same range as SetMinutes.
     private static int ClampSettingMinutes(int minutes) => Math.Clamp(minutes, MinMinutes, MaxMinutes);

@@ -9,6 +9,9 @@ public static class PomodoroNotices
     {
         var minutes = (int)Math.Round(t.NextDuration.TotalMinutes);
 
+        if (t.Ended == PomodoroPhase.Prep)
+            return new Notice("Hora de estudar", $"Foco de {minutes} min", "timer", Urgent: true);
+
         if (t.Ended == PomodoroPhase.Focus)
         {
             var subtitle = t.TotalCycles > 0

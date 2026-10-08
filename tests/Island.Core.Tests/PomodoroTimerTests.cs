@@ -49,6 +49,45 @@ public class PomodoroTimerTests
         new() { PomodoroFocusMinutes = focus, PomodoroBreakMinutes = breakMinutes };
 
     [Fact]
+    public void Pre_phase_lasts_five_minutes_and_then_pauses_on_focus()
+    {
+        using var rig = new Rig(Minutes(focus: 25));
+        rig.Timer.SetPhase(PomodoroPhase.Prep);
+        Assert.Equal(TimeSpan.FromMinutes(5), rig.Timer.PhaseDuration);
+
+        rig.Timer.Start();
+        rig.Advance(5 * 60);
+
+        Assert.Equal(new[] { PomodoroPhase.Prep }, rig.Completed);
+        Assert.Equal(PomodoroPhase.Focus, rig.Timer.Phase);
+        Assert.False(rig.Timer.IsRunning);
+        Assert.Equal(TimeSpan.FromMinutes(25), rig.Timer.Remaining);
+        Assert.Equal(0, rig.Scheduler.PendingCount);
+    }
+
+    [Fact]
+    public void Pre_phase_ignores_the_focus_and_break_settings()
+    {
+        using var rig = new Rig(Minutes(focus: 40, breakMinutes: 15));
+        rig.Timer.SetPhase(PomodoroPhase.Prep);
+
+        Assert.Equal(TimeSpan.FromMinutes(5), rig.Timer.Remaining);
+    }
+
+    [Fact]
+    public void Play_on_pre_phase_starts_it_alone_without_a_plan()
+    {
+        using var rig = new Rig();
+        rig.Timer.SetPhase(PomodoroPhase.Prep);
+
+        rig.Timer.Play(3);
+
+        Assert.True(rig.Timer.IsRunning);
+        Assert.Equal(PomodoroPhase.Prep, rig.Timer.Phase);
+        Assert.False(rig.Timer.PlanActive);
+    }
+
+    [Fact]
     public void Starts_paused_in_focus_with_the_configured_duration()
     {
         using var rig = new Rig(Minutes(focus: 30));

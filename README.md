@@ -47,6 +47,8 @@ Não implementado: Weather e conversão de arquivos.
 ## Pomodoro com ciclos
 No widget Pomodoro, escolha a duração do foco (pílula **Focus** + régua) e do descanso (pílula **Break** + régua) e a quantidade de pomodoros na pílula **×N** (clique soma 1, a roda do mouse sobe/desce; 1 a 12). **Play** com o foco intacto inicia o plano: foco → descanso → foco … → descanso, tudo automático. A cada troca a ilha abre um aviso ("Hora do descanso" / "Volte ao foco" / "Sessão concluída"), mesmo se estiver recolhida ou com a estante aberta, e toca um som se o botão de som estiver ligado. Durante o plano a pílula mostra o progresso (2/3); Pause mantém o plano e Reset o cancela. Os pomodoros e descansos são contados com o relógio do sistema, sem deriva.
 
+A pílula **Pré** é um preparo fixo de 5 minutos para se organizar antes de estudar. Ela roda sozinha, fora do plano: ao terminar, a ilha avisa "Hora de estudar" e deixa o foco pronto para o Play.
+
 ## Pomodoro raivoso
 A pílula **Angry** inicia uma sessão de foco que não pode ser pausada, reiniciada ou editada. Enquanto ela roda, janelas de navegador cujo título mostra YouTube, X (Twitter), Instagram, Reddit ou conteúdo adulto (sites e termos pornográficos conhecidos) são minimizadas e aparece um aviso.
 Só há duas saídas: o timer de foco terminar, ou digitar uma frase longa em português que não pode ser colada. A mesma frase é pedida ao escolher Quit no menu da ilha ou na bandeja enquanto a sessão estiver travada.

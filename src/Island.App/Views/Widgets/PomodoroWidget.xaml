@@ -20,12 +20,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Phase pills, then the pomodoro count (xN while stopped, progress N/M while a plan runs). -->
+        <!-- Phase pills (Pré, Focus, Break, Angry), then the pomodoro count (xN while stopped, progress N/M while a plan runs). -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-            <wid:ShelfButton x:Name="FocusPill" Width="62" Height="26" CornerRadius="13" />
-            <wid:ShelfButton x:Name="BreakPill" Width="62" Height="26" CornerRadius="13" Margin="8,0,0,0" />
-            <wid:ShelfButton x:Name="AngryPill" Width="62" Height="26" CornerRadius="13" Margin="8,0,0,0" />
-            <wid:ShelfButton x:Name="CyclesPill" Width="56" Height="26" CornerRadius="13" Margin="8,0,0,0" />
+            <wid:ShelfButton x:Name="PrepPill" Width="50" Height="26" CornerRadius="13" />
+            <wid:ShelfButton x:Name="FocusPill" Width="50" Height="26" CornerRadius="13" Margin="5,0,0,0" />
+            <wid:ShelfButton x:Name="BreakPill" Width="50" Height="26" CornerRadius="13" Margin="5,0,0,0" />
+            <wid:ShelfButton x:Name="AngryPill" Width="50" Height="26" CornerRadius="13" Margin="5,0,0,0" />
+            <wid:ShelfButton x:Name="CyclesPill" Width="50" Height="26" CornerRadius="13" Margin="5,0,0,0" />
         </StackPanel>
 
         <!-- Minute ruler: drag to change the duration (only while stopped). -->

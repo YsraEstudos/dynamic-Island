@@ -22,6 +22,8 @@ public sealed class WindowsClipboardService : IClipboardService
     private const int OpenAttempts = 5;
     private const int OpenRetryDelayMs = 20;
     private const int WriteAttempts = 3;
+    private const int ReadAttempts = 3;
+    private const int ErrorClipboardNotOpen = 1418;
 
     private readonly ILogger<WindowsClipboardService>? _logger;
 
@@ -166,23 +168,35 @@ public sealed class WindowsClipboardService : IClipboardService
         if (_disposed || Volatile.Read(ref _suppressDepth) > 0) return;
 
         ClipboardItem? item = null;
-        if (!TryOpenClipboard(IntPtr.Zero))
+        for (int attempt = 1; attempt <= ReadAttempts; attempt++)
         {
-            _logger?.LogDebug("Clipboard is busy; skipping this update.");
-            return;
-        }
+            if (!TryOpenClipboard(IntPtr.Zero))
+            {
+                _logger?.LogDebug("Clipboard is busy; skipping this update.");
+                return;
+            }
 
-        try
-        {
-            item = ReadCapturableItem();
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogDebug(ex, "Reading the clipboard failed.");
-        }
-        finally
-        {
-            NativeMethods.CloseClipboard();
+            bool lockLost = false;
+            try
+            {
+                item = ReadCapturableItem();
+            }
+            catch (ClipboardLockLostException)
+            {
+                lockLost = true;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogDebug(ex, "Reading the clipboard failed.");
+            }
+            finally
+            {
+                NativeMethods.CloseClipboard();
+            }
+
+            if (!lockLost) break;
+            _logger?.LogDebug("The clipboard lock was lost while reading (attempt {Attempt}).", attempt);
+            if (attempt < ReadAttempts) Thread.Sleep(OpenRetryDelayMs);
         }
 
         // Raised with the clipboard closed, so subscribers never block other apps' clipboard access.
@@ -245,7 +259,7 @@ public sealed class WindowsClipboardService : IClipboardService
     {
         if (format == 0 || !NativeMethods.IsClipboardFormatAvailable(format)) return false;
 
-        IntPtr handle = NativeMethods.GetClipboardData(format);
+        IntPtr handle = GetClipboardDataChecked(format);
         if (handle == IntPtr.Zero) return false;
 
         ulong size = NativeMethods.GlobalSize(handle);
@@ -265,7 +279,7 @@ public sealed class WindowsClipboardService : IClipboardService
 
     private static unsafe string? ReadUnicodeText()
     {
-        IntPtr handle = NativeMethods.GetClipboardData(NativeMethods.CF_UNICODETEXT);
+        IntPtr handle = GetClipboardDataChecked(NativeMethods.CF_UNICODETEXT);
         if (handle == IntPtr.Zero) return null;
 
         ulong sizeBytes = NativeMethods.GlobalSize(handle);
@@ -293,7 +307,7 @@ public sealed class WindowsClipboardService : IClipboardService
             : 0;
         if (format == 0) return null;   // CF_BITMAP only (a GDI handle) is not supported
 
-        IntPtr handle = NativeMethods.GetClipboardData(format);
+        IntPtr handle = GetClipboardDataChecked(format);
         if (handle == IntPtr.Zero) return null;
 
         ulong size = NativeMethods.GlobalSize(handle);
@@ -314,6 +328,22 @@ public sealed class WindowsClipboardService : IClipboardService
         }
         return ClipboardImageConverter.DibToBmp(dib);
     }
+
+    /// <summary>
+    /// GetClipboardData that reports a lost clipboard lock. WM_CLIPBOARDUPDATE can arrive while the writer's own
+    /// CloseClipboard is still finishing; our OpenClipboard then succeeds, but the writer's tail end drops the lock,
+    /// so every read fails with ERROR_CLIPBOARD_NOT_OPEN even though IsClipboardFormatAvailable still says yes.
+    /// Closing and reopening gets a clean lock.
+    /// </summary>
+    private static IntPtr GetClipboardDataChecked(uint format)
+    {
+        IntPtr handle = NativeMethods.GetClipboardData(format);
+        if (handle == IntPtr.Zero && Marshal.GetLastPInvokeError() == ErrorClipboardNotOpen)
+            throw new ClipboardLockLostException();
+        return handle;
+    }
+
+    private sealed class ClipboardLockLostException : Exception;
 
     /// <summary>
     /// Opens the clipboard with retries (another app may hold it briefly). Returns false if it stays busy.

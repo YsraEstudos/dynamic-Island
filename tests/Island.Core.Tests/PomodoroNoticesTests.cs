@@ -62,10 +62,21 @@ public class PomodoroNoticesTests
     }
 
     [Fact]
+    public void Pre_phase_end_announces_the_focus()
+    {
+        var notice = PomodoroNotices.For(Transition(PomodoroPhase.Prep, PomodoroPhase.Focus, 0, 0, false, 25));
+
+        Assert.Equal("Hora de estudar", notice.Title);
+        Assert.Equal("Foco de 25 min", notice.Subtitle);
+        Assert.Equal("timer", notice.Glyph);
+    }
+
+    [Fact]
     public void Every_pomodoro_notice_is_urgent()
     {
         var transitions = new[]
         {
+            Transition(PomodoroPhase.Prep, PomodoroPhase.Focus, 0, 0, false, 25),
             Transition(PomodoroPhase.Focus, PomodoroPhase.Break, 2, 4, false, 5),
             Transition(PomodoroPhase.Focus, PomodoroPhase.Break, 0, 0, false, 5),
             Transition(PomodoroPhase.Break, PomodoroPhase.Focus, 4, 4, true, 25),
