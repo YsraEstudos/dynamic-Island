@@ -173,7 +173,7 @@ public partial class ClipboardView : UserControl
 
             if (kind == ClipboardKind.Image)
             {
-                if (bytes is not null) shelf.ClipboardService.SetImage(bytes);
+                if (bytes is not null) shelf.ClipboardService.SetImage(ClipboardImageCodec.ToBmp(bytes));
             }
             else
             {

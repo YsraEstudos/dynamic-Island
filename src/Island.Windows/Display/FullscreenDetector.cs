@@ -35,6 +35,10 @@ public sealed class FullscreenDetector : IDisplayService
     private bool _started;
     private bool _disposed;
     private volatile bool _isFullscreen;
+    // Last process name lookup. Location events repeat for the same window while it moves, and reading a process
+    // name is far costlier than the rest of the check. Cleared on every foreground change.
+    private uint _cachedPid;
+    private string? _cachedName;
 
     /// <param name="gameProcesses">
     /// Returns the configured game process names. Read on every foreground change, so edits apply from the next change.
@@ -164,10 +168,21 @@ public sealed class FullscreenDetector : IDisplayService
 
     private string? GetProcessName(uint pid)
     {
+        lock (_gate)
+        {
+            if (pid == _cachedPid) return _cachedName;
+        }
+
         try
         {
             using var process = Process.GetProcessById((int)pid);
-            return process.ProcessName;
+            string name = process.ProcessName;
+            lock (_gate)
+            {
+                _cachedPid = pid;
+                _cachedName = name;
+            }
+            return name;
         }
         catch (Exception ex)
         {
@@ -257,7 +272,11 @@ public sealed class FullscreenDetector : IDisplayService
 
             if (eventType == NativeMethods.EVENT_SYSTEM_FOREGROUND)
             {
-                lock (_gate) RetargetLocationHookLocked();
+                lock (_gate)
+                {
+                    _cachedPid = 0;
+                    RetargetLocationHookLocked();
+                }
                 Evaluate();
             }
             else if (eventType == NativeMethods.EVENT_OBJECT_LOCATIONCHANGE)

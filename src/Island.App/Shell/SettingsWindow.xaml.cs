@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -7,13 +6,11 @@ using Island.App.ViewModels;
 namespace Island.App.Shell;
 
 /// <summary>
-/// Settings window. Closing it (title bar, Alt+F4, Esc) only hides it, so the app keeps running
-/// and the same instance can be shown again via <see cref="ShowOrActivate"/>.
+/// Settings window. Closing it (title bar, Alt+F4, Esc) really closes it, so its visual tree does not stay in memory;
+/// the app keeps running (explicit shutdown) and builds a fresh window the next time settings are opened.
 /// </summary>
 public partial class SettingsWindow : Window
 {
-    private bool _isShuttingDown;
-
     public SettingsWindow(SettingsViewModel viewModel)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
@@ -25,7 +22,7 @@ public partial class SettingsWindow : Window
         {
             if (e.Key == System.Windows.Input.Key.Escape)
             {
-                Hide();
+                Close();
             }
         };
     }
@@ -62,23 +59,8 @@ public partial class SettingsWindow : Window
         Focus();
     }
 
-    /// <summary>Really closes the window (use on application shutdown only).</summary>
-    public void CloseForShutdown()
-    {
-        _isShuttingDown = true;
-        Close();
-    }
-
-    protected override void OnClosing(CancelEventArgs e)
-    {
-        base.OnClosing(e);
-
-        if (!_isShuttingDown)
-        {
-            e.Cancel = true;
-            Hide();
-        }
-    }
+    /// <summary>Closes the window on application shutdown.</summary>
+    public void CloseForShutdown() => Close();
 
     protected override void OnSourceInitialized(EventArgs e)
     {

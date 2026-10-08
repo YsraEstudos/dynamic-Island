@@ -7,6 +7,7 @@ using Island.App.Composition;
 using Island.App.Diagnostics;
 using Island.App.Shell;
 using Island.App.ViewModels;
+using Island.App.Widgets;
 using Island.Core.Abstractions;
 using Island.Core.Application;
 using Island.Core.Clipboard;
@@ -42,6 +43,11 @@ public partial class App : System.Windows.Application
 
         _guard = SingleInstanceGuard.TryAcquire("DynamicIsland");
         if (_guard is null) { Shutdown(); return; }
+
+        // Software rendering: the island is a small layered window, and the GPU path costs far more than it saves.
+        // It loads the display driver (about 60 MB private memory and 1,200 handles here) and reads every frame back
+        // from the GPU, which used more CPU than rasterizing the pill directly. Must be set before the first window.
+        System.Windows.Media.RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.SoftwareOnly;
 
         var logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "logs");
         Log.Logger = new LoggerConfiguration()
@@ -118,7 +124,20 @@ public partial class App : System.Windows.Application
         };
         var clipboard = sp.GetRequiredService<IClipboardService>();
         var history = sp.GetRequiredService<ClipboardHistory>();
-        clipboard.ItemCaptured += (_, item) => { if (holder.Current.ClipboardEnabled) history.Add(item); };
+        // Captures go through one background chain, in order, so screenshots are compressed off the clipboard thread.
+        Task clipboardChain = Task.CompletedTask;
+        object clipboardGate = new();
+        clipboard.ItemCaptured += (_, item) =>
+        {
+            if (!holder.Current.ClipboardEnabled) return;
+            lock (clipboardGate)
+            {
+                clipboardChain = clipboardChain.ContinueWith(_ => history.Add(
+                    item is { Kind: ClipboardKind.Image, ImageBytes: { } bytes }
+                        ? item with { ImageBytes = ClipboardImageCodec.Compress(bytes) }
+                        : item), TaskScheduler.Default);
+            }
+        };
         try { clipboard.Start(); } catch (Exception ex) { Log.Error(ex, "Clipboard service failed to start"); }
         updates.Start(); // Checks GitHub once shortly after startup, then every few hours. Demo mode does nothing.
         if (!demo)
@@ -233,6 +252,8 @@ public partial class App : System.Windows.Application
             var svm = new SettingsViewModel(holder.Current, names, applier.Apply, (span, token) => phone.NotifyAsync(span, token),
                 () => CheckForUpdatesAsync(updates));
             _settingsWindow = new SettingsWindow(svm);
+            // Closing really closes it, so its visual tree is freed instead of sitting hidden for the app's lifetime.
+            _settingsWindow.Closed += (_, _) => _settingsWindow = null;
         }
         _settingsWindow.ShowOrActivate();
     }
