@@ -5,7 +5,7 @@ namespace Island.Core.Pomodoro;
 /// <summary>A site the angry focus guard blocks, recognised by the window titles a browser shows for it.</summary>
 public sealed record BlockedSite(string Name, IReadOnlyList<Regex> TitlePatterns);
 
-/// <summary>Sites blocked during angry focus, matched by window title, and the browser processes that can show them.</summary>
+/// <summary>Sites and adult content blocked during angry focus, matched by window title, and the browser processes that can show them.</summary>
 public static class BlockedSites
 {
     // Window titles can be arbitrary text; a timeout turns a pathological title into "no match" instead of a stall.
@@ -35,6 +35,20 @@ public static class BlockedSites
         {
             Pattern(@"\bReddit\b"),
             Pattern(@"(?:^|[\s(])r/[A-Za-z0-9_]+"),
+        }),
+        // Adult sites and searches, matched by page-title keywords and site names. Heuristic: it misses pages with
+        // neutral titles and can flag unrelated text that uses one of these words.
+        new BlockedSite("Conteúdo adulto", new[]
+        {
+            Pattern(@"\bporn\w*"),
+            Pattern(@"\b(?:xxx|hentai|nsfw|nudes|onlyfans|putaria|safad[ao]s?)\b"),
+            Pattern(@"\bsex ?cams?\b"),
+            Pattern(@"\bcam ?girls?\b"),
+            Pattern(@"\bsex videos?\b"),
+            Pattern(@"\bv[íi]deos? (?:de )?sexo\b"),
+            Pattern(@"\bsexo (?:explícito|amador|grátis|gratis)\b"),
+            Pattern(@"\badult ?friend ?finder\b"),
+            Pattern(@"\b(?:xvideos|xnxx|xhamster|redtube|youporn|tube8|spankbang|eporner|chaturbate|stripchat|bongacams|camsoda|livejasmine|brazzers|bangbros|realitykings|naughtyamerica|motherless|tnaflix|thumbzilla|beeg|rule34|e-hentai|nhentai|hanime|fapello|erome|redgifs|tubegalore|sunporno|hqporner|fansly|manyvids)\b"),
         }),
     };
 

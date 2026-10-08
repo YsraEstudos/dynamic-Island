@@ -7,6 +7,7 @@ namespace Island.Core.Application;
 /// Customize > Clipboard = Expanded (user-opened, protected) > Notice = Volume (latest wins) > MediaPreview > Compact.
 /// A lower-priority request never displaces a shown mode; an equal-priority request replaces it (latest wins),
 /// and a request for the mode already shown restarts its timer.
+/// Exception: an urgent notice (<see cref="Notice.Urgent"/>) replaces every mode except Customize, Mini included; Rank is unchanged.
 /// </summary>
 public static class EventPriorityPolicy
 {

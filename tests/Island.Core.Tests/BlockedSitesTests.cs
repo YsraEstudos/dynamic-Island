@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Island.Core.Pomodoro;
 
 namespace Island.Core.Tests;
@@ -5,9 +6,47 @@ namespace Island.Core.Tests;
 public class BlockedSitesTests
 {
     [Fact]
-    public void Default_lists_the_four_blocked_sites_in_order()
+    public void Default_lists_the_five_blocked_sites_in_order()
     {
-        Assert.Equal(new[] { "YouTube", "Twitter/X", "Instagram", "Reddit" }, BlockedSites.Default.Select(s => s.Name));
+        Assert.Equal(new[] { "YouTube", "Twitter/X", "Instagram", "Reddit", "Conteúdo adulto" }, BlockedSites.Default.Select(s => s.Name));
+    }
+
+    [Theory]
+    [InlineData("Free Porn Videos - XVIDEOS.COM - Google Chrome")]
+    [InlineData("Pornhub - Microsoft Edge")]
+    [InlineData("XNXX.COM - Brave")]
+    [InlineData("Chaturbate - Free Adult Webcams")]
+    [InlineData("OnlyFans")]
+    [InlineData("Vídeos de sexo grátis - xHamster")]
+    [InlineData("Hentai Haven - Firefox")]
+    [InlineData("Pornô brasileiro - Opera")]
+    [InlineData("EroMe - Google Chrome")]
+    [InlineData("Album name - EroMe - Microsoft Edge")]
+    [InlineData("erome.com")]
+    public void Adult_titles_match_adult_content(string title)
+    {
+        Assert.Equal("Conteúdo adulto", BlockedSites.Match(title));
+    }
+
+    [Theory]
+    [InlineData("Middlesex University")]
+    [InlineData("Sextant navigation guide")]
+    [InlineData("Essex County Council")]
+    [InlineData("Escola de Sexta - Gmail")]
+    [InlineData("Sussex Weather")]
+    [InlineData("Anatomia humana - Wikipedia")]
+    public void Ordinary_titles_with_adult_lookalike_words_do_not_match(string title)
+    {
+        Assert.Null(BlockedSites.Match(title));
+    }
+
+    [Fact]
+    public void Very_long_titles_are_matched_quickly()
+    {
+        var watch = Stopwatch.StartNew();
+
+        Assert.Null(BlockedSites.Match(new string('a', 100_000)));
+        Assert.True(watch.Elapsed < TimeSpan.FromSeconds(2));
     }
 
     [Theory]

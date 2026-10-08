@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.IO;
+using System.Media;
 using System.Windows;
 using System.Windows.Threading;
 using Island.App.Composition;
@@ -108,11 +109,13 @@ public partial class App : System.Windows.Application
             _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, holder.Current.PhoneFcmToken);
         };
 
-        // Pomodoro -> toast, clipboard capture -> history, global hotkey -> clipboard panel
+        // Pomodoro -> toast (and sound when enabled), clipboard capture -> history, global hotkey -> clipboard panel
         var pomodoro = sp.GetRequiredService<PomodoroTimer>();
-        pomodoro.PhaseCompleted += phase => coordinator.Post(new IslandEvent.NoticeRaised(phase == PomodoroPhase.Focus
-            ? new Notice("Focus complete", "Time for a break", "timer")
-            : new Notice("Break over", "Back to focus", "timer")));
+        pomodoro.Transitioned += t =>
+        {
+            coordinator.Post(new IslandEvent.NoticeRaised(PomodoroNotices.For(t)));
+            if (holder.Current.PomodoroSound) PlayPomodoroSound();
+        };
         var clipboard = sp.GetRequiredService<IClipboardService>();
         var history = sp.GetRequiredService<ClipboardHistory>();
         clipboard.ItemCaptured += (_, item) => { if (holder.Current.ClipboardEnabled) history.Add(item); };
@@ -152,6 +155,13 @@ public partial class App : System.Windows.Application
         coordinator.Post(new IslandEvent.NoticeRaised(outcome.Delivered
             ? new Notice("Celular bloqueado", outcome.Detail, "timer")
             : new Notice("Celular não bloqueado", outcome.Detail, "timer")));
+    }
+
+    /// <summary>Runs on the timer thread. Audio failures are logged and ignored: the toast still shows.</summary>
+    private static void PlayPomodoroSound()
+    {
+        try { SystemSounds.Asterisk.Play(); }
+        catch (Exception ex) { Log.Debug(ex, "Pomodoro sound failed to play"); }
     }
 
     /// <summary>Quit from the island menu or the tray. While an angry pomodoro is locked, the unlock dialog must release it first.</summary>

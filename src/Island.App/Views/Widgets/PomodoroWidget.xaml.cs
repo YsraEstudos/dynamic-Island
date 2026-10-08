@@ -1,3 +1,4 @@
+using System.Windows.Input;
 using System.Windows.Media;
 using Island.App.Shell;
 using Island.App.Widgets;
@@ -11,9 +12,11 @@ using UserControl = System.Windows.Controls.UserControl;
 namespace Island.App.Views.Widgets;
 
 /// <summary>
-/// Pomodoro widget (300 x 152). Phase pills (Focus, Break and Angry), a minute ruler (editable only while stopped),
-/// play/pause, sound toggle, reset and the remaining time. The Angry pill starts a locked focus session: while locked the
-/// other controls dim, the timer ignores changes, and clicking Angry opens the unlock dialog instead.
+/// Pomodoro widget (300 x 152). Phase pills (Focus, Break and Angry), a count pill (xN while stopped, N/M progress while
+/// a plan runs), a minute ruler (editable only while stopped and without a plan), play/pause, sound toggle, reset and the
+/// remaining time. The Angry pill starts a locked focus session: while locked the other controls dim, the timer ignores
+/// changes, and clicking Angry opens the unlock dialog instead. A plan (Play with N pomodoros) owns the phase, so the
+/// Focus and Break pills and the ruler dim until it ends or is reset.
 /// Everything reads the core timer; the widget adds no timer of its own. Timer changes arrive on arbitrary threads and
 /// are coalesced onto the UI thread, where the text is updated only when it changed.
 /// </summary>
@@ -31,6 +34,8 @@ public partial class PomodoroWidget : UserControl
     private string _shownTime = string.Empty;
     private bool _subscribed;
     private bool? _shownLocked;
+    private string _shownCycles = string.Empty;
+    private bool? _shownPlanActive;
 
     public PomodoroWidget(ShelfContext ctx)
     {
@@ -44,15 +49,20 @@ public partial class PomodoroWidget : UserControl
         BreakPill.LabelBrush = Grey;
         FocusPill.Background = Chip;
         BreakPill.Background = Chip;
-        FocusPill.Click += () => _ctx.Pomodoro.SetPhase(PomodoroPhase.Focus);
-        BreakPill.Click += () => _ctx.Pomodoro.SetPhase(PomodoroPhase.Break);
+        FocusPill.Click += () => SelectPhase(PomodoroPhase.Focus);
+        BreakPill.Click += () => SelectPhase(PomodoroPhase.Break);
 
         AngryPill.LabelText = "Angry";
         AngryPill.LabelBrush = Grey;
         AngryPill.Background = Chip;
         AngryPill.Click += OnAngryClicked;
 
-        PlayButton.Click += () => _ctx.Pomodoro.Toggle();
+        CyclesPill.Background = Chip;
+        CyclesPill.LabelBrush = Grey;
+        CyclesPill.Click += CycleCount;
+        CyclesPill.MouseWheel += OnCyclesWheel;
+
+        PlayButton.Click += () => _ctx.Pomodoro.Play(_ctx.Settings().PomodoroCycles);
         ResetButton.Click += () => _ctx.Pomodoro.Reset();
         SoundButton.Click += ToggleSound;
 
@@ -92,8 +102,10 @@ public partial class PomodoroWidget : UserControl
     private void Refresh()
     {
         PomodoroTimer timer = _ctx.Pomodoro;
+        IslandSettings settings = _ctx.Settings();
         bool running = timer.IsRunning;
         bool locked = _ctx.Angry.IsLocked;
+        bool planActive = timer.PlanActive;
         PomodoroPhase phase = timer.Phase;
 
         string time = FormatRemaining(timer.Remaining);
@@ -109,24 +121,48 @@ public partial class PomodoroWidget : UserControl
             TimeText.Foreground = locked ? Red : Orange;
         }
 
+        string cycles = planActive ? $"{timer.Cycle}/{timer.TotalCycles}" : $"×{settings.PomodoroCycles}";
+        if (cycles != _shownCycles)
+        {
+            _shownCycles = cycles;
+            CyclesPill.LabelText = cycles;
+        }
+
+        if (planActive != _shownPlanActive)
+        {
+            _shownPlanActive = planActive;
+            CyclesPill.Background = planActive ? OrangeSoft : Chip;
+            CyclesPill.LabelBrush = planActive ? Orange : Grey;
+        }
+
         ApplyPill(FocusPill, phase == PomodoroPhase.Focus && !locked);
         ApplyPill(BreakPill, phase == PomodoroPhase.Break && !locked);
         ApplyAngryPill(locked);
 
         // Locked: the controls are dimmed. The timer itself ignores pause, reset, phase and duration changes.
+        // A plan owns the phase, so the phase pills dim as well.
+        bool phaseLocked = locked || planActive;
+        FocusPill.Opacity = phaseLocked ? 0.4 : 1.0;
+        BreakPill.Opacity = phaseLocked ? 0.4 : 1.0;
+        // The count can only change while stopped and unlocked; during a plan it shows progress at full strength.
+        CyclesPill.Opacity = planActive || (!running && !locked) ? 1.0 : 0.4;
         double dim = locked ? 0.4 : 1.0;
-        FocusPill.Opacity = dim;
-        BreakPill.Opacity = dim;
         PlayButton.Opacity = dim;
         ResetButton.Opacity = dim;
 
         PlayButton.IsAltShown = running;
-        SoundButton.IsAltShown = !_ctx.Settings().PomodoroSound;
+        SoundButton.IsAltShown = !settings.PomodoroSound;
 
         int minutes = (int)Math.Round(timer.PhaseDuration.TotalMinutes);
         Ruler.Value = Math.Clamp(minutes, MinuteRuler.MinMinutes, MinuteRuler.MaxMinutes);
-        Ruler.Editable = !running && !locked;
-        Ruler.Opacity = running || locked ? 0.4 : 1.0;
+        Ruler.Editable = !running && !locked && !planActive;
+        Ruler.Opacity = running || locked || planActive ? 0.4 : 1.0;
+    }
+
+    /// <summary>Phase pills are ignored during a plan: the plan decides the phase.</summary>
+    private void SelectPhase(PomodoroPhase phase)
+    {
+        if (!_ctx.Pomodoro.PlanActive) _ctx.Pomodoro.SetPhase(phase);
     }
 
     /// <summary>Locked: opens the unlock dialog. Otherwise starts a locked focus session.</summary>
@@ -134,6 +170,41 @@ public partial class PomodoroWidget : UserControl
     {
         if (_ctx.Angry.IsLocked) UnlockWindow.ShowFor(_ctx.Angry);
         else _ctx.Angry.Engage();
+    }
+
+    /// <summary>Click: +1, wrapping from the maximum back to the minimum.</summary>
+    private void CycleCount()
+    {
+        if (!CanEditCycles()) return;
+
+        int current = _ctx.Settings().PomodoroCycles;
+        SetCycles(current >= PomodoroTimer.MaxCycles ? PomodoroTimer.MinCycles : current + 1);
+    }
+
+    /// <summary>Wheel up +1, wheel down -1, limited to the range. Always handled so the wheel does not reach the island.</summary>
+    private void OnCyclesWheel(object sender, MouseWheelEventArgs e)
+    {
+        e.Handled = true;
+        if (!CanEditCycles()) return;
+
+        int step = e.Delta > 0 ? 1 : -1;
+        SetCycles(_ctx.Settings().PomodoroCycles + step);
+    }
+
+    private bool CanEditCycles()
+    {
+        PomodoroTimer timer = _ctx.Pomodoro;
+        return !timer.IsRunning && !timer.PlanActive && !_ctx.Angry.IsLocked;
+    }
+
+    private void SetCycles(int cycles)
+    {
+        IslandSettings settings = _ctx.Settings();
+        int clamped = Math.Clamp(cycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles);
+        if (clamped == settings.PomodoroCycles) return;
+
+        _ctx.ApplySettings(settings with { PomodoroCycles = clamped });
+        Refresh();
     }
 
     private void ToggleSound()

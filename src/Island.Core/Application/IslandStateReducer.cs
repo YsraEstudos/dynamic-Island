@@ -72,6 +72,14 @@ public static class IslandStateReducer
                 break;
 
             case IslandEvent.NoticeRaised n:
+                if (n.Notice.Urgent && mode != IslandMode.Customize)
+                {
+                    // Urgent notices break through every mode except Customize, the Mini pill included.
+                    mode = IslandMode.Notice;
+                    notice = n.Notice;
+                    restart = true;
+                    break;
+                }
                 Request(ref mode, ref restart, IslandMode.Notice);
                 // A notice that does not resolve to Notice (a protected mode is shown) is dropped.
                 if (mode == IslandMode.Notice) notice = n.Notice;
@@ -117,7 +125,7 @@ public static class IslandStateReducer
         if (!EventPriorityPolicy.HasTimer(mode) || flags.Interacting)
             return new ReductionResult(next, flags, TimerAction.Cancel, TimeSpan.Zero);
         if (restart)
-            return new ReductionResult(next, flags, TimerAction.Arm, DurationFor(mode, s));
+            return new ReductionResult(next, flags, TimerAction.Arm, DurationFor(mode, s, notice));
         return new ReductionResult(next, flags, TimerAction.Keep, TimeSpan.Zero);
     }
 
@@ -161,11 +169,16 @@ public static class IslandStateReducer
         restart = mode == requested;
     }
 
-    private static TimeSpan DurationFor(IslandMode mode, IslandSettings s) => mode switch
+    // Urgent notices stay at least this long, so they can be read even when the setting is short.
+    private const double UrgentNoticeMinSeconds = 6.0;
+
+    private static TimeSpan DurationFor(IslandMode mode, IslandSettings s, Notice? notice) => mode switch
     {
         IslandMode.Volume => Seconds(s.VolumeDisplaySeconds),
         IslandMode.MediaPreview => Seconds(s.MediaPreviewSeconds),
-        IslandMode.Notice => Seconds(s.NoticeSeconds),
+        IslandMode.Notice => Seconds(notice is { Urgent: true }
+            ? Math.Max(s.NoticeSeconds, UrgentNoticeMinSeconds)
+            : s.NoticeSeconds),
         IslandMode.Expanded => Seconds(s.ExpandedIdleSeconds),
         // The clipboard is read more slowly than the shelf, so it stays open twice as long.
         IslandMode.Clipboard => Seconds(s.ExpandedIdleSeconds * 2),
