@@ -40,6 +40,13 @@ O script sobe `<Version>`, roda `dotnet publish` (win-x64, dependente de framewo
 
 **Se algo falhar:** veja `%LocalAppData%\DynamicIsland\logs\update-install.log` (instalação) e `island-AAAAMMDD.log` (verificação/download). Causas comuns: o app instalado numa pasta sem permissão de escrita; a Release sem `.zip`, marcada como rascunho ou pré-release (`releases/latest` ignora esses); tag que não é `vX.Y.Z`.
 
+**Armadilhas do auto-update (não repetir):** em v0.4.8 e v0.4.9 a ilha ficou fechada depois de "Install update". A causa estava no próprio app, não no processo de publicação: uma instância travava ao fechar e segurava os arquivos, a cópia falhava e o script não reabria o app. Regras para quem mexer nisso:
+- Ao fechar, o app solta a captura do mouse antes de destruir janelas, e `OnExit` tem um watchdog que força a saída após 5 s (`src/Island.App/App.xaml.cs`). Não remova nenhum dos dois.
+- O script de update (`UpdateRules.BuildUpdateScript`) precisa parar toda instância ainda aberta na pasta de instalação antes de copiar, e reabrir o app mesmo se a cópia falhar. Os testes em `UpdateRulesTests` cobrem essa ordem.
+- O script que roda é o da versão **instalada**. Uma correção no script só vale para a atualização seguinte à versão que a contém; a passagem para ela ainda usa o script antigo.
+- Antes de culpar o update, leia `update-install.log`. `robocopy failed with code 8` ou `9` significa arquivos em uso, e quase sempre há uma instância antiga aberta.
+- Não publique sem testar a atualização de verdade: instale a versão anterior, rode "Install update" e confirme que o app volta na nova.
+
 ## Estrutura
 - `Island.Core` – regras (IslandCoordinator, reducer, prioridades). Sem WPF/Win32.
 - `Island.Windows` – adaptadores (Windows.Media.Control, Core Audio/NAudio, monitores, janela overlay, JSON de configurações).
