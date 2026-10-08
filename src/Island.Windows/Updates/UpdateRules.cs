@@ -92,17 +92,23 @@ internal static class UpdateRules
 
     /// <summary>
     /// The script that finishes an update after the app exited: waits for the old process, copies the new files over the
-    /// install folder, logs the outcome and starts the app again.
+    /// install folder, logs the outcome and starts the app again. An app instance that hung while closing (a WPF
+    /// shutdown deadlock) would keep its files locked forever, so every instance still running from the install folder is
+    /// stopped before the copy. The app is reopened even when the copy fails, so an update never leaves it closed.
     /// </summary>
     public static string BuildUpdateScript(int processId, string sourceDir, string installDir, string exePath, string logPath) =>
         string.Join("\r\n",
             "$ErrorActionPreference = 'Stop'",
             $"function Log($m) {{ Add-Content -LiteralPath {Quote(logPath)} -Value ((Get-Date -Format o) + ' ' + $m) }}",
             "try {",
-            $"  Wait-Process -Id {processId} -Timeout 60 -ErrorAction SilentlyContinue",
+            $"  Wait-Process -Id {processId} -Timeout 20 -ErrorAction SilentlyContinue",
+            $"  Get-Process -ErrorAction SilentlyContinue | Where-Object {{ $_.Path -eq {Quote(exePath)} }} | Stop-Process -Force -ErrorAction SilentlyContinue",
+            "  Start-Sleep -Milliseconds 500",
             $"  robocopy {Quote(sourceDir)} {Quote(installDir)} /E /R:10 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null",
             "  if ($LASTEXITCODE -ge 8) { throw ('robocopy failed with code ' + $LASTEXITCODE) }",
             "  Log 'installed'",
+            "} catch { Log $_.Exception.Message }",
+            "try {",
             $"  Start-Process -FilePath {Quote(exePath)}",
             "  Log 'relaunched'",
             "} catch { Log $_.Exception.Message }",

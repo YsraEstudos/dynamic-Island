@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO;
 using System.Media;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using Island.App.Composition;
 using Island.App.Diagnostics;
@@ -354,6 +355,14 @@ public partial class App : System.Windows.Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        // WPF can deadlock while it destroys a window that holds the mouse capture (the stylus code waits for its pen
+        // thread, already gone). The process then lingers without a window and keeps the install folder locked, so an
+        // update can never replace it. Release the capture first, and force the exit if shutdown still hangs.
+        Mouse.Capture(null);
+        int exitCode = e.ApplicationExitCode;
+        new Thread(() => { Thread.Sleep(TimeSpan.FromSeconds(5)); Environment.Exit(exitCode); })
+        { IsBackground = true, Name = "Island.ExitWatchdog" }.Start();
+
         foreach (var source in _systemNoticeSources)
         {
             source.NoticeRaised -= OnSystemNoticeRaised;

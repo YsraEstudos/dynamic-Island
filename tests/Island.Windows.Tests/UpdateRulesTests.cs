@@ -152,11 +152,23 @@ public sealed class UpdateRulesTests
         string script = UpdateRules.BuildUpdateScript(4242, "C:/u/it's", "C:/app", "C:/app/DynamicIsland.exe", "C:/logs/update.log");
 
         int wait = script.IndexOf("Wait-Process -Id 4242", StringComparison.Ordinal);
+        int kill = script.IndexOf("$_.Path -eq 'C:/app/DynamicIsland.exe' } | Stop-Process -Force", StringComparison.Ordinal);
         int copy = script.IndexOf("robocopy 'C:/u/it''s' 'C:/app'", StringComparison.Ordinal);
         int start = script.IndexOf("Start-Process -FilePath 'C:/app/DynamicIsland.exe'", StringComparison.Ordinal);
         Assert.True(wait >= 0, "must wait for the old process");
-        Assert.True(copy > wait, "files are copied only after the old app exited, and paths are quoted");
+        Assert.True(kill > wait, "instances that hung while closing are stopped after the wait");
+        Assert.True(copy > kill, "files are copied only after the old app exited, and paths are quoted");
         Assert.True(start > copy, "the app is reopened only after the copy");
         Assert.Contains("-ge 8", script);
+    }
+
+    [Fact]
+    public void The_update_script_reopens_the_app_even_when_the_copy_fails()
+    {
+        string script = UpdateRules.BuildUpdateScript(4242, "C:/u", "C:/app", "C:/app/DynamicIsland.exe", "C:/logs/update.log");
+
+        int copyCatch = script.IndexOf("} catch", StringComparison.Ordinal);
+        int start = script.IndexOf("Start-Process -FilePath", StringComparison.Ordinal);
+        Assert.True(copyCatch >= 0 && start > copyCatch, "the relaunch is outside the copy's try block");
     }
 }
