@@ -7,8 +7,8 @@ using Microsoft.Extensions.Logging;
 namespace Island.Windows.Focus;
 
 /// <summary>
-/// Minimizes a browser window whose title names a blocked site while angry mode is active.
-/// Event-driven through WinEvent hooks; there is no polling timer. Detection is by window title only.
+/// Minimizes a browser window whose window or accessible client title names a blocked site during angry mode.
+/// Event-driven through WinEvent hooks; there is no polling timer. The client title survives named Edge windows.
 /// <para>
 /// <see cref="SetActive"/> must run on a thread that pumps window messages (the WPF UI thread).
 /// Out-of-context WinEvent callbacks are delivered through that thread's message queue.
@@ -17,6 +17,7 @@ namespace Island.Windows.Focus;
 public sealed class ForegroundSiteGuard : IDisposable
 {
     private readonly ILogger<ForegroundSiteGuard>? _logger;
+    private readonly BrowserTitleReader _browserTitles;
     private readonly object _gate = new();
     // Rooted here for the lifetime of the instance; the OS keeps only a raw function pointer.
     private readonly NativeMethods.WinEventDelegate _winEventProc;
@@ -28,6 +29,7 @@ public sealed class ForegroundSiteGuard : IDisposable
     public ForegroundSiteGuard(ILogger<ForegroundSiteGuard>? logger = null)
     {
         _logger = logger;
+        _browserTitles = new BrowserTitleReader(NativeMethods.GetBrowserClientTitle, OnBrowserTitleRead, logger);
         _winEventProc = OnWinEvent;
     }
 
@@ -65,6 +67,20 @@ public sealed class ForegroundSiteGuard : IDisposable
         return siteName is not null;
     }
 
+    /// <summary>The accessible browser client names the active page even when the window was renamed.</summary>
+    public static bool ShouldBlock(string? processName, string? windowTitle, string? browserTitle,
+        [NotNullWhen(true)] out string? siteName)
+    {
+        siteName = BlockedSites.IsBrowserProcess(processName)
+            ? BlockedSites.Match(windowTitle) ?? BlockedSites.Match(browserTitle)
+            : null;
+        return siteName is not null;
+    }
+
+    internal static bool IsBrowserTitleChange(int objectId, int childId) =>
+        (objectId == NativeMethods.OBJID_WINDOW && childId == NativeMethods.CHILDID_SELF)
+        || objectId == NativeMethods.OBJID_CLIENT;
+
     private void InstallHooksLocked()
     {
         _foregroundHook = NativeMethods.SetWinEventHook(
@@ -80,6 +96,7 @@ public sealed class ForegroundSiteGuard : IDisposable
 
     private void RemoveHooksLocked()
     {
+        _browserTitles.Cancel();
         if (_foregroundHook != IntPtr.Zero) NativeMethods.UnhookWinEvent(_foregroundHook);
         if (_nameChangeHook != IntPtr.Zero) NativeMethods.UnhookWinEvent(_nameChangeHook);
         _foregroundHook = IntPtr.Zero;
@@ -97,8 +114,9 @@ public sealed class ForegroundSiteGuard : IDisposable
 
             if (eventType == NativeMethods.EVENT_OBJECT_NAMECHANGE)
             {
-                // Name changes fire for every control on screen; only the foreground window's own title matters.
-                if (idObject != NativeMethods.OBJID_WINDOW || idChild != NativeMethods.CHILDID_SELF) return;
+                // Named windows keep their caption on tab switches. Chromium instead changes accessible client
+                // names, using nonzero (usually negative) child IDs. Always read the client root, never page text.
+                if (!IsBrowserTitleChange(idObject, idChild)) return;
                 if (hwnd != NativeMethods.GetForegroundWindow()) return;
             }
 
@@ -115,10 +133,24 @@ public sealed class ForegroundSiteGuard : IDisposable
         if (hwnd == IntPtr.Zero) return;
 
         string title = NativeMethods.GetWindowTitle(hwnd);
-        // Cheap title test first: nearly every window stops here, so the process lookup runs only on a match.
-        if (BlockedSites.Match(title) is null) return;
+        string? processName = TryGetProcessName(hwnd);
+        if (!BlockedSites.IsBrowserProcess(processName)) return;
 
-        if (!ShouldBlock(TryGetProcessName(hwnd), title, out string? siteName)) return;
+        if (ShouldBlock(processName, title, out string? siteName)) MinimizeWindow(hwnd, siteName);
+        else _browserTitles.Queue(hwnd, SynchronizationContext.Current);
+    }
+
+    private void OnBrowserTitleRead(IntPtr hwnd, string? browserTitle)
+    {
+        if (!_active || hwnd != NativeMethods.GetForegroundWindow()) return;
+        if (ShouldBlock(TryGetProcessName(hwnd), NativeMethods.GetWindowTitle(hwnd), browserTitle, out string? siteName))
+            MinimizeWindow(hwnd, siteName);
+    }
+
+    private void MinimizeWindow(IntPtr hwnd, string siteName)
+    {
+        // The browser can switch windows while accessibility is being read. Do not minimize a background window.
+        if (!_active || hwnd != NativeMethods.GetForegroundWindow()) return;
 
         NativeMethods.ShowWindowAsync(hwnd, NativeMethods.SW_MINIMIZE);
         _logger?.LogInformation("Minimized a {Site} browser window during angry mode.", siteName);

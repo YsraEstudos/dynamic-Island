@@ -29,6 +29,34 @@ public sealed class ForegroundSiteGuardTests
         Assert.Null(siteName);
     }
 
+    [Theory]
+    [InlineData("msedge", "FIscal", "(3) Página Inicial / X - Microsoft Edge", "Twitter/X")]
+    [InlineData("chrome", "Work", "Lo-fi - YouTube - Google Chrome", "YouTube")]
+    [InlineData("msedge", "FIscal", "Gmail - Microsoft Edge", null)]
+    [InlineData("notepad", "FIscal", "Home / X", null)]
+    [InlineData("Codex", "FIscal", "Home / X", null)]
+    [InlineData("msedge", "FIscal", null, null)]
+    [InlineData("msedge", "Home / X - Microsoft Edge", null, "Twitter/X")]
+    public void ShouldBlock_NamedWindow_UsesActiveBrowserTitle(string processName, string windowTitle,
+        string? browserTitle, string? expectedSite)
+    {
+        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, windowTitle, browserTitle, out string? siteName);
+
+        Assert.Equal(expectedSite is not null, blocked);
+        Assert.Equal(expectedSite, siteName);
+    }
+
+    [Theory]
+    [InlineData(0, 0, true)]
+    [InlineData(-4, 0, true)]
+    [InlineData(-4, -1205, true)] // Chromium uses negative child IDs for accessibility nodes.
+    [InlineData(0, 12, false)]
+    [InlineData(-3, 0, false)]
+    public void IsBrowserTitleChange_IncludesAccessibleClientEvents(int objectId, int childId, bool expected)
+    {
+        Assert.Equal(expected, ForegroundSiteGuard.IsBrowserTitleChange(objectId, childId));
+    }
+
     [Fact]
     public void SetActiveFalseThenDispose_CanBeRepeatedWithoutThrowing()
     {

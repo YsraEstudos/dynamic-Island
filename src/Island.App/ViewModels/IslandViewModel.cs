@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.ComponentModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,6 +11,7 @@ using Island.Core.Abstractions;
 using Island.Core.Application;
 using Island.Core.Configuration;
 using Island.Core.Models;
+using Island.Core.Pomodoro;
 
 namespace Island.App.ViewModels;
 
@@ -52,6 +55,9 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
     [ObservableProperty] private Notice? _notice;
     [ObservableProperty] private bool _pomodoroRunning;
     [ObservableProperty] private string _pomodoroText = string.Empty;
+    [ObservableProperty] private PomodoroPhase _pomodoroPhase = PomodoroPhase.Focus;
+    [ObservableProperty] private bool _pomodoroAngry;
+    [ObservableProperty] private bool _pomodoroReduceMotion;
 
     public IslandViewModel(IslandCoordinator coordinator, IMediaService media, IVolumeService volume,
         Func<IslandSettings> settings, ShelfContext shelf)
@@ -71,6 +77,8 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
 
         _coordinator.StateChanged += OnStateChanged;
         Shelf.Pomodoro.Changed += _pomodoroSignal.Signal;
+        Shelf.Angry.LockChanged += _pomodoroSignal.Signal;
+        SystemParameters.StaticPropertyChanged += OnSystemParametersChanged;
         RefreshPomodoro();
         Apply(_coordinator.State);
     }
@@ -187,6 +195,8 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         _disposed = true;
         _coordinator.StateChanged -= OnStateChanged;
         Shelf.Pomodoro.Changed -= _pomodoroSignal.Signal;
+        Shelf.Angry.LockChanged -= _pomodoroSignal.Signal;
+        SystemParameters.StaticPropertyChanged -= OnSystemParametersChanged;
         _pomodoroSignal.Dispose();
         _ticker.Stop();
     }
@@ -223,7 +233,15 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         var timer = Shelf.Pomodoro;
         PomodoroRunning = timer.IsRunning;
         PomodoroText = FormatCountdown(timer.Remaining);
+        PomodoroPhase = timer.Phase;
+        PomodoroAngry = Shelf.Angry.IsLocked;
+        PomodoroReduceMotion = Settings.ReduceAnimations || !SystemParameters.ClientAreaAnimation;
     }
+
+    /// <summary>Refreshes compact motion preferences immediately after settings are applied.</summary>
+    public void RefreshMotionPreferences() => _pomodoroSignal.Signal();
+
+    private void OnSystemParametersChanged(object? sender, PropertyChangedEventArgs e) => _pomodoroSignal.Signal();
 
     private void ApplyMedia(MediaInfo? media)
     {

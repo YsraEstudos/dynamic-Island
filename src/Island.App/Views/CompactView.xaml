@@ -9,11 +9,13 @@
                     VerticalAlignment="Center"
                     Margin="16,0,0,0"
                     Visibility="{Binding PomodoroRunning, Converter={StaticResource BoolToVisibility}}">
-            <Ellipse Width="6"
-                     Height="6"
-                     Margin="0,0,6,0"
-                     VerticalAlignment="Center"
-                     Fill="{StaticResource AccentOrangeBrush}" />
+            <controls:PomodoroGlyph Width="14"
+                                    Height="14"
+                                    Margin="0,0,6,0"
+                                    VerticalAlignment="Center"
+                                    Phase="{Binding PomodoroPhase}"
+                                    IsAngry="{Binding PomodoroAngry}"
+                                    ReduceMotion="{Binding PomodoroReduceMotion}" />
             <TextBlock Text="{Binding PomodoroText}"
                        Style="{StaticResource CompactTimerTextStyle}"
                        VerticalAlignment="Center" />

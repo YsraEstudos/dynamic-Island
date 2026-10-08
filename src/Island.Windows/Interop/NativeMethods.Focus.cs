@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Island.Windows.Interop;
@@ -6,6 +7,7 @@ namespace Island.Windows.Interop;
 internal static partial class NativeMethods
 {
     public const uint EVENT_OBJECT_NAMECHANGE = 0x800C;
+    public const int OBJID_CLIENT = -4;
     public const int SW_MINIMIZE = 6;
 
     [LibraryImport("user32.dll", EntryPoint = "GetWindowTextLengthW")]
@@ -22,6 +24,39 @@ internal static partial class NativeMethods
     [LibraryImport("user32.dll", EntryPoint = "ShowWindowAsync")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool ShowWindowAsync(IntPtr hwnd, int cmdShow);
+
+    [DllImport("oleacc.dll")]
+    private static extern int AccessibleObjectFromWindow(IntPtr hwnd, uint objectId, ref Guid interfaceId,
+        [MarshalAs(UnmanagedType.Interface)] out object? accessible);
+
+    /// <summary>
+    /// The browser's client root exposes the active page title, unlike a user-named window caption.
+    /// Reads one property only: bookmarks, background tabs and page text are never searched.
+    /// </summary>
+    public static string? GetBrowserClientTitle(IntPtr hwnd)
+    {
+        if (hwnd == IntPtr.Zero) return null;
+
+        object? accessible = null;
+        try
+        {
+            var interfaceId = new Guid("618736E0-3C3D-11CF-810C-00AA00389B71"); // IAccessible
+            if (AccessibleObjectFromWindow(hwnd, unchecked((uint)OBJID_CLIENT), ref interfaceId, out accessible) < 0
+                || accessible is null) return null;
+
+            return accessible.GetType().InvokeMember("accName", BindingFlags.GetProperty, null, accessible,
+                new object[] { CHILDID_SELF }) as string;
+        }
+        catch (Exception ex) when (ex is COMException or TargetInvocationException or ArgumentException)
+        {
+            // Accessibility can disappear during navigation or when the browser closes.
+            return null;
+        }
+        finally
+        {
+            if (accessible is not null && Marshal.IsComObject(accessible)) Marshal.ReleaseComObject(accessible);
+        }
+    }
 
     /// <summary>Reads a window title. Returns an empty string when the window has none or no longer exists.</summary>
     public static unsafe string GetWindowTitle(IntPtr hwnd)

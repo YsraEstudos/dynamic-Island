@@ -186,6 +186,7 @@ public partial class IslandWindow : System.Windows.Window
     {
         IslandSettings settings = _settings();
         _transitions.ReduceAnimations = settings.ReduceAnimations;
+        _vm.RefreshMotionPreferences();
         ShelfLayer.SetSaved(settings.GetShelfRows());
 
         SyncDock(settings);
