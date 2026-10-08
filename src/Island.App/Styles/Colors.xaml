@@ -1,0 +1,26 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Island surface: pure black, no gradients. -->
+    <SolidColorBrush x:Key="IslandBlackBrush" Color="#000000" />
+
+    <!-- Single accent colours. -->
+    <SolidColorBrush x:Key="AccentGreenBrush" Color="#30D158" />
+    <SolidColorBrush x:Key="MutedRedBrush" Color="#FF453A" />
+    <SolidColorBrush x:Key="VolumeTrackBrush" Color="#1E3D29" />
+    <SolidColorBrush x:Key="WaveBrush" Color="#C7A4FF" />
+
+    <!-- Neutrals. -->
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#A1A1A6" />
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#6E6E73" />
+    <SolidColorBrush x:Key="ProgressTrackBrush" Color="#3A3A3C" />
+    <SolidColorBrush x:Key="ArtPlaceholderBrush" Color="#1C1C1E" />
+
+    <!-- Shelf, notices and the island context menu. -->
+    <SolidColorBrush x:Key="AccentOrangeBrush" Color="#FF9F0A" />
+    <SolidColorBrush x:Key="AccentBlueBrush" Color="#0A84FF" />
+    <SolidColorBrush x:Key="ShelfTileBrush" Color="#1C1C1E" />
+    <SolidColorBrush x:Key="ShelfButtonBrush" Color="#2C2C2E" />
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#1C1C1E" />
+    <SolidColorBrush x:Key="MenuHoverBrush" Color="#2C2C2E" />
+    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="#3A3A3C" />
+</ResourceDictionary>

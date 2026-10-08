@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Island.App/Island.App.csproj" />
+    <Project Path="src/Island.Core/Island.Core.csproj" />
+    <Project Path="src/Island.Windows/Island.Windows.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Island.Core.Tests/Island.Core.Tests.csproj" />
+    <Project Path="tests/Island.Windows.Tests/Island.Windows.Tests.csproj" />
+  </Folder>
+</Solution>

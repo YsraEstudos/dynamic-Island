@@ -1,0 +1,303 @@
+using System.Globalization;
+using System.IO;
+using System.Windows;
+using System.Windows.Threading;
+using Island.App.Composition;
+using Island.App.Diagnostics;
+using Island.App.Shell;
+using Island.App.ViewModels;
+using Island.Core.Abstractions;
+using Island.Core.Application;
+using Island.Core.Clipboard;
+using Island.Core.Pomodoro;
+using Island.Windows.Focus;
+using Island.Windows.Input;
+using Island.Core.Configuration;
+using Island.Core.Fakes;
+using Island.Core.Models;
+using Island.Windows.Display;
+using Island.Windows.Shell;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
+using Serilog;
+
+namespace Island.App;
+
+public partial class App : System.Windows.Application
+{
+    private SingleInstanceGuard? _guard;
+    private ServiceProvider? _services;
+    private IslandWindow? _window;
+    private SettingsWindow? _settingsWindow;
+    private TrayIconService? _tray;
+    private DispatcherTimer? _demoTimer;
+    private GlobalHotkey? _hotkey;
+    private AngryPomodoro? _angry;
+    private SoakRunner? _soak;
+
+    protected override async void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+
+        _guard = SingleInstanceGuard.TryAcquire("DynamicIsland");
+        if (_guard is null) { Shutdown(); return; }
+
+        var logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "logs");
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(Path.Combine(logDir, "island-.log"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5)
+            .CreateLogger();
+        var loggerFactory = new Serilog.Extensions.Logging.SerilogLoggerFactory(Log.Logger);
+
+        DispatcherUnhandledException += (_, ex) => { Log.Error(ex.Exception, "Unhandled UI exception"); ex.Handled = true; };
+
+        TimeSpan? soak = ParseSoak(e.Args);
+        bool demo = e.Args.Contains("--demo") || soak is not null;
+        _services = ServiceRegistration.Build(demo, loggerFactory);
+        var sp = _services;
+
+        var holder = sp.GetRequiredService<SettingsHolder>();
+        var monitors = sp.GetRequiredService<MonitorService>();
+        var media = sp.GetRequiredService<IMediaService>();
+        var volume = sp.GetRequiredService<IVolumeService>();
+        var display = sp.GetRequiredService<IDisplayService>();
+        var coordinator = sp.GetRequiredService<IslandCoordinator>();
+
+        var applier = sp.GetRequiredService<SettingsApplier>();
+        var vm = sp.GetRequiredService<IslandViewModel>();
+        var updates = sp.GetRequiredService<IUpdateService>();
+        _window = new IslandWindow(vm, monitors, sp.GetRequiredService<Func<IslandSettings>>(), applier.Apply, () => updates.Available);
+        applier.Applied = () => Dispatcher.BeginInvoke(() => _window?.ApplySettings());
+        _window.OpenSettingsRequested += () => OpenSettings(holder, applier, monitors);
+        _window.QuitRequested += RequestQuit;
+        _window.InstallUpdateRequested += () => _ = InstallUpdateAsync(updates, coordinator);
+        _window.CheckUpdateRequested += () => _ = CheckUpdatesFromMenuAsync(updates, coordinator);
+        _window.TaskbarRecreated += () => _tray?.Refresh();
+        _window.Show();
+
+        volume.Initialize();
+        display.Start();
+        try { await media.InitializeAsync(); }
+        catch (Exception ex) { Log.Error(ex, "Media service failed to initialize"); }
+        // The Mini pill is remembered: keep the saved flag in step with the island state (written only when it changes).
+        coordinator.StateChanged += state =>
+        {
+            bool mini = state.Mode == IslandMode.Mini;
+            if (mini == holder.Current.Minimized) return;
+            Dispatcher.BeginInvoke(() =>
+            {
+                if (mini != holder.Current.Minimized) applier.Apply(holder.Current with { Minimized = mini });
+            });
+        };
+        coordinator.Start();
+
+        // Angry pomodoro: while locked, browsers on distracting sites are minimized; a blocked site raises a notice.
+        var angry = sp.GetRequiredService<AngryPomodoro>();
+        var siteGuard = sp.GetRequiredService<ForegroundSiteGuard>();
+        _angry = angry;
+        angry.LockChanged += () => Dispatcher.BeginInvoke(() => siteGuard.SetActive(angry.IsLocked));
+        siteGuard.SiteBlocked += site => coordinator.Post(new IslandEvent.NoticeRaised(
+            new Notice($"{site} bloqueado", "Pomodoro raivoso ativo", "timer")));
+
+        // Angry engaged -> ask the phone to block for the time left. Leaving Angry early sends nothing: the phone
+        // keeps its block until the original end (or until the phrase is typed on the phone).
+        var phone = sp.GetRequiredService<IPhoneBlockNotifier>();
+        var focusTimer = sp.GetRequiredService<PomodoroTimer>();
+        angry.LockChanged += () =>
+        {
+            if (!angry.IsLocked || !holder.Current.PhoneBlockEnabled) return;
+            _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, holder.Current.PhoneFcmToken);
+        };
+
+        // Pomodoro -> toast, clipboard capture -> history, global hotkey -> clipboard panel
+        var pomodoro = sp.GetRequiredService<PomodoroTimer>();
+        pomodoro.PhaseCompleted += phase => coordinator.Post(new IslandEvent.NoticeRaised(phase == PomodoroPhase.Focus
+            ? new Notice("Focus complete", "Time for a break", "timer")
+            : new Notice("Break over", "Back to focus", "timer")));
+        var clipboard = sp.GetRequiredService<IClipboardService>();
+        var history = sp.GetRequiredService<ClipboardHistory>();
+        clipboard.ItemCaptured += (_, item) => { if (holder.Current.ClipboardEnabled) history.Add(item); };
+        try { clipboard.Start(); } catch (Exception ex) { Log.Error(ex, "Clipboard service failed to start"); }
+        updates.Start(); // Checks GitHub once shortly after startup, then every few hours. Demo mode does nothing.
+        if (!demo)
+        {
+            _hotkey = new GlobalHotkey(GlobalHotkey.ModControl | GlobalHotkey.ModAlt, 0x56 /* V */);
+            _hotkey.Pressed += () => coordinator.Post(new IslandEvent.ClipboardRequested());
+            if (!_hotkey.Register()) Log.Warning("Ctrl+Alt+V is already taken; clipboard hotkey disabled");
+        }
+        if (demo && soak is null) StartDemo(sp);
+
+        _tray = new TrayIconService(
+            openSettings: () => OpenSettings(holder, applier, monitors),
+            setPaused: paused => coordinator.Post(new IslandEvent.PausedChanged(paused)),
+            exit: RequestQuit);
+
+        SystemEvents.DisplaySettingsChanged += OnDisplayChanged;
+        SystemEvents.SessionSwitch += OnSessionSwitch;
+        SystemEvents.PowerModeChanged += OnPowerModeChanged;
+
+        // Soak test (--soak): fake events for the given duration, then shut down. Its verdict is in the log.
+        if (soak is { } soakDuration)
+        {
+            _soak = new SoakRunner(coordinator, sp.GetRequiredService<FakeMediaService>(),
+                sp.GetRequiredService<FakeVolumeService>(), Dispatcher, soakDuration,
+                () => Dispatcher.BeginInvoke(() => Shutdown()));
+            _soak.Start();
+        }
+    }
+
+    /// <summary>Fire-and-forget: the notifier never throws, and a failure only raises a toast. Angry keeps running either way.</summary>
+    private static async Task BlockPhoneAsync(IPhoneBlockNotifier phone, IslandCoordinator coordinator, TimeSpan remaining, string token)
+    {
+        PhoneBlockOutcome outcome = await phone.NotifyAsync(remaining, token).ConfigureAwait(false);
+        coordinator.Post(new IslandEvent.NoticeRaised(outcome.Delivered
+            ? new Notice("Celular bloqueado", outcome.Detail, "timer")
+            : new Notice("Celular não bloqueado", outcome.Detail, "timer")));
+    }
+
+    /// <summary>Quit from the island menu or the tray. While an angry pomodoro is locked, the unlock dialog must release it first.</summary>
+    private void RequestQuit()
+    {
+        if (!ConfirmNotLocked()) return;
+        Shutdown();
+    }
+
+    /// <summary>
+    /// "Install update" from the island menu. Installing replaces the running app, so it passes the same Angry guard as Quit.
+    /// Progress is shown as temporary notices; failures are logged and shown as a notice.
+    /// </summary>
+    private async Task InstallUpdateAsync(IUpdateService updates, IslandCoordinator coordinator)
+    {
+        UpdateInfo? update = updates.Available;
+        if (update is null || !ConfirmNotLocked()) return;
+
+        coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Downloading {update.Tag}", "Update", "timer")));
+        try
+        {
+            await updates.InstallAsync(update);
+            coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Installing {update.Tag}", "Windows is updating the app", "timer")));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Installing update {Tag} failed", update.Tag);
+            coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Update failed", "See the logs", "timer")));
+        }
+    }
+
+    /// <summary>Asks the update source for a newer release and describes the outcome in one line. Never throws.</summary>
+    private static async Task<string> CheckForUpdatesAsync(IUpdateService updates)
+    {
+        try
+        {
+            UpdateInfo? update = await updates.CheckAsync();
+            return update is null ? "You're up to date." : $"{update.Tag} is available. Right-click the island and choose Install update.";
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Update check failed");
+            return "Couldn't check for updates. Try again later.";
+        }
+    }
+
+    /// <summary>"Check for updates" from the island menu: the outcome is a temporary notice.</summary>
+    private static async Task CheckUpdatesFromMenuAsync(IUpdateService updates, IslandCoordinator coordinator)
+    {
+        coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Checking for updates", "Update", "timer")));
+        string result = await CheckForUpdatesAsync(updates);
+        coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Update", result, "timer")));
+    }
+
+    /// <summary>True when no angry session is locked, or when the unlock phrase was typed (which releases the lock).</summary>
+    private bool ConfirmNotLocked() => _angry is not { IsLocked: true } || UnlockWindow.ShowFor(_angry);
+
+    private void OpenSettings(SettingsHolder holder, SettingsApplier applier, MonitorService monitors)
+    {
+        if (_settingsWindow is null)
+        {
+            var names = monitors.GetMonitors()
+                .Select(m => $"Monitor {m.Index + 1}{(m.IsPrimary ? " (primary)" : "")} - {m.Width}x{m.Height}")
+                .ToList();
+            var phone = _services!.GetRequiredService<IPhoneBlockNotifier>();
+            var updates = _services!.GetRequiredService<IUpdateService>();
+            var svm = new SettingsViewModel(holder.Current, names, applier.Apply, (span, token) => phone.NotifyAsync(span, token),
+                () => CheckForUpdatesAsync(updates));
+            _settingsWindow = new SettingsWindow(svm);
+        }
+        _settingsWindow.ShowOrActivate();
+    }
+
+    private void OnDisplayChanged(object? s, EventArgs e) => Dispatcher.BeginInvoke(() => _window?.Nudge());
+
+    private void OnSessionSwitch(object? s, SessionSwitchEventArgs e)
+    {
+        if (e.Reason == SessionSwitchReason.SessionUnlock) Dispatcher.BeginInvoke(() => _window?.Nudge());
+    }
+
+    private void OnPowerModeChanged(object? s, PowerModeChangedEventArgs e)
+    {
+        if (e.Mode == PowerModes.Resume) Dispatcher.BeginInvoke(() => _window?.Nudge());
+    }
+
+    /// <summary>Demo: a looping fake playlist plus periodic volume changes, so every state can be seen without real media.</summary>
+    private void StartDemo(IServiceProvider sp)
+    {
+        var media = sp.GetRequiredService<FakeMediaService>();
+        var vol = sp.GetRequiredService<FakeVolumeService>();
+        media.SetPlaylist(
+            new MediaInfo("Blue Hour", "Nova Coast", null, true, TimeSpan.FromSeconds(83), TimeSpan.FromSeconds(214), "demo"),
+            new MediaInfo("Glass Tides", "Nova Coast", null, true, TimeSpan.Zero, TimeSpan.FromSeconds(187), "demo"));
+        var hist = sp.GetRequiredService<ClipboardHistory>();
+        hist.Add(ClipboardItem.FromText("Meet at the studio at four. Bring the new cut."));
+        hist.Add(ClipboardItem.FromText("#1219ED"));
+        hist.Add(ClipboardItem.FromText("https://weeknight.kitchen/nachos"));
+        hist.Add(ClipboardItem.FromText("A better clipboard?"));
+        int n = 0;
+        _demoTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _demoTimer.Tick += (_, _) =>
+        {
+            n++;
+            media.Tick(TimeSpan.FromSeconds(1));
+            if (n % 12 == 0) vol.SetLevel(vol.Current.Level >= 90 ? 30 : vol.Current.Level + 15);
+            if (n % 40 == 0) _ = media.NextAsync();
+        };
+        _demoTimer.Start();
+    }
+
+    /// <summary>Parses <c>--soak</c> (10 minutes) or <c>--soak=minutes</c>. Returns null when no soak run is requested.</summary>
+    private static TimeSpan? ParseSoak(string[] args)
+    {
+        const double DefaultMinutes = 10;
+        foreach (string arg in args)
+        {
+            if (arg == "--soak") return TimeSpan.FromMinutes(DefaultMinutes);
+            if (!arg.StartsWith("--soak=", StringComparison.OrdinalIgnoreCase)) continue;
+
+            string value = arg["--soak=".Length..];
+            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double minutes)
+                && minutes > 0 && minutes <= 24 * 60)
+            {
+                return TimeSpan.FromMinutes(minutes);
+            }
+
+            Log.Warning("Invalid --soak value '{Value}'; using {Default} minutes", value, DefaultMinutes);
+            return TimeSpan.FromMinutes(DefaultMinutes);
+        }
+        return null;
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        SystemEvents.DisplaySettingsChanged -= OnDisplayChanged;
+        SystemEvents.SessionSwitch -= OnSessionSwitch;
+        SystemEvents.PowerModeChanged -= OnPowerModeChanged;
+        _demoTimer?.Stop();
+        _soak?.Dispose();
+        _hotkey?.Dispose();
+        _tray?.Dispose();
+        _settingsWindow?.CloseForShutdown();
+        _window?.Close();
+        _services?.Dispose();
+        _guard?.Dispose();
+        Log.CloseAndFlush();
+        base.OnExit(e);
+    }
+}

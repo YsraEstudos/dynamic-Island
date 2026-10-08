@@ -1,0 +1,145 @@
+<Window x:Class="Island.App.Shell.UnlockWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Desistir do foco?"
+        Width="560"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True"
+        Topmost="True"
+        Background="{StaticResource MenuBackgroundBrush}"
+        Foreground="{StaticResource TextPrimaryBrush}"
+        FontFamily="{StaticResource IslandFontFamily}"
+        FontSize="13"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True"
+        Loaded="OnLoaded">
+
+    <Window.Resources>
+        <!-- Both buttons share one shape; a disabled button fades out. -->
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="Background" Value="{StaticResource ShelfButtonBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="18,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="PART_Root"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PART_Root" Property="Opacity" Value="0.85" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PART_Root" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="24,20,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Title and the one-line rule. -->
+        <TextBlock Grid.Row="0"
+                   Text="Desistir do foco?"
+                   FontSize="20"
+                   FontWeight="SemiBold"
+                   Foreground="{StaticResource TextPrimaryBrush}" />
+        <TextBlock Grid.Row="1"
+                   Margin="0,4,0,0"
+                   Text="O Pomodoro raivoso está ativo. Para sair antes do fim, digite a frase abaixo exatamente como está, sem copiar e colar."
+                   FontSize="13"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   TextWrapping="Wrap" />
+
+        <!-- The phrase is display only: not selectable, not focusable, no hit testing. -->
+        <Border Grid.Row="2"
+                Margin="0,14,0,0"
+                Padding="16,12"
+                Background="{StaticResource ShelfTileBrush}"
+                CornerRadius="12">
+            <TextBlock x:Name="PhraseText"
+                       FontSize="16"
+                       FontWeight="Medium"
+                       LineHeight="24"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       TextWrapping="Wrap"
+                       Focusable="False"
+                       IsHitTestVisible="False" />
+        </Border>
+
+        <!-- Input. Its border shows progress: red when off track, green when complete. Paste and drop are refused in code. -->
+        <Border x:Name="InputBorder"
+                Grid.Row="3"
+                Margin="0,12,0,0"
+                Padding="12,8"
+                Background="{StaticResource ShelfTileBrush}"
+                BorderBrush="{StaticResource MenuSeparatorBrush}"
+                BorderThickness="1"
+                CornerRadius="10">
+            <TextBox x:Name="InputBox"
+                     Height="76"
+                     Padding="0"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Foreground="{StaticResource TextPrimaryBrush}"
+                     CaretBrush="{StaticResource TextPrimaryBrush}"
+                     FontSize="16"
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     VerticalScrollBarVisibility="Auto"
+                     IsUndoEnabled="False"
+                     SpellCheck.IsEnabled="False"
+                     AllowDrop="False">
+                <TextBox.ContextMenu>
+                    <ContextMenu Visibility="Collapsed" />
+                </TextBox.ContextMenu>
+            </TextBox>
+        </Border>
+
+        <!-- Progress on the left, actions on the right. -->
+        <Grid Grid.Row="4" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="ProgressText"
+                       VerticalAlignment="Center"
+                       FontSize="12"
+                       Foreground="{StaticResource TextSecondaryBrush}" />
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button x:Name="StayButton"
+                        Background="{StaticResource AccentBlueBrush}"
+                        Content="Voltar ao foco"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="OnStayClicked" />
+                <Button x:Name="GiveUpButton"
+                        Margin="10,0,0,0"
+                        Content="Desistir do foco"
+                        IsEnabled="False"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="OnGiveUpClicked" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,36 @@
+using System.Windows;
+using Island.App.ViewModels;
+using Island.App.Views;
+using Island.App.Views.Widgets;
+
+namespace Island.App.Widgets;
+
+/// <param name="IconKey">Key of a Geometry resource (24-unit icon) available app-wide, shown in the customize tray.</param>
+/// <param name="Width">Preferred width in DIPs. All widgets share the same height (WidgetCatalog.WidgetHeight).</param>
+public sealed record WidgetDescriptor(string Id, string Title, string IconKey, double Width,
+    Func<ShelfContext, IslandViewModel, FrameworkElement> Create);
+
+/// <summary>The shelf widgets. Ids: nowplaying, pomodoro, calendar, filetray. Every widget is WidgetHeight tall.</summary>
+public static class WidgetCatalog
+{
+    public const double WidgetHeight = 152;
+
+    public static IReadOnlyList<WidgetDescriptor> All { get; } = new[]
+    {
+        new WidgetDescriptor("nowplaying", "Now Playing", "Icon.Widget.NowPlaying", 400,
+            (ctx, vm) =>
+            {
+                var widget = new MediaExpandedView { Width = 400, Height = WidgetHeight };
+                widget.Attach(vm);
+                return widget;
+            }),
+        new WidgetDescriptor("pomodoro", "Pomodoro", "Icon.Widget.Pomodoro", 300,
+            (ctx, vm) => new PomodoroWidget(ctx)),
+        new WidgetDescriptor("calendar", "Calendar", "Icon.Widget.Calendar", 280,
+            (ctx, vm) => new CalendarWidget()),
+        new WidgetDescriptor("filetray", "File Tray", "Icon.Widget.FileTray", 280,
+            (ctx, vm) => new FileTrayWidget(ctx)),
+    };
+
+    public static WidgetDescriptor? Find(string id) => All.FirstOrDefault(w => w.Id == id);
+}

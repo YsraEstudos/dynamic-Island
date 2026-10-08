@@ -1,0 +1,110 @@
+<UserControl x:Class="Island.App.Views.ShelfView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch">
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Widget band: 16 DIP padding, one widget row (152), 16 DIP padding. -->
+            <RowDefinition Height="184" />
+            <!-- Customize tray (only in edit mode). -->
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Tray first: the canvas below is drawn above it, so cards and drag ghosts pass over the tiles. -->
+        <Grid x:Name="TrayRoot"
+              Grid.Row="1"
+              Height="84"
+              Margin="16,0,16,0"
+              VerticalAlignment="Center"
+              Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Every catalogued widget as a tile; tiles already on the shelf are dimmed and checked. -->
+            <StackPanel x:Name="TileRow"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center" />
+
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="12,0,0,0">
+                <!-- Cancel: leave edit mode without saving. -->
+                <Border x:Name="CancelButton"
+                        Width="34"
+                        Height="34"
+                        Margin="0,0,10,0"
+                        CornerRadius="17"
+                        Cursor="Hand"
+                        Background="{StaticResource ShelfButtonBrush}">
+                    <Viewbox Width="14" Height="14">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="{StaticResource UiIconClose}"
+                                  Stroke="{StaticResource TextPrimaryBrush}"
+                                  StrokeThickness="2.2"
+                                  StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round" />
+                        </Canvas>
+                    </Viewbox>
+                </Border>
+
+                <!-- Commit: save the working list and return to the shelf. -->
+                <Border x:Name="CommitButton"
+                        Width="34"
+                        Height="34"
+                        CornerRadius="17"
+                        Cursor="Hand"
+                        Background="{StaticResource AccentBlueBrush}">
+                    <Viewbox Width="16" Height="16">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="{StaticResource UiIconCheck}"
+                                  Stroke="{StaticResource TextPrimaryBrush}"
+                                  StrokeThickness="2.4"
+                                  StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round"
+                                  StrokeLineJoin="Round" />
+                        </Canvas>
+                    </Viewbox>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <!-- Widget cards: placed by springs in code (no layout panel), so every reorder, add and removal animates. -->
+        <Canvas x:Name="WidgetCanvas" Grid.Row="0" />
+
+        <!-- Drop hints for a card moved to the row above (top edge) or below (top of the tray). Shown only while dragging. -->
+        <Border x:Name="AboveIndicator"
+                Width="120"
+                Height="3"
+                Margin="0,2,0,0"
+                CornerRadius="1.5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                IsHitTestVisible="False"
+                Visibility="Collapsed"
+                Background="{StaticResource AccentBlueBrush}" />
+        <Border x:Name="BelowIndicator"
+                Grid.Row="1"
+                Width="120"
+                Height="3"
+                Margin="0,2,0,0"
+                CornerRadius="1.5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                IsHitTestVisible="False"
+                Visibility="Collapsed"
+                Background="{StaticResource AccentBlueBrush}" />
+
+        <!-- One dot per row, the current one bright. Shown only when there is more than one row. -->
+        <StackPanel x:Name="PageDots"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,3"
+                    IsHitTestVisible="False"
+                    Visibility="Collapsed" />
+    </Grid>
+</UserControl>

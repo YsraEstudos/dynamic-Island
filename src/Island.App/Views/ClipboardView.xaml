@@ -1,0 +1,81 @@
+<UserControl x:Class="Island.App.Views.ClipboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wid="clr-namespace:Island.App.Widgets"
+             xmlns:views="clr-namespace:Island.App.Views">
+    <Grid Margin="16,8,16,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44" />
+            <RowDefinition Height="4" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Top bar: search and square are decorative; the menu holds "Clear history". -->
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <wid:ShelfButton Width="30" Height="30" CornerRadius="15" Background="#1C1C1E"
+                                 Icon="{StaticResource WidgetIcon.Search}" IconSize="15"
+                                 IconBrush="{StaticResource TextSecondaryBrush}" />
+                <wid:ShelfButton Width="30" Height="30" CornerRadius="15" Margin="6,0,0,0" Background="#1C1C1E"
+                                 Icon="{StaticResource WidgetIcon.Square}" IconSize="15"
+                                 IconBrush="{StaticResource TextSecondaryBrush}" />
+                <wid:ShelfButton Width="120" Height="30" CornerRadius="15" Margin="6,0,0,0" Background="#2C2C2E"
+                                 Icon="{StaticResource WidgetIcon.History}" IconSize="15"
+                                 IconBrush="{StaticResource TextPrimaryBrush}"
+                                 LabelText="Clipboard" LabelBrush="{StaticResource TextPrimaryBrush}" />
+                <wid:ShelfButton Width="30" Height="30" CornerRadius="15" Margin="6,0,0,0" Background="#1C1C1E"
+                                 Icon="{StaticResource WidgetIcon.Plus}" IconSize="15"
+                                 IconBrush="{StaticResource TextSecondaryBrush}" />
+            </StackPanel>
+            <wid:ShelfButton x:Name="MoreButton" Width="30" Height="30" CornerRadius="15"
+                             HorizontalAlignment="Right" VerticalAlignment="Center" Background="#1C1C1E"
+                             Icon="{StaticResource WidgetIcon.More}" IsFilled="True" IconSize="15"
+                             IconBrush="{StaticResource TextSecondaryBrush}" />
+        </Grid>
+
+        <!-- Cards: newest first, horizontal scrolling and virtualized. -->
+        <Grid Grid.Row="2">
+            <ScrollViewer x:Name="Scroller"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Hidden"
+                          CanContentScroll="True"
+                          VerticalAlignment="Top">
+                <ItemsControl x:Name="Cards">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal"
+                                                    VirtualizingStackPanel.IsVirtualizing="True"
+                                                    VirtualizingStackPanel.VirtualizationMode="Standard" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <views:ClipboardCard Entry="{Binding}" Margin="0,0,10,0" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <TextBlock x:Name="EmptyText"
+                       Text="Nothing copied yet"
+                       FontSize="13"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- "..." menu: a small inline panel, no popup window (the island window never takes focus). -->
+        <Border x:Name="ClearMenu"
+                Grid.RowSpan="3"
+                Visibility="Collapsed"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,46,0,0"
+                Padding="4"
+                CornerRadius="12"
+                Background="#1C1C1E">
+            <wid:ShelfButton x:Name="ClearButton" Width="132" Height="30" CornerRadius="10" Background="#2A2A2A"
+                             LabelText="Clear history" LabelBrush="{StaticResource MutedRedBrush}" />
+        </Border>
+    </Grid>
+</UserControl>

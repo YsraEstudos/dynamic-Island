@@ -1,0 +1,201 @@
+<ContextMenu x:Class="Island.App.Shell.IslandContextMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent"
+             BorderThickness="0"
+             Padding="0"
+             HasDropShadow="False">
+    <ContextMenu.Resources>
+        <!-- Hairline between groups. -->
+        <Style TargetType="Separator">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Separator">
+                        <Border Height="1"
+                                Margin="12,4"
+                                Background="{StaticResource MenuSeparatorBrush}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="FontFamily" Value="{StaticResource IslandFontFamily}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="PART_Row"
+                                Height="36"
+                                Padding="8,0,12,0"
+                                CornerRadius="8"
+                                Background="Transparent">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Content="{TemplateBinding Icon}"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left" />
+                                <ContentPresenter Grid.Column="1"
+                                                  Content="{TemplateBinding Header}"
+                                                  VerticalAlignment="Center"
+                                                  RecognizesAccessKey="True" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="PART_Row" Property="Background" Value="{StaticResource MenuHoverBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ContextMenu.Resources>
+
+    <ContextMenu.Template>
+        <ControlTemplate TargetType="ContextMenu">
+            <Border Background="{StaticResource MenuBackgroundBrush}"
+                    CornerRadius="12"
+                    Padding="6"
+                    BorderThickness="1"
+                    BorderBrush="{StaticResource ShelfButtonBrush}">
+                <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" />
+            </Border>
+        </ControlTemplate>
+    </ContextMenu.Template>
+
+    <MenuItem x:Name="CustomizeItem" Header="Customize Shelf">
+        <MenuItem.Icon>
+            <Viewbox Width="18" Height="18">
+                <Canvas Width="24" Height="24">
+                    <Path Data="{StaticResource UiIconMenuShelf}"
+                          Stroke="{StaticResource TextPrimaryBrush}"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+        </MenuItem.Icon>
+    </MenuItem>
+
+    <MenuItem x:Name="ClipboardMenuItem" Header="Open Clipboard">
+        <MenuItem.Icon>
+            <Viewbox Width="18" Height="18">
+                <Canvas Width="24" Height="24">
+                    <Path Data="{StaticResource UiIconMenuClipboard}"
+                          Stroke="{StaticResource TextPrimaryBrush}"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+        </MenuItem.Icon>
+    </MenuItem>
+
+    <MenuItem x:Name="MinimizeItem" Header="Minimize">
+        <MenuItem.Icon>
+            <Viewbox Width="18" Height="18">
+                <Canvas Width="24" Height="24">
+                    <Path Data="M6,12 H18"
+                          Stroke="{StaticResource TextPrimaryBrush}"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+        </MenuItem.Icon>
+    </MenuItem>
+
+    <!-- Only offered while the island sits at a dragged position. -->
+    <MenuItem x:Name="ResetPositionItem" Header="Reset position" Visibility="Collapsed">
+        <MenuItem.Icon>
+            <Viewbox Width="18" Height="18">
+                <Canvas Width="24" Height="24">
+                    <Path Data="M3,12 A9,9 0 1 0 12,3 A9.75,9.75 0 0 0 5.26,5.74 L3,8 M3,3 V8 H8"
+                          Stroke="{StaticResource TextPrimaryBrush}"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+        </MenuItem.Icon>
+    </MenuItem>
+
+    <Separator />
+
+    <!-- Only offered when a newer release with an .msix exists on GitHub. The version is set at runtime. -->
+    <MenuItem x:Name="UpdateItem" Header="Install update" Visibility="Collapsed">
+        <MenuItem.Icon>
+            <Viewbox Width="18" Height="18">
+                <Canvas Width="24" Height="24">
+                    <Path Data="M12,4 V16 M7,11 L12,16 L17,11 M5,20 H19"
+                          Stroke="{StaticResource TextPrimaryBrush}"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+        </MenuItem.Icon>
+    </MenuItem>
+
+    <!-- Shown while no newer release is known; the result is reported as a notice. -->
+    <MenuItem x:Name="CheckUpdateItem" Header="Check for updates">
+        <MenuItem.Icon>
+            <Viewbox Width="18" Height="18">
+                <Canvas Width="24" Height="24">
+                    <Path Data="M20,12 A8,8 0 1 1 17.66,6.34 M20,4 V9 H15"
+                          Stroke="{StaticResource TextPrimaryBrush}"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+        </MenuItem.Icon>
+    </MenuItem>
+
+    <MenuItem x:Name="SettingsItem" Header="Open Settings">
+        <MenuItem.Icon>
+            <Viewbox Width="18" Height="18">
+                <Canvas Width="24" Height="24">
+                    <Path Data="{StaticResource UiIconMenuSettings}"
+                          Stroke="{StaticResource TextPrimaryBrush}"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+        </MenuItem.Icon>
+    </MenuItem>
+
+    <Separator />
+
+    <MenuItem x:Name="QuitItem" Header="Quit">
+        <MenuItem.Icon>
+            <Viewbox Width="18" Height="18">
+                <Canvas Width="24" Height="24">
+                    <Path Data="{StaticResource UiIconMenuQuit}"
+                          Stroke="{StaticResource TextPrimaryBrush}"
+                          StrokeThickness="1.8"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+        </MenuItem.Icon>
+    </MenuItem>
+</ContextMenu>

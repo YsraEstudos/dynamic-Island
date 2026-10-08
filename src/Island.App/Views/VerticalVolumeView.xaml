@@ -1,0 +1,64 @@
+<UserControl x:Class="Island.App.Views.VerticalVolumeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Island.App.Controls"
+             Width="48"
+             Height="200"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center">
+    <Grid Margin="0,14,0,14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Speaker icon, same geometry as VolumeView. -->
+        <Viewbox Grid.Row="0" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Canvas Width="24" Height="24">
+                <Path Data="{StaticResource IconSpeakerBody}" Fill="{StaticResource TextPrimaryBrush}" />
+                <Path Data="{StaticResource IconSpeakerWaves}"
+                      Stroke="{StaticResource TextPrimaryBrush}"
+                      StrokeThickness="1.8"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Visibility="{Binding IsMuted, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" />
+                <Path Data="{StaticResource IconSpeakerMute}"
+                      Stroke="{StaticResource MutedRedBrush}"
+                      StrokeThickness="1.8"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Visibility="{Binding IsMuted, Converter={StaticResource BoolToVisibility}}" />
+            </Canvas>
+        </Viewbox>
+
+        <!-- Vertical level bar: fills from the bottom up. Green, red when muted (as in VolumeView). -->
+        <controls:FractionBar Grid.Row="2"
+                              Orientation="Vertical"
+                              Width="14"
+                              BarThickness="6"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Stretch"
+                              Value="{Binding VolumeFraction}"
+                              TrackBrush="{StaticResource VolumeTrackBrush}">
+            <controls:FractionBar.Style>
+                <Style TargetType="{x:Type controls:FractionBar}">
+                    <Setter Property="FillBrush" Value="{StaticResource AccentGreenBrush}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsMuted}" Value="True">
+                            <Setter Property="FillBrush" Value="{StaticResource MutedRedBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </controls:FractionBar.Style>
+        </controls:FractionBar>
+
+        <TextBlock Grid.Row="4"
+                   Text="{Binding VolumeLevel}"
+                   Style="{StaticResource ValueTextStyle}"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center" />
+    </Grid>
+</UserControl>

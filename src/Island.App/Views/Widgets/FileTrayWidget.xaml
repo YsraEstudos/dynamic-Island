@@ -1,0 +1,75 @@
+<UserControl x:Class="Island.App.Views.Widgets.FileTrayWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wid="clr-namespace:Island.App.Widgets"
+             Width="280"
+             Height="152"
+             AllowDrop="True">
+    <Grid>
+        <Border x:Name="Surface" CornerRadius="16" Background="#161616" />
+
+        <!-- Dashed drop frame. -->
+        <Rectangle x:Name="DropFrame"
+                   Margin="1"
+                   RadiusX="15"
+                   RadiusY="15"
+                   Stroke="#48484A"
+                   StrokeThickness="1.4"
+                   StrokeDashArray="4 3"
+                   IsHitTestVisible="False" />
+
+        <!-- Empty state. -->
+        <StackPanel x:Name="EmptyPanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+            <Viewbox Width="26" Height="26" HorizontalAlignment="Center">
+                <Canvas Width="24" Height="24">
+                    <Path Data="{StaticResource Icon.Widget.FileTray}"
+                          Stroke="{StaticResource TextSecondaryBrush}"
+                          StrokeThickness="1.6"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Canvas>
+            </Viewbox>
+            <TextBlock Text="Drop files here"
+                       Margin="0,6,0,0"
+                       HorizontalAlignment="Center"
+                       FontSize="12"
+                       Style="{StaticResource ArtistTextStyle}" />
+        </StackPanel>
+
+        <!-- Files: count and clear on top, a horizontally scrolling row of chips below. -->
+        <Grid x:Name="FilesPanel"
+              Margin="12,10,12,10"
+              Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="22" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <TextBlock x:Name="CountText"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource CaptionTextStyle}" />
+                <wid:ShelfButton x:Name="ClearButton"
+                                 Width="62" Height="22" CornerRadius="11"
+                                 HorizontalAlignment="Right"
+                                 Background="#2C2C2E"
+                                 LabelText="Clear"
+                                 LabelBrush="{StaticResource TextSecondaryBrush}" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled"
+                          Margin="0,6,0,0">
+                <StackPanel x:Name="Chips"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center" />
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

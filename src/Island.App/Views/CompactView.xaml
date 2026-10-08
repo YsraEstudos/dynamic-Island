@@ -1,0 +1,29 @@
+<UserControl x:Class="Island.App.Views.CompactView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Island.App.Controls">
+    <Grid>
+        <!-- Pomodoro countdown: shown only while a pomodoro runs (the capsule is then 150 DIPs wide). -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Margin="16,0,0,0"
+                    Visibility="{Binding PomodoroRunning, Converter={StaticResource BoolToVisibility}}">
+            <Ellipse Width="6"
+                     Height="6"
+                     Margin="0,0,6,0"
+                     VerticalAlignment="Center"
+                     Fill="{StaticResource AccentOrangeBrush}" />
+            <TextBlock Text="{Binding PomodoroText}"
+                       Style="{StaticResource CompactTimerTextStyle}"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Static glyph only: no animation in the compact state. -->
+        <controls:EqualizerGlyph HorizontalAlignment="Right"
+                                 VerticalAlignment="Center"
+                                 Margin="0,0,16,0"
+                                 BarBrush="{StaticResource WaveBrush}"
+                                 Visibility="{Binding IsEqualizerActive, Converter={StaticResource BoolToVisibility}}" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,52 @@
+<UserControl x:Class="Island.App.Views.VerticalCompactView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Island.App.Controls"
+             Width="36"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center">
+    <!-- Capsule height: 124 DIPs, 150 while a pomodoro runs (the countdown needs the room at the top). -->
+    <UserControl.Style>
+        <Style TargetType="{x:Type UserControl}">
+            <Setter Property="Height" Value="124" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding PomodoroRunning}" Value="True">
+                    <Setter Property="Height" Value="150" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Pomodoro countdown, stacked: orange dot above "MM:SS". 11px tabular digits are about 28 DIPs wide, so they fit in 36. -->
+        <StackPanel Grid.Row="0"
+                    Margin="0,14,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Visibility="{Binding PomodoroRunning, Converter={StaticResource BoolToVisibility}}">
+            <Ellipse Width="6"
+                     Height="6"
+                     Margin="0,0,0,5"
+                     HorizontalAlignment="Center"
+                     Fill="{StaticResource AccentOrangeBrush}" />
+            <TextBlock Text="{Binding PomodoroText}"
+                       Style="{StaticResource CompactTimerTextStyle}"
+                       FontSize="11"
+                       HorizontalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Static glyph only: no animation in the compact state. Sits at the bottom of the capsule. -->
+        <controls:EqualizerGlyph Grid.Row="2"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Bottom"
+                                 Margin="0,0,0,16"
+                                 BarBrush="{StaticResource WaveBrush}"
+                                 Visibility="{Binding IsEqualizerActive, Converter={StaticResource BoolToVisibility}}" />
+    </Grid>
+</UserControl>
