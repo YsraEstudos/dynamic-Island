@@ -20,7 +20,7 @@ internal static class UpdateRules
         return true;
     }
 
-    /// <summary>Missing parts count as zero, so "0.2" and "0.2.0.0" compare equal. MSIX identities use four parts.</summary>
+    /// <summary>Missing parts count as zero, so "0.2" and "0.2.0.0" compare equal.</summary>
     public static Version Normalize(Version v) => new(v.Major, v.Minor, Math.Max(v.Build, 0), Math.Max(v.Revision, 0));
 
     /// <summary>"owner/name" made of GitHub's characters only, so it can go into the API path unchanged.</summary>
@@ -43,7 +43,7 @@ internal static class UpdateRules
 
     /// <summary>
     /// Reads a GitHub "latest release" payload. Returns the update when the release is newer than <paramref name="current"/>
-    /// and its .msix asset has a trusted address; otherwise null. Throws <see cref="JsonException"/> on invalid JSON.
+    /// and its .zip asset has a trusted address; otherwise null. Throws <see cref="JsonException"/> on invalid JSON.
     /// </summary>
     public static UpdateInfo? Evaluate(string json, Version current)
     {
@@ -55,12 +55,12 @@ internal static class UpdateRules
         if (!TryParseTag(tag, out Version version)) return null;
         if (version.CompareTo(Normalize(current)) <= 0) return null;
 
-        Uri? download = FindMsixAsset(root);
+        Uri? download = FindPackageAsset(root);
         return download is null ? null : new UpdateInfo(version, tag!.Trim(), download);
     }
 
-    /// <summary>The first asset whose name ends in .msix. Null when there is none, or when its address is not trusted.</summary>
-    public static Uri? FindMsixAsset(JsonElement release)
+    /// <summary>The first asset whose name ends in .zip. Null when there is none, or when its address is not trusted.</summary>
+    public static Uri? FindPackageAsset(JsonElement release)
     {
         if (!release.TryGetProperty("assets", out JsonElement assets) || assets.ValueKind != JsonValueKind.Array) return null;
 
@@ -69,7 +69,7 @@ internal static class UpdateRules
             if (asset.ValueKind != JsonValueKind.Object) continue;
 
             string? name = ReadString(asset, "name");
-            if (name is null || !name.EndsWith(".msix", StringComparison.OrdinalIgnoreCase)) continue;
+            if (name is null || !name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)) continue;
 
             string? url = ReadString(asset, "browser_download_url");
             return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) && IsTrustedDownload(uri) ? uri : null;
@@ -78,7 +78,7 @@ internal static class UpdateRules
         return null;
     }
 
-    /// <summary>An MSIX is a ZIP container, so the file must start with the local file header signature "PK\x03\x04".</summary>
+    /// <summary>The package is a ZIP file, so it must start with the local file header signature "PK\x03\x04".</summary>
     public static bool LooksLikeZip(string path)
     {
         using FileStream stream = File.OpenRead(path);
@@ -91,30 +91,22 @@ internal static class UpdateRules
     public static string Quote(string value) => "'" + value.Replace("'", "''") + "'";
 
     /// <summary>
-    /// The script that installs the package, logs the outcome and, once the update replaced the app, starts the new copy
-    /// through its Start-menu entry (package family name + application id). The relaunch is skipped when the package is not installed.
+    /// The script that finishes an update after the app exited: waits for the old process, copies the new files over the
+    /// install folder, logs the outcome and starts the app again.
     /// </summary>
-    public static string BuildInstallScript(string package, string logPath, string packageName, string appId) =>
+    public static string BuildUpdateScript(int processId, string sourceDir, string installDir, string exePath, string logPath) =>
         string.Join("\r\n",
             "$ErrorActionPreference = 'Stop'",
             $"function Log($m) {{ Add-Content -LiteralPath {Quote(logPath)} -Value ((Get-Date -Format o) + ' ' + $m) }}",
             "try {",
-            $"  Add-AppxPackage -Path {Quote(package)} -ForceUpdateFromAnyVersion -ForceApplicationShutdown",
+            $"  Wait-Process -Id {processId} -Timeout 60 -ErrorAction SilentlyContinue",
+            $"  robocopy {Quote(sourceDir)} {Quote(installDir)} /E /R:10 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null",
+            "  if ($LASTEXITCODE -ge 8) { throw ('robocopy failed with code ' + $LASTEXITCODE) }",
             "  Log 'installed'",
-            $"  $pkg = Get-AppxPackage -Name {Quote(packageName)} | Select-Object -First 1",
-            $"  if ($pkg) {{ Start-Process explorer.exe -ArgumentList ('shell:AppsFolder\\' +$pkg.PackageFamilyName + '!' + {Quote(appId)}); Log 'relaunched' }}",
+            $"  Start-Process -FilePath {Quote(exePath)}",
+            "  Log 'relaunched'",
             "} catch { Log $_.Exception.Message }",
             "");
-
-    /// <summary>
-    /// A one-line command that asks WMI to start <paramref name="scriptPath"/>. A process created that way is not a child of the app,
-    /// so replacing the package (which ends the app and its children) does not stop the installer.
-    /// </summary>
-    public static string BuildDetachedLauncher(string scriptPath)
-    {
-        string inner = $"powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"{scriptPath}\"";
-        return $"Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{{ CommandLine = {Quote(inner)} }} | Out-Null";
-    }
 
     private static string? ReadString(JsonElement obj, string name) =>
         obj.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String ? value.GetString() : null;

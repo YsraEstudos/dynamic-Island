@@ -55,7 +55,7 @@ public sealed record IslandSettings
     /// <summary>FCM registration token of the phone (copied from the Foco &amp; Bem-Estar app).</summary>
     public string PhoneFcmToken { get; init; } = string.Empty;
 
-    /// <summary>GitHub repository ("owner/name") whose latest release is checked for a newer .msix. Older files without it get the default.</summary>
+    /// <summary>GitHub repository ("owner/name") whose latest release is checked for a newer .zip. Older files without it get the default.</summary>
     public string UpdateRepository { get; init; } = "YsraEstudos/dynamic-Island";
 
     /// <summary>The shelf as rows (see <see cref="ShelfLayout.ToRows"/>).</summary>

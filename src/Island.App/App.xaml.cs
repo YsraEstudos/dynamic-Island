@@ -174,7 +174,9 @@ public partial class App : System.Windows.Application
         try
         {
             await updates.InstallAsync(update);
-            coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Installing {update.Tag}", "Windows is updating the app", "timer")));
+            coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Installing {update.Tag}", "The app restarts by itself", "timer")));
+            await Task.Delay(1500); // Let the notice show before the app exits so the helper can replace its files.
+            Shutdown();
         }
         catch (Exception ex)
         {

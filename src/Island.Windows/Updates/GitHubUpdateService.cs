@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Net;
 using System.Reflection;
 using Island.Core.Abstractions;
@@ -8,10 +9,10 @@ using Microsoft.Extensions.Logging;
 namespace Island.Windows.Updates;
 
 /// <summary>
-/// Looks for a newer release of the app on GitHub and installs its .msix. The check runs shortly after startup and then
+/// Looks for a newer release of the app on GitHub and installs its .zip. The check runs shortly after startup and then
 /// every six hours; the result is cached in <see cref="Available"/> so the context menu reads it without I/O.
-/// Install downloads the package to %LocalAppData%\DynamicIsland\updates, then starts a hidden PowerShell that runs
-/// Add-AppxPackage. That update replaces the running app, and the script then reopens it. Only trusted GitHub addresses are downloaded from.
+/// Install downloads the zip to %LocalAppData%\DynamicIsland\updates and unpacks it; the caller then exits the app and a
+/// hidden PowerShell copies the new files over the install folder and starts the app again. Only trusted GitHub addresses are downloaded from.
 /// </summary>
 public sealed class GitHubUpdateService : IUpdateService, IDisposable
 {
@@ -19,8 +20,6 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
     public static readonly TimeSpan CheckInterval = TimeSpan.FromHours(6);
 
     private const string UserAgent = "DynamicIsland-Updater";
-    private const string PackageName = "DynamicIsland"; // Identity Name in packaging/Package.appxmanifest
-    private const string AppId = "DynamicIsland";       // Application Id in the same manifest
     private const int BufferSize = 81920;
     private static readonly TimeSpan CheckTimeout = TimeSpan.FromSeconds(15);
 
@@ -31,6 +30,8 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
     private readonly Func<string> _repository;
     private readonly Version _current;
     private readonly string _downloadDirectory;
+    private readonly string _installDirectory;
+    private readonly string _exePath;
     private readonly ILogger? _log;
     private readonly CancellationTokenSource _stop = new();
 
@@ -49,6 +50,8 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _current = UpdateRules.Normalize(currentVersion);
         _downloadDirectory = downloadDirectory ?? DefaultDownloadDirectory;
+        _exePath = Environment.ProcessPath ?? throw new InvalidOperationException("The app path is unknown.");
+        _installDirectory = Path.GetDirectoryName(_exePath)!;
         _log = log;
     }
 
@@ -128,8 +131,9 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         try
         {
             string package = await DownloadAsync(update, progress, ct).ConfigureAwait(false);
-            LaunchInstaller(package);
-            launched = true; // Stays set: the running app is about to be replaced.
+            string source = Extract(package, update);
+            LaunchInstaller(source);
+            launched = true; // Stays set: the caller exits the app so the helper can replace its files.
         }
         finally
         {
@@ -145,7 +149,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
             throw new InvalidOperationException("The update address is not a GitHub download.");
 
         Directory.CreateDirectory(_downloadDirectory);
-        string target = Path.Combine(_downloadDirectory, $"DynamicIsland-{update.Version}.msix");
+        string target = Path.Combine(_downloadDirectory, $"DynamicIsland-{update.Version}.zip");
         string partial = target + ".part";
         try
         {
@@ -169,7 +173,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
                 }
             }
 
-            if (!UpdateRules.LooksLikeZip(partial)) throw new InvalidDataException("The downloaded file is not an MSIX package.");
+            if (!UpdateRules.LooksLikeZip(partial)) throw new InvalidDataException("The downloaded file is not a zip package.");
 
             File.Move(partial, target, overwrite: true);
             _log?.LogInformation("Downloaded update {Tag} to {Path}", update.Tag, target);
@@ -216,16 +220,26 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         }
     }
 
+    /// <summary>Unpacks the zip next to it and returns the folder. Refuses a package without the app's executable.</summary>
+    private string Extract(string package, UpdateInfo update)
+    {
+        string folder = Path.Combine(_downloadDirectory, $"DynamicIsland-{update.Version}");
+        if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        ZipFile.ExtractToDirectory(package, folder);
+        if (!File.Exists(Path.Combine(folder, Path.GetFileName(_exePath))))
+            throw new InvalidDataException("The update package does not contain the app.");
+        return folder;
+    }
+
     /// <summary>
-    /// Writes the install script and starts it detached from this app (see <see cref="UpdateRules.BuildDetachedLauncher"/>).
-    /// It installs the package, logs the outcome and reopens the new app, since this one is replaced.
+    /// Writes the update script and starts it. It waits for this process to exit, so the caller must shut the app down
+    /// right after <see cref="InstallAsync"/> returns.
     /// </summary>
-    private void LaunchInstaller(string package)
+    private void LaunchInstaller(string sourceDir)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(InstallLogPath)!);
-        Directory.CreateDirectory(_downloadDirectory);
         string scriptPath = Path.Combine(_downloadDirectory, "install-update.ps1");
-        File.WriteAllText(scriptPath, UpdateRules.BuildInstallScript(package, InstallLogPath, PackageName, AppId));
+        File.WriteAllText(scriptPath, UpdateRules.BuildUpdateScript(Environment.ProcessId, sourceDir, _installDirectory, _exePath, InstallLogPath));
 
         var start = new ProcessStartInfo("powershell.exe")
         {
@@ -233,13 +247,15 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
             CreateNoWindow = true,
         };
         start.ArgumentList.Add("-NoProfile");
+        start.ArgumentList.Add("-ExecutionPolicy");
+        start.ArgumentList.Add("Bypass");
         start.ArgumentList.Add("-WindowStyle");
         start.ArgumentList.Add("Hidden");
-        start.ArgumentList.Add("-Command");
-        start.ArgumentList.Add(UpdateRules.BuildDetachedLauncher(scriptPath));
+        start.ArgumentList.Add("-File");
+        start.ArgumentList.Add(scriptPath);
 
         using Process process = Process.Start(start) ?? throw new InvalidOperationException("PowerShell did not start.");
-        _log?.LogInformation("Installer started for {Package}", package);
+        _log?.LogInformation("Update helper started for {Source}", sourceDir);
     }
 
     private static void TryDelete(string path)

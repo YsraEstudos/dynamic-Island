@@ -6,7 +6,7 @@ namespace Island.Windows.Tests;
 
 public sealed class UpdateRulesTests
 {
-    private const string Package = "https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/DynamicIsland_0.2.0.0_x64.msix";
+    private const string Package = "https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/DynamicIsland-0.2.0-win-x64.zip";
 
     private static string Release(string tag, params (string Name, string Url)[] assets) =>
         JsonSerializer.Serialize(new
@@ -37,9 +37,9 @@ public sealed class UpdateRulesTests
         Assert.False(UpdateRules.TryParseTag(tag, out _));
 
     [Fact]
-    public void A_newer_release_with_an_msix_is_an_update()
+    public void A_newer_release_with_a_zip_is_an_update()
     {
-        UpdateInfo? update = UpdateRules.Evaluate(Release("v0.2.0", ("DynamicIsland_0.2.0.0_x64.msix", Package)), new Version(0, 1, 0));
+        UpdateInfo? update = UpdateRules.Evaluate(Release("v0.2.0", ("DynamicIsland-0.2.0-win-x64.zip", Package)), new Version(0, 1, 0));
 
         Assert.NotNull(update);
         Assert.Equal(new Version(0, 2, 0, 0), update.Version);
@@ -52,28 +52,28 @@ public sealed class UpdateRulesTests
     [InlineData("v0.1")] // equal once padded to four parts
     [InlineData("v0.0.9")] // older
     public void Equal_or_older_releases_are_not_updates(string tag) =>
-        Assert.Null(UpdateRules.Evaluate(Release(tag, ("a.msix", Package)), new Version(0, 1, 0)));
+        Assert.Null(UpdateRules.Evaluate(Release(tag, ("a.zip", Package)), new Version(0, 1, 0)));
 
     [Fact]
     public void A_fourth_part_bump_is_an_update()
     {
-        Assert.NotNull(UpdateRules.Evaluate(Release("v0.1.0.1", ("a.msix", Package)), new Version(0, 1, 0)));
+        Assert.NotNull(UpdateRules.Evaluate(Release("v0.1.0.1", ("a.zip", Package)), new Version(0, 1, 0)));
     }
 
     [Theory]
     [InlineData("nightly")]
     [InlineData("v0.2.0-beta")]
     public void Unparseable_tags_are_never_updates(string tag) =>
-        Assert.Null(UpdateRules.Evaluate(Release(tag, ("a.msix", Package)), new Version(0, 1, 0)));
+        Assert.Null(UpdateRules.Evaluate(Release(tag, ("a.zip", Package)), new Version(0, 1, 0)));
 
     [Fact]
-    public void The_first_msix_asset_is_chosen_and_the_others_are_ignored()
+    public void The_first_zip_asset_is_chosen_and_the_others_are_ignored()
     {
-        const string first = "https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/first.msix";
-        const string second = "https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/second.msix";
+        const string first = "https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/first.zip";
+        const string second = "https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/second.zip";
 
         UpdateInfo? update = UpdateRules.Evaluate(
-            Release("v0.2.0", ("notes.txt", "https://github.com/YsraEstudos/dynamic-Island/notes.txt"), ("first.msix", first), ("second.msix", second)),
+            Release("v0.2.0", ("notes.txt", "https://github.com/YsraEstudos/dynamic-Island/notes.txt"), ("first.zip", first), ("second.zip", second)),
             new Version(0, 1, 0));
 
         Assert.NotNull(update);
@@ -81,27 +81,27 @@ public sealed class UpdateRulesTests
     }
 
     [Fact]
-    public void A_release_without_an_msix_is_not_an_update()
+    public void A_release_without_a_zip_is_not_an_update()
     {
-        Assert.Null(UpdateRules.Evaluate(Release("v0.2.0", ("setup.exe", Package), ("notes.zip", Package)), new Version(0, 1, 0)));
+        Assert.Null(UpdateRules.Evaluate(Release("v0.2.0", ("setup.exe", Package), ("notes.txt", Package)), new Version(0, 1, 0)));
     }
 
     [Theory]
-    [InlineData("http://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/a.msix")] // not HTTPS
-    [InlineData("https://evil.example.com/a.msix")] // other host
-    [InlineData("https://github.com.evil.example/a.msix")] // look-alike host
-    [InlineData("https://github.com@evil.example/a.msix")] // user-info trick: the host is evil.example
-    [InlineData("https://github.com:8443/YsraEstudos/dynamic-Island/a.msix")] // not the default port
-    [InlineData("file:///C:/Windows/System32/a.msix")]
+    [InlineData("http://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/a.zip")] // not HTTPS
+    [InlineData("https://evil.example.com/a.zip")] // other host
+    [InlineData("https://github.com.evil.example/a.zip")] // look-alike host
+    [InlineData("https://github.com@evil.example/a.zip")] // user-info trick: the host is evil.example
+    [InlineData("https://github.com:8443/YsraEstudos/dynamic-Island/a.zip")] // not the default port
+    [InlineData("file:///C:/Windows/System32/a.zip")]
     [InlineData("not a url")]
     public void Only_https_github_addresses_are_trusted(string url) =>
-        Assert.Null(UpdateRules.Evaluate(Release("v0.2.0", ("a.msix", url)), new Version(0, 1, 0)));
+        Assert.Null(UpdateRules.Evaluate(Release("v0.2.0", ("a.zip", url)), new Version(0, 1, 0)));
 
     [Theory]
-    [InlineData("https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/a.msix")]
-    [InlineData("https://objects.githubusercontent.com/github-production-release-asset/1/a.msix")]
+    [InlineData("https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/a.zip")]
+    [InlineData("https://objects.githubusercontent.com/github-production-release-asset/1/a.zip")]
     public void GitHub_https_addresses_are_trusted(string url) =>
-        Assert.NotNull(UpdateRules.Evaluate(Release("v0.2.0", ("a.msix", url)), new Version(0, 1, 0)));
+        Assert.NotNull(UpdateRules.Evaluate(Release("v0.2.0", ("a.zip", url)), new Version(0, 1, 0)));
 
     [Theory]
     [InlineData("YsraEstudos/dynamic-Island")]
@@ -129,11 +129,11 @@ public sealed class UpdateRulesTests
         Directory.CreateDirectory(dir);
         try
         {
-            string zip = Path.Combine(dir, "good.msix");
+            string zip = Path.Combine(dir, "good.zip");
             File.WriteAllBytes(zip, [0x50, 0x4B, 0x03, 0x04, 0x00, 0x00]);
-            string html = Path.Combine(dir, "login.msix");
+            string html = Path.Combine(dir, "login.zip");
             File.WriteAllText(html, "<html>sign in</html>");
-            string tiny = Path.Combine(dir, "tiny.msix");
+            string tiny = Path.Combine(dir, "tiny.zip");
             File.WriteAllBytes(tiny, [0x50]);
 
             Assert.True(UpdateRules.LooksLikeZip(zip));
@@ -147,27 +147,16 @@ public sealed class UpdateRulesTests
     }
 
     [Fact]
-    public void The_install_script_installs_then_reopens_the_app_through_its_start_entry()
+    public void The_update_script_waits_copies_then_reopens_the_app()
     {
-        string script = UpdateRules.BuildInstallScript("C:/u/it's.msix", "C:/logs/update.log", "DynamicIsland", "DynamicIsland");
+        string script = UpdateRules.BuildUpdateScript(4242, "C:/u/it's", "C:/app", "C:/app/DynamicIsland.exe", "C:/logs/update.log");
 
-        int install = script.IndexOf("Add-AppxPackage -Path 'C:/u/it''s.msix'", StringComparison.Ordinal);
-        int relaunch = script.IndexOf("explorer.exe", StringComparison.Ordinal);
-        Assert.True(install >= 0, "package path must be quoted for PowerShell");
-        Assert.True(relaunch > install, "the app is reopened only after the install command");
-        Assert.Contains("-ForceApplicationShutdown", script);
-        Assert.Contains("Get-AppxPackage -Name 'DynamicIsland'", script);
-        Assert.Contains("PackageFamilyName", script);
-        Assert.Contains("'!' + 'DynamicIsland'", script);
-    }
-
-    [Fact]
-    public void The_detached_launcher_goes_through_wmi_so_the_installer_outlives_the_app()
-    {
-        string command = UpdateRules.BuildDetachedLauncher("C:/u/install-update.ps1");
-
-        Assert.Contains("Win32_Process", command);
-        Assert.Contains("-File", command);
-        Assert.Contains("C:/u/install-update.ps1", command);
+        int wait = script.IndexOf("Wait-Process -Id 4242", StringComparison.Ordinal);
+        int copy = script.IndexOf("robocopy 'C:/u/it''s' 'C:/app'", StringComparison.Ordinal);
+        int start = script.IndexOf("Start-Process -FilePath 'C:/app/DynamicIsland.exe'", StringComparison.Ordinal);
+        Assert.True(wait >= 0, "must wait for the old process");
+        Assert.True(copy > wait, "files are copied only after the old app exited, and paths are quoted");
+        Assert.True(start > copy, "the app is reopened only after the copy");
+        Assert.Contains("-ge 8", script);
     }
 }

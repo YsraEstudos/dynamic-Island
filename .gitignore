@@ -4,3 +4,4 @@ obj/
 *.user
 packaging/*.pfx
 packaging/out/
+release-out/

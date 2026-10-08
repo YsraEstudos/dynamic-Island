@@ -8,7 +8,7 @@ namespace Island.Windows.Tests;
 public sealed class GitHubUpdateServiceTests : IDisposable
 {
     private const string Latest = "https://api.github.com/repos/YsraEstudos/dynamic-Island/releases/latest";
-    private const string Package = "https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/DynamicIsland_0.2.0.0_x64.msix";
+    private const string Package = "https://github.com/YsraEstudos/dynamic-Island/releases/download/v0.2.0/DynamicIsland-0.2.0-win-x64.zip";
 
     private sealed record Seen(string Url, string? UserAgent);
 
@@ -37,7 +37,7 @@ public sealed class GitHubUpdateServiceTests : IDisposable
         new(HttpStatusCode.OK) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
 
     private static string Release(string tag) =>
-        $"{{\"tag_name\":\"{tag}\",\"assets\":[{{\"name\":\"DynamicIsland_0.2.0.0_x64.msix\",\"browser_download_url\":\"{Package}\"}}]}}";
+        $"{{\"tag_name\":\"{tag}\",\"assets\":[{{\"name\":\"DynamicIsland-0.2.0-win-x64.zip\",\"browser_download_url\":\"{Package}\"}}]}}";
 
     private static UpdateInfo Update() => new(new Version(0, 2, 0, 0), "v0.2.0", new Uri(Package));
 
@@ -103,7 +103,7 @@ public sealed class GitHubUpdateServiceTests : IDisposable
 
         string path = await Service().DownloadAsync(Update(), new Recorder(reported));
 
-        Assert.Equal(Path.Combine(_dir, "DynamicIsland-0.2.0.0.msix"), path);
+        Assert.Equal(Path.Combine(_dir, "DynamicIsland-0.2.0.0.zip"), path);
         Assert.Equal(payload, File.ReadAllBytes(path));
         Assert.False(File.Exists(path + ".part"));
         Assert.NotEmpty(reported);
@@ -116,14 +116,14 @@ public sealed class GitHubUpdateServiceTests : IDisposable
         _reply = _ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<html>sign in</html>") };
 
         await Assert.ThrowsAsync<InvalidDataException>(() => Service().DownloadAsync(Update()));
-        Assert.False(File.Exists(Path.Combine(_dir, "DynamicIsland-0.2.0.0.msix")));
-        Assert.False(File.Exists(Path.Combine(_dir, "DynamicIsland-0.2.0.0.msix.part")));
+        Assert.False(File.Exists(Path.Combine(_dir, "DynamicIsland-0.2.0.0.zip")));
+        Assert.False(File.Exists(Path.Combine(_dir, "DynamicIsland-0.2.0.0.zip.part")));
     }
 
     [Fact]
     public async Task A_download_from_an_untrusted_address_is_refused_before_any_request()
     {
-        var update = new UpdateInfo(new Version(0, 2, 0, 0), "v0.2.0", new Uri("https://evil.example.com/a.msix"));
+        var update = new UpdateInfo(new Version(0, 2, 0, 0), "v0.2.0", new Uri("https://evil.example.com/a.zip"));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => Service().DownloadAsync(update));
         Assert.Empty(_seen);
