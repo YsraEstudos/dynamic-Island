@@ -120,6 +120,10 @@ public static class ServiceRegistration
         s.AddSingleton<FileTray>();
         if (demo) s.AddSingleton<IClipboardService, FakeClipboardService>();
         else s.AddSingleton<IClipboardService, WindowsClipboardService>();
+        // Mixer
+        if (demo) s.AddSingleton<IAudioMixerService, FakeAudioMixerService>();
+        else s.AddSingleton<IAudioMixerService, WindowsAudioMixerService>();
+
         s.AddSingleton(sp => new ShelfContext(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<PomodoroSchedule>(),
             sp.GetRequiredService<FileTray>(),
@@ -128,7 +132,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<QuickNotesService>(), sp.GetRequiredService<IQuickNotesWindowHost>(),
             sp.GetRequiredService<Func<IslandSettings>>(),
             sp.GetRequiredService<SettingsApplier>().Apply,
-            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>()));
+            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>(),
+            sp.GetRequiredService<IAudioMixerService>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,

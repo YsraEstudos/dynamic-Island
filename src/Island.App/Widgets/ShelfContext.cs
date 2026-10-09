@@ -24,7 +24,8 @@ public sealed class ShelfContext(
     Func<IslandSettings> settings,
     Action<IslandSettings> applySettings,
     BudgetBook? budgets = null,
-    IBudgetWindowHost? budgetHost = null)
+    IBudgetWindowHost? budgetHost = null,
+    IAudioMixerService? mixer = null)
 {
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
@@ -43,4 +44,6 @@ public sealed class ShelfContext(
     public Func<IslandSettings> Settings { get; } = settings;
     /// <summary>Persists + applies new settings (updates the holder, saves JSON, re-applies to the window).</summary>
     public Action<IslandSettings> ApplySettings { get; } = applySettings;
+    /// <summary>Per-app audio sessions for the Mixer widget.</summary>
+    public IAudioMixerService? Mixer { get; } = mixer;
 }
