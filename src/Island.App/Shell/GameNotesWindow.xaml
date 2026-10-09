@@ -1,0 +1,32 @@
+<Window x:Class="Island.App.Shell.GameNotesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nota do jogo"
+        Width="340" SizeToContent="Height"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI">
+    <Border x:Name="Surface" Background="#161616" BorderBrush="#303033" BorderThickness="1"
+            CornerRadius="16" Padding="16,13,16,12">
+        <StackPanel>
+            <TextBlock x:Name="GameText" FontSize="11" Foreground="#A1A1A6"
+                       TextTrimming="CharacterEllipsis"/>
+
+            <Grid Margin="0,6,0,0">
+                <TextBox x:Name="NoteBox" Background="Transparent" BorderThickness="0"
+                         Foreground="#F5F5F7" CaretBrush="#F5F5F7" FontSize="14"
+                         MaxLength="500" KeyDown="OnNoteKeyDown"
+                         AutomationProperties.Name="Texto da nova nota do jogo"/>
+                <TextBlock x:Name="Placeholder" Text="Escreva uma nota e tecle Enter"
+                           Foreground="#6E6E73" FontSize="14" IsHitTestVisible="False"
+                           VerticalAlignment="Center" Margin="2,0,0,0"/>
+            </Grid>
+
+            <TextBlock x:Name="StatusText" Margin="0,6,0,0" FontSize="11" Foreground="#FFD4D7"
+                       Visibility="Collapsed"/>
+            <TextBlock Margin="0,8,0,0" FontSize="10" Foreground="#6E6E73"
+                       Text="Enter adiciona  ·  Esc fecha"/>
+        </StackPanel>
+    </Border>
+</Window>

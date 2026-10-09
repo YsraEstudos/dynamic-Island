@@ -202,12 +202,13 @@ public sealed class CalendarWindowsTests
             [typeof(CalendarAgenda), typeof(DateOnly), typeof(CalendarEntryKind), typeof(bool)],
             modifiers: null);
         Assert.NotNull(constructor);
-        var owner = new Window { Width = 240, Height = 160, ShowInTaskbar = false };
+        var owner = WpfStaTestHost.KeepOffscreen(new Window { Width = 240, Height = 160, ShowInTaskbar = false });
         _ = new WindowInteropHelper(owner).EnsureHandle();
         owner.Show();
         owner.UpdateLayout();
         var window = (Window)constructor!.Invoke([agenda, new DateOnly(2026, 10, 9), kind, reduceAnimations]);
         window.Owner = owner;
+        WpfStaTestHost.KeepOffscreen(window);
 
         var timer = new DispatcherTimer(DispatcherPriority.ApplicationIdle, app.Dispatcher)
         {
@@ -289,7 +290,7 @@ public sealed class CalendarWindowsTests
         };
         app.DispatcherUnhandledException += captureFailure;
 
-        var owner = new Window { Width = 240, Height = 160, ShowInTaskbar = false };
+        var owner = WpfStaTestHost.KeepOffscreen(new Window { Width = 240, Height = 160, ShowInTaskbar = false });
         _ = new WindowInteropHelper(owner).EnsureHandle();
         owner.Show();
         owner.UpdateLayout();
@@ -301,6 +302,7 @@ public sealed class CalendarWindowsTests
         Assert.NotNull(constructor);
         var window = (CalendarDayWindow)constructor!.Invoke([agenda, date, true]);
         window.Owner = owner;
+        WpfStaTestHost.KeepOffscreen(window);
 
         var timer = new DispatcherTimer(DispatcherPriority.ApplicationIdle, app.Dispatcher)
         {

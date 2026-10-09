@@ -17,8 +17,10 @@ using Island.Windows.Focus;
 using Island.Windows.Input;
 using Island.Core.Configuration;
 using Island.Core.Fakes;
+using Island.Core.GameNotes;
 using Island.Core.Models;
 using Island.Core.Notes;
+using Island.Core.Performance;
 using Island.Windows.Display;
 using Island.Windows.Shell;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,6 +85,12 @@ public partial class App : System.Windows.Application
         var quickNotes = sp.GetRequiredService<QuickNotesService>();
         try { await quickNotes.InitializeAsync(); }
         catch (Exception ex) { Log.Error(ex, "Quick notes failed to initialize"); }
+
+        // GameNotes: the foreground game is tracked from launch, so its notes are ready when the widget or Ctrl+Alt+G opens them.
+        sp.GetRequiredService<IForegroundGameTracker>().Start();
+        sp.GetRequiredService<GameNotesHotkeyController>().Start();
+        try { await sp.GetRequiredService<GameNotesService>().InitializeAsync(); }
+        catch (Exception ex) { Log.Error(ex, "Game notes failed to initialize"); }
         _quickNotesWindowManager = sp.GetRequiredService<QuickNotesWindowManager>();
         _quickNotesHotkey = new QuickNotesHotkeyController(
             () => new GlobalHotkey(GlobalHotkey.ModControl | GlobalHotkey.ModAlt, 0x4E /* N */),
@@ -142,6 +150,9 @@ public partial class App : System.Windows.Application
             try { source.Start(); }
             catch (Exception ex) { Log.Warning(ex, "System notice source failed to start"); }
         }
+
+        // Performance: temperature alerts are normal notices; sampling starts here (alerts on, or the widget on screen).
+        PerformanceWiring.Attach(sp.GetRequiredService<PerformanceMonitor>(), coordinator);
 
         // Angry pomodoro: while locked, browsers on distracting sites are minimized; a blocked site raises a notice.
         var angry = sp.GetRequiredService<AngryPomodoro>();
@@ -205,6 +216,8 @@ public partial class App : System.Windows.Application
             _hotkey.Pressed += () => coordinator.Post(new IslandEvent.ClipboardRequested());
             if (!_hotkey.Register()) Log.Warning("Ctrl+Alt+V is already taken; clipboard hotkey disabled");
         }
+        // Capture shortcuts (Ctrl+Alt+P / Ctrl+Alt+R). Not registered in demo mode, so a demo run cannot take the keys.
+        if (!demo) sp.GetRequiredService<CaptureHotkeys>().Start();
         if (demo && soak is null && !smoke) StartDemo(sp);
 
         _tray = new TrayIconService(

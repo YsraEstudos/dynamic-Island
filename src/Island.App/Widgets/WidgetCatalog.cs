@@ -30,10 +30,18 @@ public static class WidgetCatalog
             (ctx, vm) => new CalendarWidget(ctx)),
         new WidgetDescriptor("quicknotes", "Notas", "Icon.Widget.QuickNotes", 280,
             (ctx, vm) => new QuickNotesWidget(ctx)),
+        new WidgetDescriptor("gamenotes", "Notas do Jogo", "Icon.Widget.GameNotes", 280,
+            (ctx, vm) => new GameNotesWidget(ctx)),
         new WidgetDescriptor("budget", "Orçamento IA", "Icon.Widget.Budget", 280,
             (ctx, vm) => new BudgetWidget(ctx)),
+        new WidgetDescriptor("performance", "Desempenho", "Icon.Widget.Performance", 300,
+            (ctx, vm) => new PerformanceWidget(ctx)),
         new WidgetDescriptor("filetray", "File Tray", "Icon.Widget.FileTray", 280,
             (ctx, vm) => new FileTrayWidget(ctx)),
+        new WidgetDescriptor("capture", "Captura", "Icon.Widget.Capture", 280,
+            (ctx, vm) => new CaptureWidget(ctx)),
+        new WidgetDescriptor("mixer", "Mixer", "Icon.Widget.Mixer", 280,
+            (ctx, vm) => new MixerWidget(ctx)),
     };
 
     public static WidgetDescriptor? Find(string id) => All.FirstOrDefault(w => w.Id == id);

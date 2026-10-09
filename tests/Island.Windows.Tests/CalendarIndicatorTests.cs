@@ -28,7 +28,7 @@ public sealed class CalendarIndicatorTests
             view.DataContext = Context(pomodoro, pending: true);
             var surface = new Grid { Width = shape.Width, Height = shape.Height };
             surface.Children.Add(view);
-            var window = new Window { Content = surface, SizeToContent = SizeToContent.WidthAndHeight, ShowInTaskbar = false };
+            var window = WpfStaTestHost.KeepOffscreen(new Window { Content = surface, SizeToContent = SizeToContent.WidthAndHeight, ShowInTaskbar = false });
             try
             {
                 window.Show();

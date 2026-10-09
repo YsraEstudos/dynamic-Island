@@ -4,7 +4,10 @@ using Island.App.Shell;
 using Island.Core.Clipboard;
 using Island.Core.Calendar;
 using Island.Core.Budgets;
+using Island.Core.GameNotes;
+using Island.Core.Capture;
 using Island.Core.Notes;
+using Island.Core.Performance;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
 using Island.Windows.Clipboard;
@@ -12,16 +15,20 @@ using Island.Core.Abstractions;
 using Island.Core.Application;
 using Island.Core.Configuration;
 using Island.Core.Fakes;
+using Island.Core.Models;
 using Island.Windows.Audio;
 using Island.Windows.Configuration;
 using Island.Windows.Calendar;
+using Island.Windows.Capture;
 using Island.Windows.Budgets;
 using Island.Windows.Notes;
+using Island.Windows.GameNotes;
 using Island.Windows.Display;
 using Island.Windows.Devices;
 using Island.Windows.Focus;
 using Island.Windows.Input;
 using Island.Windows.Media;
+using Island.Windows.Performance;
 using Island.Windows.Phone;
 using Island.Windows.Updates;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,6 +82,24 @@ public static class ServiceRegistration
         s.AddSingleton(sp => new QuickNotesWindowManager(
             sp.GetRequiredService<QuickNotesService>(), () => sp.GetRequiredService<SettingsHolder>().Current.ReduceAnimations));
         s.AddSingleton<IQuickNotesWindowHost>(sp => sp.GetRequiredService<QuickNotesWindowManager>());
+        // GameNotes
+        if (demo)
+        {
+            s.AddSingleton<IGameNotesStore>(_ => new InMemoryGameNotesStore(DemoGameNotes.Seed()));
+            s.AddSingleton<IForegroundGameTracker>(_ => new FakeForegroundGameTracker(DemoGameNotes.InitialGame));
+        }
+        else
+        {
+            s.AddSingleton<IGameNotesStore>(sp => new JsonGameNotesStore(log: sp.GetService<ILogger<JsonGameNotesStore>>()));
+            s.AddSingleton<IForegroundGameTracker>(sp => new WinEventForegroundGameTracker(
+                () => sp.GetRequiredService<SettingsHolder>().Current.GameProcesses,
+                sp.GetService<ILogger<WinEventForegroundGameTracker>>()));
+        }
+        s.AddSingleton<GameNotesService>();
+        s.AddSingleton(sp => new GameNotesWindowManager(
+            sp.GetRequiredService<GameNotesService>(), () => sp.GetRequiredService<SettingsHolder>().Current.ReduceAnimations));
+        s.AddSingleton<IGameNotesWindowHost>(sp => sp.GetRequiredService<GameNotesWindowManager>());
+        s.AddSingleton<GameNotesHotkeyController>();
         s.AddSingleton<IBudgetStore>(_ => new JsonBudgetStore());
         s.AddSingleton(sp => new BudgetBook(sp.GetRequiredService<IBudgetStore>()));
         s.AddSingleton<BudgetWindowManager>();
@@ -120,6 +145,31 @@ public static class ServiceRegistration
         s.AddSingleton<FileTray>();
         if (demo) s.AddSingleton<IClipboardService, FakeClipboardService>();
         else s.AddSingleton<IClipboardService, WindowsClipboardService>();
+        // Performance
+        s.AddSingleton<IPerformanceSettingsStore>(_ => new JsonPerformanceSettingsStore());
+        if (demo) s.AddSingleton<IPerformanceSampler, FakePerformanceSampler>();
+        else s.AddSingleton<IPerformanceSampler>(_ => new WindowsPerformanceSampler());
+        s.AddSingleton(sp => new PerformanceMonitor(
+            sp.GetRequiredService<IPerformanceSampler>(), sp.GetRequiredService<IPerformanceSettingsStore>(),
+            sp.GetRequiredService<IIslandScheduler>()));
+
+
+        // Capture: Ctrl+Alt+P print, Ctrl+Alt+R record. Demo mode uses the fake backend, which captures and writes nothing.
+        if (demo) s.AddSingleton<IScreenCaptureService, FakeScreenCaptureService>();
+        else s.AddSingleton<IScreenCaptureService, WindowsScreenCaptureService>();
+        s.AddSingleton(sp => new CaptureController(
+            sp.GetRequiredService<IScreenCaptureService>(), CaptureLibrary.DefaultFolder,
+            notice => sp.GetRequiredService<IslandCoordinator>().Post(new IslandEvent.NoticeRaised(notice)),
+            CaptureLibrary.LatestScreenshot(CaptureLibrary.DefaultFolder)));
+        s.AddSingleton(sp => new CaptureHotkeys(
+            sp.GetRequiredService<CaptureController>(),
+            key => new GlobalHotkey(GlobalHotkey.ModControl | GlobalHotkey.ModAlt, key),
+            action => System.Windows.Application.Current.Dispatcher.BeginInvoke(action)));
+
+        // Mixer
+        if (demo) s.AddSingleton<IAudioMixerService, FakeAudioMixerService>();
+        else s.AddSingleton<IAudioMixerService, WindowsAudioMixerService>();
+
         s.AddSingleton(sp => new ShelfContext(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<PomodoroSchedule>(),
             sp.GetRequiredService<FileTray>(),
@@ -128,7 +178,11 @@ public static class ServiceRegistration
             sp.GetRequiredService<QuickNotesService>(), sp.GetRequiredService<IQuickNotesWindowHost>(),
             sp.GetRequiredService<Func<IslandSettings>>(),
             sp.GetRequiredService<SettingsApplier>().Apply,
-            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>()));
+            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>(),
+            sp.GetRequiredService<GameNotesService>(), sp.GetRequiredService<IGameNotesWindowHost>(),
+            sp.GetRequiredService<PerformanceMonitor>(),
+            sp.GetRequiredService<CaptureController>(), sp.GetRequiredService<CaptureHotkeys>(),
+            sp.GetRequiredService<IAudioMixerService>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,

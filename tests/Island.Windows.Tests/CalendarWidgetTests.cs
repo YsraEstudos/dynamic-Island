@@ -64,7 +64,7 @@ public sealed class CalendarWidgetTests
         WpfStaTestHost.Run(_ =>
         {
             var widget = CreateWidget(reduceAnimations: false);
-            var firstWindow = new Window { Content = widget, ShowInTaskbar = false, Width = 320, Height = 210 };
+            var firstWindow = WpfStaTestHost.KeepOffscreen(new Window { Content = widget, ShowInTaskbar = false, Width = 320, Height = 210 });
             Window? secondWindow = null;
             try
             {
@@ -80,7 +80,7 @@ public sealed class CalendarWidgetTests
                 Assert.False(timer.IsEnabled);
                 Assert.False(GetField<bool>(widget, "_isMonthTransition"));
 
-                secondWindow = new Window { Content = widget, ShowInTaskbar = false, Width = 320, Height = 210 };
+                secondWindow = WpfStaTestHost.KeepOffscreen(new Window { Content = widget, ShowInTaskbar = false, Width = 320, Height = 210 });
                 secondWindow.Show();
                 PumpLoadedEvents();
                 Assert.True(timer.IsEnabled);
