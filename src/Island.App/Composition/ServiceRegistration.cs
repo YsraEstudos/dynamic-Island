@@ -164,7 +164,11 @@ public static class ServiceRegistration
         s.AddSingleton(sp => new CaptureHotkeys(
             sp.GetRequiredService<CaptureController>(),
             key => new GlobalHotkey(GlobalHotkey.ModControl | GlobalHotkey.ModAlt, key),
-            action => System.Windows.Application.Current.Dispatcher.BeginInvoke(action)));
+            action => System.Windows.Application.Current.Dispatcher.BeginInvoke(action),
+        // Mixer
+        if (demo) s.AddSingleton<IAudioMixerService, FakeAudioMixerService>();
+        else s.AddSingleton<IAudioMixerService, WindowsAudioMixerService>();
+
         s.AddSingleton(sp => new ShelfContext(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<PomodoroSchedule>(),
             sp.GetRequiredService<FileTray>(),
@@ -176,7 +180,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>(),
             sp.GetRequiredService<GameNotesService>(), sp.GetRequiredService<IGameNotesWindowHost>(),
             sp.GetRequiredService<PerformanceMonitor>(),
-            sp.GetRequiredService<CaptureController>(), sp.GetRequiredService<CaptureHotkeys>()));
+            sp.GetRequiredService<CaptureController>(), sp.GetRequiredService<CaptureHotkeys>(),
+            sp.GetRequiredService<IAudioMixerService>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,

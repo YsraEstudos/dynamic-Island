@@ -32,7 +32,8 @@ public sealed class ShelfContext(
     IGameNotesWindowHost? gameNotesHost = null,
     PerformanceMonitor? performance = null,
     CaptureController? capture = null,
-    ICaptureShortcutStatus? captureShortcuts = null)
+    ICaptureShortcutStatus? captureShortcuts = null,
+    IAudioMixerService? mixer = null)
 {
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
@@ -59,4 +60,6 @@ public sealed class ShelfContext(
     public Func<IslandSettings> Settings { get; } = settings;
     /// <summary>Persists + applies new settings (updates the holder, saves JSON, re-applies to the window).</summary>
     public Action<IslandSettings> ApplySettings { get; } = applySettings;
+    /// <summary>Per-app audio sessions for the Mixer widget.</summary>
+    public IAudioMixerService? Mixer { get; } = mixer;
 }

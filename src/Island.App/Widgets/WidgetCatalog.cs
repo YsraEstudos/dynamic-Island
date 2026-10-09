@@ -40,6 +40,8 @@ public static class WidgetCatalog
             (ctx, vm) => new FileTrayWidget(ctx)),
         new WidgetDescriptor("capture", "Captura", "Icon.Widget.Capture", 280,
             (ctx, vm) => new CaptureWidget(ctx)),
+        new WidgetDescriptor("mixer", "Mixer", "Icon.Widget.Mixer", 280,
+            (ctx, vm) => new MixerWidget(ctx)),
     };
 
     public static WidgetDescriptor? Find(string id) => All.FirstOrDefault(w => w.Id == id);
