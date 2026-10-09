@@ -118,6 +118,104 @@ public sealed class QuickNotesViewModelTests
     }
 
     [Fact]
+    public async Task Beginning_a_new_note_opens_the_editor_before_anything_is_saved()
+    {
+        // Regression: the editor used to stay hidden until a note existed, so a note could never be started.
+        var viewModel = await CreateViewModelAsync(TimeSpan.FromMilliseconds(10));
+
+        await viewModel.BeginNewCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.IsEditorOpen);
+        Assert.True(viewModel.IsUnsavedDraft);
+        Assert.False(viewModel.HasSelectedNote);
+    }
+
+    [Fact]
+    public async Task Typing_into_a_new_draft_creates_the_note_and_keeps_it_selected()
+    {
+        var viewModel = await CreateViewModelAsync(TimeSpan.FromMilliseconds(10));
+        await viewModel.BeginNewCommand.ExecuteAsync(null);
+
+        viewModel.ContentDraft = "primeira ideia";
+        await viewModel.FlushPendingSaveAsync();
+
+        var note = Assert.Single(viewModel.Notes);
+        Assert.Equal("primeira ideia", note.Content);
+        Assert.Equal(note.Id, viewModel.SelectedNoteId);
+        Assert.True(viewModel.IsEditorOpen);
+        Assert.False(viewModel.IsUnsavedDraft);
+        Assert.Equal(1, viewModel.ActiveCount);
+    }
+
+    [Fact]
+    public async Task Pinning_a_new_draft_saves_it_first_and_pins_it()
+    {
+        var viewModel = await CreateViewModelAsync(TimeSpan.FromSeconds(5));
+        await viewModel.BeginNewCommand.ExecuteAsync(null);
+        viewModel.TitleDraft = "fixar";
+
+        await viewModel.TogglePinCommand.ExecuteAsync(null);
+
+        Assert.True(Assert.Single(viewModel.Notes).IsPinned);
+    }
+
+    [Fact]
+    public async Task Open_note_switches_to_the_collection_that_holds_it()
+    {
+        var (viewModel, service, note) = await CreateViewModelWithNoteAsync("arquivada");
+        await service.SetArchivedAsync(note.Id, true);
+
+        await viewModel.OpenNoteAsync(note.Id);
+
+        Assert.Equal(QuickNoteCollection.Archived, viewModel.SelectedCollection);
+        Assert.Equal(note.Id, viewModel.SelectedNoteId);
+        Assert.Equal("arquivada", viewModel.ContentDraft);
+    }
+
+    [Fact]
+    public async Task Retrying_after_a_failed_save_persists_the_draft_once_the_store_recovers()
+    {
+        var (viewModel, store) = await CreateViewModelWithStoreAsync(TimeSpan.FromMilliseconds(10));
+        await viewModel.BeginNewCommand.ExecuteAsync(null);
+        viewModel.ContentDraft = "não perder";
+        store.ThrowOnSave = true;
+        await viewModel.FlushPendingSaveAsync();
+        Assert.True(viewModel.IsSaveError);
+
+        store.ThrowOnSave = false;
+        viewModel.RetrySaveCommand.Execute(null);
+        await viewModel.FlushPendingSaveAsync();
+
+        Assert.False(viewModel.IsSaveError);
+        Assert.Equal("não perder", Assert.Single(viewModel.Notes).Content);
+    }
+
+    [Fact]
+    public async Task Emptying_the_trash_removes_only_trashed_notes()
+    {
+        var (viewModel, service, note) = await CreateViewModelWithNoteAsync("descartar");
+        var kept = Assert.IsType<QuickNote>(await service.SaveDraftAsync(null, Draft("manter")));
+        await service.MoveToTrashAsync(note.Id);
+        await viewModel.SelectCollectionCommand.ExecuteAsync(QuickNoteCollection.Trash);
+
+        await viewModel.EmptyTrashCommand.ExecuteAsync(null);
+
+        Assert.Empty(service.GetNotes(QuickNoteCollection.Trash));
+        Assert.Equal(kept.Id, Assert.Single(service.GetNotes()).Id);
+    }
+
+    [Fact]
+    public void Display_title_falls_back_to_the_first_line_of_the_content()
+    {
+        var note = new QuickNote(Guid.NewGuid(), "", "ligar para o João\namanhã às 10h",
+            Array.Empty<QuickNoteChecklistItem>(), Array.Empty<string>(), QuickNoteColor.Default,
+            false, false, DateTimeOffset.Now, DateTimeOffset.Now, null);
+
+        Assert.Equal("ligar para o João", Island.App.Notes.QuickNoteDisplay.Title(note));
+        Assert.Equal("amanhã às 10h", Island.App.Notes.QuickNoteDisplay.Preview(note));
+    }
+
+    [Fact]
     public void Settings_view_model_commits_global_hotkey_preference_changes()
     {
         IslandSettings? applied = null;

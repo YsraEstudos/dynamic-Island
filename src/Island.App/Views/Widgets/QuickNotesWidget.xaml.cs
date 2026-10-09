@@ -1,25 +1,27 @@
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
+using Island.App.Notes;
+using Island.App.Shell;
 using Island.App.Widgets;
 using Island.Core.Notes;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using UserControl = System.Windows.Controls.UserControl;
+using Cursors = System.Windows.Input.Cursors;
 
 namespace Island.App.Views.Widgets;
 
-/// <summary>Compact shelf entry point with two live note previews and a one-click capture action.</summary>
+/// <summary>
+/// Compact shelf entry point: a capture bar (opens the small capture window), the two latest notes (click to open one in
+/// the app) and "Abrir app". Both windows grow out of this widget. The island never takes the keyboard, so typing happens there.
+/// </summary>
 public partial class QuickNotesWidget : UserControl
 {
-    private static readonly Brush DefaultAccent = FrozenColor(0x68, 0x70, 0x7E);
-    private static readonly Brush BlueAccent = FrozenColor(0x65, 0xB6, 0xFF);
-    private static readonly Brush GreenAccent = FrozenColor(0x69, 0xC9, 0x8E);
-    private static readonly Brush YellowAccent = FrozenColor(0xF5, 0xC4, 0x51);
-    private static readonly Brush PinkAccent = FrozenColor(0xF0, 0x8A, 0xB5);
-    private static readonly Brush PurpleAccent = FrozenColor(0xBB, 0x9A, 0xF7);
+    private const int VisibleNotes = 2;
 
     private readonly ShelfContext _context;
     private readonly UiSignal _signal;
@@ -32,11 +34,15 @@ public partial class QuickNotesWidget : UserControl
         _context = context;
         _signal = new UiSignal(Dispatcher, Refresh);
 
-        OpenButton.Click += _context.QuickNotesHost.OpenNotes;
-        CaptureButton.Click += _context.QuickNotesHost.OpenForCapture;
+        OpenButton.Click += () => _context.QuickNotesHost.OpenNotes(WidgetBounds);
+        CaptureButton.Click += () => _context.QuickNotesHost.OpenForCapture(CaptureBounds);
         Loaded += (_, _) => Subscribe();
         Unloaded += (_, _) => Unsubscribe();
     }
+
+    private Rect? WidgetBounds() => WindowPlacement.ScreenBounds(Face);
+
+    private Rect? CaptureBounds() => WindowPlacement.ScreenBounds(CaptureButton);
 
     private void Subscribe()
     {
@@ -64,13 +70,12 @@ public partial class QuickNotesWidget : UserControl
     private void Refresh()
     {
         IReadOnlyList<QuickNote> allNotes = _context.QuickNotes.GetNotes();
-        IReadOnlyList<QuickNote> notes = allNotes.Take(2).ToArray();
         CountText.Text = allNotes.Count == 0 ? string.Empty : allNotes.Count.ToString();
         NotesList.Children.Clear();
-        foreach (QuickNote note in notes)
-            NotesList.Children.Add(BuildPreview(note));
+        foreach (QuickNote note in allNotes.Take(VisibleNotes))
+            NotesList.Children.Add(BuildRow(note));
 
-        bool hasNotes = notes.Count > 0;
+        bool hasNotes = allNotes.Count > 0;
         NotesList.Visibility = hasNotes ? Visibility.Visible : Visibility.Collapsed;
         EmptyText.Visibility = hasNotes ? Visibility.Collapsed : Visibility.Visible;
         HotkeyConflictPanel.Visibility = _context.Settings().QuickNotesHotkeyEnabled
@@ -79,65 +84,81 @@ public partial class QuickNotesWidget : UserControl
             : Visibility.Collapsed;
     }
 
-    private static FrameworkElement BuildPreview(QuickNote note)
+    private FrameworkElement BuildRow(QuickNote note)
     {
-        var title = new TextBlock
+        string title = QuickNoteDisplay.Title(note);
+        string preview = QuickNoteDisplay.Preview(note);
+
+        var line = new TextBlock
         {
-            Text = string.IsNullOrWhiteSpace(note.Title) ? "Sem título" : note.Title,
             FontSize = 11.5,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        line.Inlines.Add(new System.Windows.Documents.Run(title)
+        {
             FontWeight = FontWeights.SemiBold,
             Foreground = Brushes.White,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-        };
-        var content = new TextBlock
+        });
+        if (preview.Length > 0)
         {
-            Text = PreviewText(note),
-            FontSize = 10,
-            Foreground = new SolidColorBrush(Color.FromRgb(0xA1, 0xA1, 0xA6)),
-            Margin = new Thickness(0, 2, 0, 0),
-            MaxHeight = 16,
-            TextWrapping = TextWrapping.NoWrap,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-        };
-        var stack = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-        stack.Children.Add(title);
-        stack.Children.Add(content);
+            line.Inlines.Add(new System.Windows.Documents.Run("   " + preview)
+            {
+                Foreground = new SolidColorBrush(Color.FromRgb(0x8E, 0x8E, 0x93)),
+            });
+        }
 
-        var preview = new Border
+        var grid = new Grid();
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+        var bar = new Border
         {
-            Background = new SolidColorBrush(Color.FromRgb(0x20, 0x20, 0x22)),
-            BorderBrush = AccentFor(note.Color),
-            BorderThickness = new Thickness(2, 1, 1, 1),
+            Width = 3,
+            CornerRadius = new CornerRadius(2),
+            Background = QuickNoteDisplay.Accent(note.Color),
+            Margin = new Thickness(0, 1, 8, 1),
+        };
+        grid.Children.Add(bar);
+        Grid.SetColumn(line, 1);
+        grid.Children.Add(line);
+
+        if (note.IsPinned)
+        {
+            var star = new TextBlock
+            {
+                Text = "★",
+                FontSize = 10.5,
+                Foreground = new SolidColorBrush(Color.FromRgb(0xF5, 0xC4, 0x51)),
+                Margin = new Thickness(6, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            Grid.SetColumn(star, 2);
+            grid.Children.Add(star);
+        }
+
+        var idle = Brushes.Transparent;
+        var hover = new SolidColorBrush(Color.FromRgb(0x24, 0x24, 0x27));
+        var row = new Border
+        {
+            Background = idle,
             CornerRadius = new CornerRadius(8),
-            Padding = new Thickness(8, 5, 8, 5),
-            Margin = new Thickness(0, 0, 0, 5),
-            Child = stack,
+            Padding = new Thickness(7, 3, 7, 3),
+            Margin = new Thickness(0, 0, 0, 2),
+            Height = 24,
+            Cursor = Cursors.Hand,
+            Child = grid,
+            ToolTip = preview.Length > 0 ? title + "\n" + preview : title,
         };
-        AutomationProperties.SetName(preview, PreviewText(note));
-        return preview;
-    }
-
-    private static Brush AccentFor(QuickNoteColor color) => color switch
-    {
-        QuickNoteColor.Blue => BlueAccent,
-        QuickNoteColor.Green => GreenAccent,
-        QuickNoteColor.Yellow => YellowAccent,
-        QuickNoteColor.Pink => PinkAccent,
-        QuickNoteColor.Purple => PurpleAccent,
-        _ => DefaultAccent
-    };
-
-    private static Brush FrozenColor(byte red, byte green, byte blue)
-    {
-        var brush = new SolidColorBrush(Color.FromRgb(red, green, blue));
-        brush.Freeze();
-        return brush;
-    }
-
-    private static string PreviewText(QuickNote note)
-    {
-        if (!string.IsNullOrWhiteSpace(note.Content)) return note.Content;
-        if (note.Checklist.Count > 0) return $"☐ {note.Checklist[0].Text}";
-        return note.Tags.Count > 0 ? string.Join(" · ", note.Tags) : "Toque em Abrir para editar";
+        AutomationProperties.SetName(row, "Abrir nota: " + title);
+        row.MouseEnter += (_, _) => row.Background = hover;
+        row.MouseLeave += (_, _) => row.Background = idle;
+        row.MouseLeftButtonUp += (_, e) =>
+        {
+            e.Handled = true;
+            _context.QuickNotesHost.OpenNote(note.Id, WidgetBounds);
+        };
+        return row;
     }
 }

@@ -118,6 +118,47 @@ public sealed class QuickNotesService
         }, cancellationToken);
     }
 
+    /// <summary>One-shot capture used by the quick-capture window: creates a note from plain text. Blank text is ignored.</summary>
+    public Task<QuickNote?> CaptureAsync(
+        string text,
+        QuickNoteColor color = QuickNoteColor.Default,
+        bool pinned = false,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        if (string.IsNullOrWhiteSpace(text)) return Task.FromResult<QuickNote?>(null);
+
+        return MutateAsync(notes =>
+        {
+            var now = _timeProvider.GetUtcNow();
+            var note = new QuickNote(
+                Guid.NewGuid(),
+                string.Empty,
+                text.Trim(),
+                Array.AsReadOnly(Array.Empty<QuickNoteChecklistItem>()),
+                Array.AsReadOnly(Array.Empty<string>()),
+                color,
+                pinned,
+                false,
+                now,
+                now,
+                null);
+
+            return (notes.Append(note).ToArray(), (QuickNote?)note);
+        }, cancellationToken);
+    }
+
+    /// <summary>Permanently removes everything currently in the trash.</summary>
+    public async Task EmptyTrashAsync(CancellationToken cancellationToken = default)
+    {
+        await MutateAsync(notes =>
+        {
+            if (!notes.Any(note => note.DeletedAt is not null)) return (notes, false);
+
+            return (notes.Where(note => note.DeletedAt is null).ToArray(), true);
+        }, cancellationToken).ConfigureAwait(false);
+    }
+
     public async Task SetPinnedAsync(Guid id, bool pinned, CancellationToken cancellationToken = default)
     {
         await MutateAsync(notes =>

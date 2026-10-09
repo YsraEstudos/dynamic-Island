@@ -28,7 +28,7 @@ public static class WidgetCatalog
             (ctx, vm) => new PomodoroWidget(ctx)),
         new WidgetDescriptor("calendar", "Calendar", "Icon.Widget.Calendar", 280,
             (ctx, vm) => new CalendarWidget(ctx)),
-        new WidgetDescriptor("quicknotes", "Notas", "Icon.Widget.QuickNotes", 280,
+        new WidgetDescriptor("quicknotes", "Notas", "Icon.Widget.QuickNotes", 340,
             (ctx, vm) => new QuickNotesWidget(ctx)),
         new WidgetDescriptor("gamenotes", "Notas do Jogo", "Icon.Widget.GameNotes", 280,
             (ctx, vm) => new GameNotesWidget(ctx)),

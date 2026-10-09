@@ -83,6 +83,13 @@ Quatro widgets da estante pensados para quem joga com a ilha em outra tela ou nu
 - Orientado a eventos (sessões novas, mudança de volume, troca do dispositivo de saída padrão). Todo o COM roda numa thread MTA própria; o medidor de pico (40 ms) só roda com o widget visível e som tocando.
 - **Limites:** sem seletor de dispositivo de saída (exigiria a API não documentada PolicyConfig) e sem volume preferido por app. A ordem pelo app em primeiro plano só atualiza quando algo muda (não há hook de foco). Código em `Island.Core/Audio`, `Island.Windows/Audio/WindowsAudioMixerService` e `Views/Widgets/MixerWidget`.
 
+### Notas (`quicknotes`)
+- O widget (340 DIP) tem uma **barra de captura**, as duas notas mais recentes (clique numa para abri-la no app) e **Abrir app**. Os dois botões abrem janelas que **crescem a partir do widget** (`WindowMorph`: o cartão sai do retângulo do widget na tela e se expande; ao fechar, encolhe de volta).
+- **Captura rápida:** a ilha não ativa (WS_EX_NOACTIVATE), então não recebe teclado; a barra abre a mini-janela `QuickCaptureWindow` (Enter salva, Shift+Enter quebra linha, Ctrl+Enter continua no app, Esc fecha; cor e fixar). O atalho global **Ctrl+Alt+N** abre a mesma janela.
+- **App de notas** (`QuickNotesWindow`): lista com cor, prévia, etiquetas, progresso do checklist e idade; abas Notas/Arquivo/Lixeira com contagem; busca (Ctrl+F); fixar, arquivar, lixeira, restaurar, esvaziar lixeira; checklist (Enter adiciona item); autosave com "Tentar salvar de novo". Ctrl+N cria, Esc fecha, Delete manda para a lixeira.
+- O editor abre assim que você pede uma nota nova; a nota só passa a existir quando tem conteúdo (rascunho vazio não é salvo). Dados em `%LocalAppData%\DynamicIsland
+otes.json`.
+
 ### Notas do Jogo (`gamenotes`)
 - Notas (checklist com marcar, fixar e apagar) amarradas ao jogo em primeiro plano; voltando ao jogo, as notas dele reaparecem. O widget lembra o último jogo, então continua mostrando as notas dele quando você dá alt-tab para a ilha. ‹ › navegam entre jogos com notas e dá para fixar um jogo à mão se a detecção errar.
 - **Como digitar:** a ilha não ativa (WS_EX_NOACTIVATE), então não recebe teclado. O botão **+** e o atalho global **Ctrl+Alt+G** abrem uma janela própria (Enter adiciona, Esc fecha), a mesma solução das Notas. Se o atalho estiver em uso o widget avisa e o botão + continua funcionando.

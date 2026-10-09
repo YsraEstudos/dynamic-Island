@@ -19,6 +19,43 @@ public sealed class QuickNotesServiceTests
         QuickNoteColor.Default);
 
     [Fact]
+    public async Task Capture_creates_a_pinned_coloured_note_from_plain_text()
+    {
+        var service = await CreateServiceAsync();
+
+        var note = await service.CaptureAsync("  ideia rápida  ", QuickNoteColor.Green, pinned: true);
+
+        Assert.NotNull(note);
+        Assert.Equal("ideia rápida", note!.Content);
+        Assert.True(note.IsPinned);
+        Assert.Equal(QuickNoteColor.Green, note.Color);
+        Assert.Equal(note.Id, Assert.Single(service.GetNotes()).Id);
+    }
+
+    [Fact]
+    public async Task Capture_ignores_blank_text()
+    {
+        var service = await CreateServiceAsync();
+
+        Assert.Null(await service.CaptureAsync("   "));
+        Assert.Empty(service.GetNotes());
+    }
+
+    [Fact]
+    public async Task Empty_trash_deletes_only_trashed_notes()
+    {
+        var service = await CreateServiceAsync();
+        var gone = (await service.SaveDraftAsync(null, DraftWithContent))!;
+        var kept = (await service.SaveDraftAsync(null, DraftWithContent))!;
+        await service.MoveToTrashAsync(gone.Id);
+
+        await service.EmptyTrashAsync();
+
+        Assert.Empty(service.GetNotes(QuickNoteCollection.Trash));
+        Assert.Equal(kept.Id, Assert.Single(service.GetNotes()).Id);
+    }
+
+    [Fact]
     public async Task Blank_new_draft_is_not_persisted()
     {
         var service = await CreateServiceAsync();

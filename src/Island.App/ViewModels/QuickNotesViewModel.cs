@@ -69,6 +69,7 @@ public sealed class QuickNotesViewModel : ObservableObject
     private long _editRevision;
     private Guid _draftSessionId = Guid.NewGuid();
     private bool _isLoadingDraft;
+    private bool _isNewDraft;
     private IReadOnlyList<QuickNote> _notes = Array.Empty<QuickNote>();
     private Guid? _selectedNoteId;
     private QuickNoteCollection _selectedCollection = QuickNoteCollection.Active;
@@ -97,6 +98,8 @@ public sealed class QuickNotesViewModel : ObservableObject
         TogglePinCommand = new AsyncRelayCommand(TogglePinAsync);
         ArchiveSelectedCommand = new AsyncRelayCommand(ArchiveSelectedAsync);
         TrashSelectedCommand = new AsyncRelayCommand(TrashSelectedAsync);
+        EmptyTrashCommand = new AsyncRelayCommand(EmptyTrashAsync);
+        RetrySaveCommand = new RelayCommand(RetrySave);
         RestoreSelectedCommand = new AsyncRelayCommand(RestoreSelectedAsync);
         DeleteSelectedPermanentlyCommand = new AsyncRelayCommand(DeleteSelectedPermanentlyAsync);
         AddChecklistItemCommand = new RelayCommand(AddChecklistItem);
@@ -121,6 +124,56 @@ public sealed class QuickNotesViewModel : ObservableObject
         ? _service.GetNotes(_selectedCollection).FirstOrDefault(note => note.Id == id)
         : null;
 
+    /// <summary>The editor is shown for a saved note and also for a brand-new draft that has not been saved yet.</summary>
+    public bool IsEditorOpen => _selectedNoteId is not null || _isNewDraft;
+
+    /// <summary>A new draft that has no note behind it yet (it is only created once it has content).</summary>
+    public bool IsUnsavedDraft => _isNewDraft && _selectedNoteId is null;
+
+    public int ActiveCount => _service.GetNotes(QuickNoteCollection.Active).Count;
+    public int ArchivedCount => _service.GetNotes(QuickNoteCollection.Archived).Count;
+    public int TrashCount => _service.GetNotes(QuickNoteCollection.Trash).Count;
+
+    public bool IsActiveView => SelectedCollection == QuickNoteCollection.Active;
+
+    public string CollectionTitle => SelectedCollection switch
+    {
+        QuickNoteCollection.Archived => "Arquivo",
+        QuickNoteCollection.Trash => "Lixeira",
+        _ => "Todas as notas"
+    };
+
+    public string EmptyListText => !string.IsNullOrWhiteSpace(SearchText)
+        ? "Nenhuma nota encontrada para essa busca."
+        : SelectedCollection switch
+        {
+            QuickNoteCollection.Archived => "Nada arquivado por aqui.",
+            QuickNoteCollection.Trash => "A lixeira está vazia.",
+            _ => "Você ainda não tem notas."
+        };
+
+    public bool IsListEmpty => _notes.Count == 0 && !IsUnsavedDraft;
+
+    public string ChecklistProgress
+    {
+        get
+        {
+            int total = _checklistDraft.Count;
+            return total == 0 ? string.Empty : $"{_checklistDraft.Count(item => item.IsCompleted)}/{total}";
+        }
+    }
+
+    public string FooterInfo
+    {
+        get
+        {
+            var note = SelectedNote;
+            int words = CountWords(ContentDraft);
+            string count = words == 1 ? "1 palavra" : $"{words} palavras";
+            return note is null ? count : $"{count}  ·  Criada em {note.CreatedAt.ToLocalTime():dd/MM/yyyy HH:mm}";
+        }
+    }
+
     public Guid? SelectedNoteId
     {
         get => _selectedNoteId;
@@ -130,6 +183,7 @@ public sealed class QuickNotesViewModel : ObservableObject
             {
                 OnPropertyChanged(nameof(SelectedNote));
                 OnPropertyChanged(nameof(HasSelectedNote));
+                NotifyEditorStateChanged();
             }
         }
     }
@@ -146,6 +200,10 @@ public sealed class QuickNotesViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsEditorEnabled));
                 OnPropertyChanged(nameof(ArchiveActionText));
                 OnPropertyChanged(nameof(SelectedNote));
+                OnPropertyChanged(nameof(IsActiveView));
+                OnPropertyChanged(nameof(CollectionTitle));
+                OnPropertyChanged(nameof(EmptyListText));
+                OnPropertyChanged(nameof(IsListEmpty));
             }
         }
     }
@@ -161,7 +219,11 @@ public sealed class QuickNotesViewModel : ObservableObject
         get => _searchText;
         set
         {
-            if (SetProperty(ref _searchText, value ?? string.Empty)) RefreshNotes();
+            if (SetProperty(ref _searchText, value ?? string.Empty))
+            {
+                RefreshNotes();
+                OnPropertyChanged(nameof(EmptyListText));
+            }
         }
     }
 
@@ -179,7 +241,11 @@ public sealed class QuickNotesViewModel : ObservableObject
         get => _contentDraft;
         set
         {
-            if (SetProperty(ref _contentDraft, value ?? string.Empty)) QueueAutosave();
+            if (SetProperty(ref _contentDraft, value ?? string.Empty))
+            {
+                OnPropertyChanged(nameof(FooterInfo));
+                QueueAutosave();
+            }
         }
     }
 
@@ -206,9 +272,15 @@ public sealed class QuickNotesViewModel : ObservableObject
         get => _saveState;
         private set
         {
-            if (SetProperty(ref _saveState, value)) OnPropertyChanged(nameof(SaveStateText));
+            if (SetProperty(ref _saveState, value))
+            {
+                OnPropertyChanged(nameof(SaveStateText));
+                OnPropertyChanged(nameof(IsSaveError));
+            }
         }
     }
+
+    public bool IsSaveError => SaveState == QuickNotesSaveState.Error;
 
     public string SaveStateText => SaveState switch
     {
@@ -233,6 +305,8 @@ public sealed class QuickNotesViewModel : ObservableObject
     public IAsyncRelayCommand TrashSelectedCommand { get; }
     public IAsyncRelayCommand RestoreSelectedCommand { get; }
     public IAsyncRelayCommand DeleteSelectedPermanentlyCommand { get; }
+    public IAsyncRelayCommand EmptyTrashCommand { get; }
+    public IRelayCommand RetrySaveCommand { get; }
     public IRelayCommand AddChecklistItemCommand { get; }
     public IRelayCommand<QuickNoteChecklistDraftItem> RemoveChecklistItemCommand { get; }
 
@@ -265,11 +339,39 @@ public sealed class QuickNotesViewModel : ObservableObject
         if (SaveState == QuickNotesSaveState.Error) return;
 
         SelectedCollection = QuickNoteCollection.Active;
+        SearchText = string.Empty;
         RefreshNotes();
         SelectedNoteId = null;
         ClearDraft();
+        _isNewDraft = true;
+        NotifyEditorStateChanged();
         SaveErrorMessage = string.Empty;
         SaveState = QuickNotesSaveState.Saved;
+    }
+
+    /// <summary>Jumps straight to a note (from the widget), switching to the collection that holds it.</summary>
+    public async Task OpenNoteAsync(Guid id)
+    {
+        await FlushPendingSaveAsync();
+        if (SaveState == QuickNotesSaveState.Error) return;
+
+        QuickNoteCollection? target = null;
+        foreach (var collection in new[] { QuickNoteCollection.Active, QuickNoteCollection.Archived, QuickNoteCollection.Trash })
+        {
+            if (_service.GetNotes(collection).Any(note => note.Id == id))
+            {
+                target = collection;
+                break;
+            }
+        }
+
+        if (target is null) return;
+
+        SelectedCollection = target.Value;
+        SearchText = string.Empty;
+        RefreshNotes();
+        var found = _service.GetNotes(target.Value).FirstOrDefault(note => note.Id == id);
+        if (found is not null) LoadNote(found);
     }
 
     private async Task SelectNoteAsync(Guid id)
@@ -298,11 +400,14 @@ public sealed class QuickNotesViewModel : ObservableObject
 
     private async Task TogglePinAsync()
     {
-        var note = SelectedNote;
-        if (note is null || IsTrashView) return;
+        if (IsTrashView) return;
 
+        // A brand-new draft only becomes a note once flushed, so resolve the note after the flush.
         await FlushPendingSaveAsync();
         if (SaveState == QuickNotesSaveState.Error) return;
+
+        var note = SelectedNote;
+        if (note is null) return;
 
         await _service.SetPinnedAsync(note.Id, !note.IsPinned);
         RefreshNotes();
@@ -311,11 +416,14 @@ public sealed class QuickNotesViewModel : ObservableObject
 
     private async Task ArchiveSelectedAsync()
     {
-        var note = SelectedNote;
-        if (note is null || IsTrashView) return;
+        if (IsTrashView) return;
 
+        // A brand-new draft only becomes a note once flushed, so resolve the note after the flush.
         await FlushPendingSaveAsync();
         if (SaveState == QuickNotesSaveState.Error) return;
+
+        var note = SelectedNote;
+        if (note is null) return;
 
         await _service.SetArchivedAsync(note.Id, !note.IsArchived);
         RemoveSelectedAfterMutation();
@@ -323,11 +431,14 @@ public sealed class QuickNotesViewModel : ObservableObject
 
     private async Task TrashSelectedAsync()
     {
-        var note = SelectedNote;
-        if (note is null || IsTrashView) return;
+        if (IsTrashView) return;
 
+        // A brand-new draft only becomes a note once flushed, so resolve the note after the flush.
         await FlushPendingSaveAsync();
         if (SaveState == QuickNotesSaveState.Error) return;
+
+        var note = SelectedNote;
+        if (note is null) return;
 
         await _service.MoveToTrashAsync(note.Id);
         RemoveSelectedAfterMutation();
@@ -348,6 +459,17 @@ public sealed class QuickNotesViewModel : ObservableObject
         if (note is null || !IsTrashView) return;
 
         await _service.DeletePermanentlyAsync(note.Id);
+        RemoveSelectedAfterMutation();
+    }
+
+    /// <summary>Re-queues the failed write with the current draft (nothing was lost: the draft stays in the editor).</summary>
+    private void RetrySave() => QueueAutosave();
+
+    private async Task EmptyTrashAsync()
+    {
+        if (!IsTrashView) return;
+
+        await _service.EmptyTrashAsync();
         RemoveSelectedAfterMutation();
     }
 
@@ -384,10 +506,16 @@ public sealed class QuickNotesViewModel : ObservableObject
         }
 
         OnPropertyChanged(nameof(ChecklistDraft));
+        OnPropertyChanged(nameof(ChecklistProgress));
         if (!_isLoadingDraft) QueueAutosave();
     }
 
-    private void OnChecklistItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) => QueueAutosave();
+    private void OnChecklistItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(QuickNoteChecklistDraftItem.IsCompleted))
+            OnPropertyChanged(nameof(ChecklistProgress));
+        QueueAutosave();
+    }
 
     private void QueueAutosave()
     {
@@ -478,11 +606,30 @@ public sealed class QuickNotesViewModel : ObservableObject
     {
         Notes = _service.GetNotes(SelectedCollection, SearchText);
         OnPropertyChanged(nameof(HasSelectedNote));
+        OnPropertyChanged(nameof(ActiveCount));
+        OnPropertyChanged(nameof(ArchivedCount));
+        OnPropertyChanged(nameof(TrashCount));
+        OnPropertyChanged(nameof(IsListEmpty));
+        OnPropertyChanged(nameof(FooterInfo));
     }
+
+    private void NotifyEditorStateChanged()
+    {
+        OnPropertyChanged(nameof(IsEditorOpen));
+        OnPropertyChanged(nameof(IsUnsavedDraft));
+        OnPropertyChanged(nameof(IsListEmpty));
+        OnPropertyChanged(nameof(FooterInfo));
+    }
+
+    private static int CountWords(string text) =>
+        string.IsNullOrWhiteSpace(text)
+            ? 0
+            : text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
 
     private void LoadNote(QuickNote note)
     {
         _draftSessionId = Guid.NewGuid();
+        _isNewDraft = false;
         _isLoadingDraft = true;
         try
         {
@@ -509,8 +656,10 @@ public sealed class QuickNotesViewModel : ObservableObject
 
     private void ClearSelection()
     {
+        _isNewDraft = false;
         SelectedNoteId = null;
         ClearDraft();
+        NotifyEditorStateChanged();
     }
 
     private void ClearDraft()
