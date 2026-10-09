@@ -18,22 +18,36 @@ public static class BudgetTextFormatter
     {
         DayStatus.Available => PercentFormatter.Format(row.Percent),
         DayStatus.Excluded => "Não usa",
-        DayStatus.Reset => $"Reinicia às {resetHour}h",
+        DayStatus.Reset => row.Percent > 0
+            ? $"{PercentFormatter.Format(row.Percent)} · reinicia às {resetHour}h"
+            : $"Reinicia às {resetHour}h",
         _ => "—",
     };
 
     public static string EntryLabel(EntryMode mode) =>
         mode == EntryMode.Consumed ? "Quanto você já consumiu" : "Quanto ainda resta";
 
-    public static string Hero(BudgetPlan plan) =>
-        plan.UsableDaysLeft == 0 ? "—" : PercentFormatter.Format(plan.PerDayPercent) + " por dia";
+    public static string Hero(BudgetPlan plan)
+    {
+        if (plan.WeightedDaysLeft == 0) return "—";
+        double value = plan.TodayIsUsable ? plan.TodayPercent : plan.PerDayPercent;
+        string number = PercentFormatter.Format(value);
+        return HasPartialResetToday(plan) ? number + " hoje" : number + " por dia";
+    }
 
     public static string Allowance(BudgetPlan plan) => PercentFormatter.Format(plan.TodayAllowance);
 
     public static string LeftAfterToday(BudgetPlan plan) => PercentFormatter.Format(plan.LeftAfterToday);
 
-    public static string Remaining(BudgetPlan plan) =>
-        PercentFormatter.Format(plan.RemainingPercent) + " de " + PercentFormatter.Format(plan.TotalPercent);
+    public static string Remaining(BudgetPlan plan)
+    {
+        string now = PercentFormatter.Format(plan.RemainingPercent);
+        bool showsTrajectory = plan.State == PlanState.Active && plan.TodayIsUsable && plan.TodayAllowance > 0;
+        return showsTrajectory ? $"{now} → {PercentFormatter.Format(plan.LeftAfterToday)}" : now;
+    }
+
+    private static bool HasPartialResetToday(BudgetPlan plan) =>
+        plan.Days.Any(r => r.IsToday && r.Status == DayStatus.Reset);
 
     public static double Progress(BudgetPlan plan) =>
         plan.TotalPercent > 0 ? Math.Clamp(plan.PerDayPercent / plan.TotalPercent, 0, 1) : 0;

@@ -82,6 +82,6 @@ public partial class BudgetWidget : UserControl
     {
         string status = BudgetTextFormatter.Status(budget, plan);
         if (status.Length > 0) return status;
-        return $"Hoje {BudgetTextFormatter.Allowance(plan)} · sobra {BudgetTextFormatter.LeftAfterToday(plan)}";
+        return $"Pode usar {BudgetTextFormatter.Allowance(plan)} hoje";
     }
 }

@@ -11,4 +11,6 @@ public sealed record BudgetPlan(
     double PerDayPercent,
     bool TodayIsUsable,
     int TodayAllowance,
-    double LeftAfterToday);
+    double LeftAfterToday,
+    double WeightedDaysLeft,
+    double TodayPercent);
