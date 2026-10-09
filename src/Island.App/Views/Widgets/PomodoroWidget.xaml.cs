@@ -23,6 +23,9 @@ namespace Island.App.Views.Widgets;
 /// each break is free. While locked the other controls dim, the timer ignores changes, and clicking Angry opens the
 /// unlock dialog instead. A plan (Play with N pomodoros) owns the phase, so the Focus and Break pills and the ruler dim
 /// until it ends or is reset. The forecast clock refreshes every 15 s while the timer is stopped.
+/// The clock button schedules a start (a clock time, Focus or Angry, and a count) through <see cref="ScheduleWindow"/>;
+/// while a start is pending and nothing runs, the forecast shows its time instead ("às 14:30 · Focus ×4"). The clock
+/// button dims while locked and then ignores clicks.
 /// Everything reads the core timer; the widget adds only the forecast ticker. Timer changes arrive on arbitrary threads
 /// and are coalesced onto the UI thread, where the text is updated only when it changed.
 /// </summary>
@@ -45,6 +48,7 @@ public partial class PomodoroWidget : UserControl
     private bool? _shownLocked;
     private int _shownCycles = -1;
     private string _shownForecast = string.Empty;
+    private Brush? _shownScheduleBrush;
     private DispatcherTimer? _forecastTimer;
 
     public PomodoroWidget(ShelfContext ctx)
@@ -75,6 +79,7 @@ public partial class PomodoroWidget : UserControl
 
         PlayButton.Click += () => _ctx.Pomodoro.Play(_ctx.Settings().PomodoroCycles);
         ResetButton.Click += () => _ctx.Pomodoro.Reset();
+        ScheduleButton.Click += OnScheduleClicked;
         SoundButton.Click += ToggleSound;
 
         // Live drag: the timer's duration follows the ruler; release stores it in the settings for the phase.
@@ -91,6 +96,7 @@ public partial class PomodoroWidget : UserControl
 
         _ctx.Pomodoro.Changed += OnPomodoroChanged;
         _ctx.Angry.LockChanged += OnLockChanged;
+        _ctx.Schedule.Changed += OnScheduleChanged;
         _subscribed = true;
         _forecastTimer ??= CreateForecastTimer();
         Refresh();
@@ -102,6 +108,7 @@ public partial class PomodoroWidget : UserControl
 
         _ctx.Pomodoro.Changed -= OnPomodoroChanged;
         _ctx.Angry.LockChanged -= OnLockChanged;
+        _ctx.Schedule.Changed -= OnScheduleChanged;
         _subscribed = false;
         _forecastTimer?.Stop();
     }
@@ -111,6 +118,9 @@ public partial class PomodoroWidget : UserControl
 
     /// <summary>Arbitrary thread.</summary>
     private void OnLockChanged() => _signal.Signal();
+
+    /// <summary>Arbitrary thread.</summary>
+    private void OnScheduleChanged() => _signal.Signal();
 
     /// <summary>Ticks the forecast clock while the timer is stopped; a running timer already refreshes on every change.</summary>
     private DispatcherTimer CreateForecastTimer()
@@ -161,7 +171,8 @@ public partial class PomodoroWidget : UserControl
         }
         Track.Progress = planActive ? PlanProgress(timer, settings) : 0.0;
 
-        RefreshForecast(timer, settings, planActive);
+        ScheduledStart? pending = _ctx.Schedule.Pending;
+        RefreshForecast(timer, settings, planActive, pending);
 
         ApplyPill(PrepPill, phase == PomodoroPhase.Prep && !locked);
         ApplyPill(FocusPill, phase == PomodoroPhase.Focus && !locked);
@@ -177,6 +188,16 @@ public partial class PomodoroWidget : UserControl
         double dim = locked ? 0.4 : 1.0;
         PlayButton.Opacity = dim;
         ResetButton.Opacity = dim;
+        ScheduleButton.Opacity = dim;
+
+        // A pending scheduled start colours the clock icon: orange for Focus, red for Angry.
+        Brush scheduleBrush = pending is null ? Grey
+            : pending.Mode == ScheduledStartMode.Angry ? Red : Orange;
+        if (!ReferenceEquals(scheduleBrush, _shownScheduleBrush))
+        {
+            _shownScheduleBrush = scheduleBrush;
+            ScheduleButton.IconBrush = scheduleBrush;
+        }
 
         PlayButton.IsAltShown = running;
         SoundButton.IsAltShown = !settings.PomodoroSound;
@@ -217,11 +238,19 @@ public partial class PomodoroWidget : UserControl
     /// "até 15:30 · 1h30": the clock time the remaining work ends and its length. Rebuilt only when the text changes.
     /// Shows "—" when there is no work left.
     /// </summary>
-    private void RefreshForecast(PomodoroTimer timer, IslandSettings settings, bool planActive)
+    private void RefreshForecast(PomodoroTimer timer, IslandSettings settings, bool planActive, ScheduledStart? pending)
     {
-        TimeSpan rest = timer.TimeToFinish(settings.PomodoroCycles);
+        // A pending start shows its own time while nothing runs; otherwise the forecast of the work left.
+        bool showSchedule = pending is not null && !timer.IsRunning && !planActive;
+        TimeSpan rest = showSchedule ? TimeSpan.Zero : timer.TimeToFinish(settings.PomodoroCycles);
         string key;
-        if (rest <= TimeSpan.Zero)
+        if (showSchedule)
+        {
+            string at = pending!.At.ToLocalTime().ToString("HH:mm", PtBr);
+            string label = (pending.Mode == ScheduledStartMode.Angry ? "Angry" : "Focus") + " ×" + pending.Cycles;
+            key = $"às {at}|{label}|scheduled";
+        }
+        else if (rest <= TimeSpan.Zero)
         {
             key = "—";
         }
@@ -235,6 +264,20 @@ public partial class PomodoroWidget : UserControl
         _shownForecast = key;
 
         ForecastText.Inlines.Clear();
+        if (showSchedule)
+        {
+            bool angry = pending!.Mode == ScheduledStartMode.Angry;
+            string at = pending.At.ToLocalTime().ToString("HH:mm", PtBr);
+            string label = (angry ? "Angry" : "Focus") + " ×" + pending.Cycles;
+            ForecastText.Inlines.Add(new Run("às ") { Foreground = Grey });
+            ForecastText.Inlines.Add(new Run(at)
+            {
+                Foreground = angry ? Red : Orange,
+                FontWeight = System.Windows.FontWeights.SemiBold,
+            });
+            ForecastText.Inlines.Add(new Run(" · " + label) { Foreground = Grey });
+            return;
+        }
         if (rest <= TimeSpan.Zero)
         {
             ForecastText.Inlines.Add(new Run("—") { Foreground = Grey });
@@ -259,6 +302,13 @@ public partial class PomodoroWidget : UserControl
         int rest = minutes % 60;
         if (hours == 0) return $"{rest} min";
         return rest == 0 ? $"{hours}h" : $"{hours}h{rest:00}";
+    }
+
+    /// <summary>Opens the schedule dialog. Ignored while locked: the dimmed clock button does nothing then.</summary>
+    private void OnScheduleClicked()
+    {
+        if (_ctx.Angry.IsLocked) return;
+        ScheduleWindow.ShowFor(_ctx.Schedule, _ctx.Settings().PomodoroCycles);
     }
 
     /// <summary>Phase pills are ignored during a plan: the plan decides the phase.</summary>

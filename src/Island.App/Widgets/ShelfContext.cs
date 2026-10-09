@@ -10,6 +10,7 @@ namespace Island.App.Widgets;
 public sealed class ShelfContext(
     PomodoroTimer pomodoro,
     AngryPomodoro angry,
+    PomodoroSchedule schedule,
     FileTray fileTray,
     ClipboardHistory clipboard,
     IClipboardService clipboardService,
@@ -20,6 +21,8 @@ public sealed class ShelfContext(
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
     public AngryPomodoro Angry { get; } = angry;
+    /// <summary>Scheduled start: a plan (Focus or Angry) that begins by itself at a clock time.</summary>
+    public PomodoroSchedule Schedule { get; } = schedule;
     public FileTray FileTray { get; } = fileTray;
     public ClipboardHistory Clipboard { get; } = clipboard;
     public IClipboardService ClipboardService { get; } = clipboardService;

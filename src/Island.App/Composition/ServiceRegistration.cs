@@ -88,13 +88,16 @@ public static class ServiceRegistration
         s.AddSingleton<SettingsApplier>();
         s.AddSingleton<PomodoroTimer>();
         s.AddSingleton<AngryPomodoro>();
+        s.AddSingleton(sp => new PomodoroSchedule(
+            sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<IIslandScheduler>()));
         s.AddSingleton(sp => new ForegroundSiteGuard(sp.GetService<ILogger<ForegroundSiteGuard>>()));
         s.AddSingleton<ClipboardHistory>();
         s.AddSingleton<FileTray>();
         if (demo) s.AddSingleton<IClipboardService, FakeClipboardService>();
         else s.AddSingleton<IClipboardService, WindowsClipboardService>();
         s.AddSingleton(sp => new ShelfContext(
-            sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<FileTray>(),
+            sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<PomodoroSchedule>(),
+            sp.GetRequiredService<FileTray>(),
             sp.GetRequiredService<ClipboardHistory>(), sp.GetRequiredService<IClipboardService>(),
             sp.GetRequiredService<IMediaService>(), sp.GetRequiredService<Func<IslandSettings>>(),
             sp.GetRequiredService<SettingsApplier>().Apply));

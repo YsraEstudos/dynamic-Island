@@ -114,6 +114,8 @@ public partial class App : System.Windows.Application
         var siteGuard = sp.GetRequiredService<ForegroundSiteGuard>();
         _angry = angry;
         angry.LockChanged += () => Dispatcher.BeginInvoke(() => siteGuard.SetActive(angry.IsLocked));
+        // The scheduled start is resolved here so it exists (and is disposed with the container) from launch.
+        sp.GetRequiredService<PomodoroSchedule>();
         siteGuard.SiteBlocked += site => coordinator.Post(new IslandEvent.NoticeRaised(
             new Notice($"{site} bloqueado", "Pomodoro raivoso ativo", "timer")));
 

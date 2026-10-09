@@ -73,6 +73,10 @@
                                  Background="{StaticResource PomodoroChipBrush}"
                                  IconBrush="{StaticResource TextSecondaryBrush}"
                                  Icon="{StaticResource WidgetIcon.Stopwatch}" IconSize="16" />
+                <wid:ShelfButton x:Name="ScheduleButton" Width="34" Height="34" CornerRadius="17" Margin="8,0,0,0"
+                                 Background="{StaticResource PomodoroChipBrush}"
+                                 IconBrush="{StaticResource TextSecondaryBrush}"
+                                 Icon="{StaticResource WidgetIcon.Clock}" IconSize="16" />
             </StackPanel>
 
             <TextBlock x:Name="TimeText"
