@@ -16,6 +16,7 @@ public partial class QuickNotesWindow : Window
     private bool _allowClose;
     private bool _closeAttemptInProgress;
     private bool _isAnimatingSelection;
+    private bool _beginNewInProgress;
 
     public QuickNotesWindow(QuickNotesViewModel viewModel, Func<bool> reduceAnimations)
     {
@@ -45,7 +46,29 @@ public partial class QuickNotesWindow : Window
 
     public Task FlushPendingSaveAsync() => _viewModel.FlushPendingSaveAsync();
 
-    public void BeginNewNote() => _viewModel.BeginNewCommand.Execute(null);
+    public async Task BeginNewNoteAndFocusAsync()
+    {
+        if (_beginNewInProgress) return;
+
+        _beginNewInProgress = true;
+        Surface.IsEnabled = false;
+        bool focusNewDraft = false;
+        try
+        {
+            await _viewModel.BeginNewCommand.ExecuteAsync(null);
+            focusNewDraft = _viewModel.SaveState != QuickNotesSaveState.Error;
+        }
+        finally
+        {
+            Surface.IsEnabled = true;
+            _beginNewInProgress = false;
+        }
+
+        if (focusNewDraft) FocusTitle();
+    }
+
+    private async void OnBeginNewNoteClick(object sender, RoutedEventArgs e) =>
+        await BeginNewNoteAndFocusAsync();
 
     public void SetHotkeyConflict(bool conflict) =>
         HotkeyConflictBanner.Visibility = conflict ? Visibility.Visible : Visibility.Collapsed;
@@ -71,13 +94,12 @@ public partial class QuickNotesWindow : Window
         }
     }
 
-    private void OnWindowKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    private async void OnWindowKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
     {
         if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.N)
         {
-            _viewModel.BeginNewCommand.Execute(null);
-            FocusTitle();
             e.Handled = true;
+            await BeginNewNoteAndFocusAsync();
         }
         else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.F)
         {

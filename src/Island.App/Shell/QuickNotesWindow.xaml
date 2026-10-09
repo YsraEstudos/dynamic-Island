@@ -165,7 +165,7 @@
                 </StackPanel>
             </Border>
             <Button Grid.Column="2" Style="{StaticResource NotesPrimaryButton}"
-                    Command="{Binding BeginNewCommand}"
+                    Click="OnBeginNewNoteClick"
                     AutomationProperties.Name="Criar nota rápida">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="＋" FontSize="17" Margin="0,-2,6,0"/>
@@ -280,7 +280,7 @@
                                        Foreground="{StaticResource NotesMutedBrush}" TextAlignment="Center"
                                        TextWrapping="Wrap" Margin="0,8,0,18"/>
                             <Button Style="{StaticResource NotesPrimaryButton}" Content="Criar nota"
-                                    Command="{Binding BeginNewCommand}" HorizontalAlignment="Center"
+                                    Click="OnBeginNewNoteClick" HorizontalAlignment="Center"
                                     AutomationProperties.Name="Criar primeira nota"/>
                         </StackPanel>
                     </Border>

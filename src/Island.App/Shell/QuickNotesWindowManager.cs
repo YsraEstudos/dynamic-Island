@@ -21,12 +21,18 @@ public sealed class QuickNotesWindowManager : IQuickNotesWindowHost
 
     public bool HotkeyConflict { get; private set; }
 
-    public void OpenForCapture()
+    public async void OpenForCapture()
     {
-        var window = GetOrCreateWindow();
-        window.ShowOrActivate();
-        window.BeginNewNote();
-        window.FocusTitle();
+        try
+        {
+            var window = GetOrCreateWindow();
+            window.ShowOrActivate();
+            await window.BeginNewNoteAndFocusAsync();
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "Could not open quick notes for capture");
+        }
     }
 
     public void OpenNotes() => GetOrCreateWindow().ShowOrActivate();

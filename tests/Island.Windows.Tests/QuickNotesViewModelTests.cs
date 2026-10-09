@@ -86,6 +86,27 @@ public sealed class QuickNotesViewModelTests
     }
 
     [Fact]
+    public async Task Editing_a_new_note_while_its_first_save_is_in_flight_does_not_create_a_duplicate()
+    {
+        var store = new BlockingMemoryQuickNotesStore();
+        var service = new QuickNotesService(store);
+        await service.InitializeAsync();
+        var viewModel = new QuickNotesViewModel(service, autosaveDelay: TimeSpan.FromMilliseconds(10));
+        store.BlockWrites = true;
+
+        viewModel.ContentDraft = "first revision";
+        await store.WriteStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        viewModel.ContentDraft = "latest revision";
+        store.ReleaseWrite.TrySetResult();
+
+        await viewModel.FlushPendingSaveAsync();
+
+        var savedNote = Assert.Single(service.GetNotes());
+        Assert.Equal("latest revision", savedNote.Content);
+        Assert.Equal(2, store.WriteCalls);
+    }
+
+    [Fact]
     public async Task Search_includes_tags_and_content()
     {
         var (viewModel, _, note) = await CreateViewModelWithNoteAsync("receita", ["cozinha"]);

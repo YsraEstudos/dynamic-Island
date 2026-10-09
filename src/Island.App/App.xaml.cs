@@ -210,7 +210,7 @@ public partial class App : System.Windows.Application
         {
             _soak = new SoakRunner(coordinator, sp.GetRequiredService<FakeMediaService>(),
                 sp.GetRequiredService<FakeVolumeService>(), Dispatcher, soakDuration,
-                () => Dispatcher.BeginInvoke(() => Shutdown()));
+                () => Dispatcher.BeginInvoke(new Action(ShutdownAfterQuickNotesFlush)));
             _soak.Start();
         }
     }
@@ -243,15 +243,7 @@ public partial class App : System.Windows.Application
         try
         {
             if (!ConfirmNotLocked()) return;
-            if (_quickNotesWindowManager is { } notes)
-            {
-                await notes.FlushPendingSaveAsync();
-                if (notes.HasSaveError)
-                {
-                    notes.OpenNotes();
-                    return;
-                }
-            }
+            if (!await FlushQuickNotesBeforeShutdownAsync()) return;
 
             Shutdown();
         }
@@ -270,18 +262,52 @@ public partial class App : System.Windows.Application
         UpdateInfo? update = updates.Available;
         if (update is null || !ConfirmNotLocked()) return;
 
+        try
+        {
+            if (!await FlushQuickNotesBeforeShutdownAsync()) return;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Could not flush quick notes before installing update {Tag}", update.Tag);
+            return;
+        }
+
         coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Downloading {update.Tag}", "Update", "timer")));
         try
         {
             await updates.InstallAsync(update);
             coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Installing {update.Tag}", "The app restarts by itself", "timer")));
             await Task.Delay(1500); // Let the notice show before the app exits so the helper can replace its files.
+            if (!await FlushQuickNotesBeforeShutdownAsync()) return;
             Shutdown();
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Installing update {Tag} failed", update.Tag);
             coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Update failed", "See the logs", "timer")));
+        }
+    }
+
+    private async Task<bool> FlushQuickNotesBeforeShutdownAsync()
+    {
+        if (_quickNotesWindowManager is not { } notes) return true;
+
+        await notes.FlushPendingSaveAsync();
+        if (!notes.HasSaveError) return true;
+
+        notes.OpenNotes();
+        return false;
+    }
+
+    private async void ShutdownAfterQuickNotesFlush()
+    {
+        try
+        {
+            if (await FlushQuickNotesBeforeShutdownAsync()) Shutdown();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Could not flush quick notes before soak shutdown");
         }
     }
 

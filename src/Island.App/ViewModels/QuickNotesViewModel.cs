@@ -67,6 +67,7 @@ public sealed class QuickNotesViewModel : ObservableObject
     private Task? _pendingSaveTask;
     private PendingSave? _pendingSave;
     private long _editRevision;
+    private Guid _draftSessionId = Guid.NewGuid();
     private bool _isLoadingDraft;
     private IReadOnlyList<QuickNote> _notes = Array.Empty<QuickNote>();
     private Guid? _selectedNoteId;
@@ -392,7 +393,7 @@ public sealed class QuickNotesViewModel : ObservableObject
     {
         if (_isLoadingDraft || IsTrashView) return;
 
-        var pending = new PendingSave(SelectedNoteId, CaptureDraft(), ++_editRevision);
+        var pending = new PendingSave(SelectedNoteId, CaptureDraft(), ++_editRevision, _draftSessionId);
         _pendingSave = pending;
         SaveErrorMessage = string.Empty;
         SaveState = QuickNotesSaveState.Pending;
@@ -422,6 +423,8 @@ public sealed class QuickNotesViewModel : ObservableObject
         try
         {
             if (_pendingSave?.Revision != pending.Revision) return;
+            // A first save may have created this draft while this debounce task was waiting for the gate.
+            pending = _pendingSave;
             if (pending.Revision == _editRevision) SaveState = QuickNotesSaveState.Saving;
 
             try
@@ -429,11 +432,15 @@ public sealed class QuickNotesViewModel : ObservableObject
                 var saved = await _service.SaveDraftAsync(pending.NoteId, pending.Draft, cancellationToken);
                 if (_pendingSave?.Revision == pending.Revision) _pendingSave = null;
 
+                if (pending.NoteId is null && saved is not null && _draftSessionId == pending.DraftSessionId)
+                {
+                    if (SelectedNoteId is null) SelectedNoteId = saved.Id;
+                    if (_pendingSave is { NoteId: null } newerSave && newerSave.DraftSessionId == pending.DraftSessionId)
+                        _pendingSave = newerSave with { NoteId = saved.Id };
+                }
+
                 if (pending.Revision == _editRevision)
                 {
-                    if (pending.NoteId is null && saved is not null && SelectedNoteId is null)
-                        SelectedNoteId = saved.Id;
-
                     RefreshNotes();
                     SaveErrorMessage = string.Empty;
                     SaveState = QuickNotesSaveState.Saved;
@@ -475,6 +482,7 @@ public sealed class QuickNotesViewModel : ObservableObject
 
     private void LoadNote(QuickNote note)
     {
+        _draftSessionId = Guid.NewGuid();
         _isLoadingDraft = true;
         try
         {
@@ -507,6 +515,7 @@ public sealed class QuickNotesViewModel : ObservableObject
 
     private void ClearDraft()
     {
+        _draftSessionId = Guid.NewGuid();
         _isLoadingDraft = true;
         try
         {
@@ -522,5 +531,5 @@ public sealed class QuickNotesViewModel : ObservableObject
         }
     }
 
-    private sealed record PendingSave(Guid? NoteId, QuickNoteDraft Draft, long Revision);
+    private sealed record PendingSave(Guid? NoteId, QuickNoteDraft Draft, long Revision, Guid DraftSessionId);
 }
