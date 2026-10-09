@@ -1,4 +1,5 @@
 using Island.Core.Abstractions;
+using Island.Core.Budgets;
 using Island.Core.Clipboard;
 using Island.Core.Configuration;
 using Island.Core.Calendar;
@@ -21,7 +22,9 @@ public sealed class ShelfContext(
     QuickNotesService quickNotes,
     IQuickNotesWindowHost quickNotesHost,
     Func<IslandSettings> settings,
-    Action<IslandSettings> applySettings)
+    Action<IslandSettings> applySettings,
+    BudgetBook? budgets = null,
+    IBudgetWindowHost? budgetHost = null)
 {
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
@@ -35,6 +38,8 @@ public sealed class ShelfContext(
     public CalendarAgenda Calendar { get; } = calendar;
     public QuickNotesService QuickNotes { get; } = quickNotes;
     public IQuickNotesWindowHost QuickNotesHost { get; } = quickNotesHost;
+    public BudgetBook? Budgets { get; } = budgets;
+    public IBudgetWindowHost? BudgetHost { get; } = budgetHost;
     public Func<IslandSettings> Settings { get; } = settings;
     /// <summary>Persists + applies new settings (updates the holder, saves JSON, re-applies to the window).</summary>
     public Action<IslandSettings> ApplySettings { get; } = applySettings;

@@ -1,0 +1,91 @@
+<UserControl x:Class="Island.App.Budgets.Views.BudgetEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             UseLayoutRounding="True"
+             TextOptions.TextFormattingMode="Display"
+             KeyDown="OnKeyDown">
+
+    <Border Style="{StaticResource Budget.Card}">
+        <Expander x:Name="Editor"
+                  Header="Configurar"
+                  Foreground="{StaticResource Budget.TextBrush}"
+                  FontFamily="Segoe UI Variable Text"
+                  FontSize="14"
+                  FontWeight="SemiBold">
+            <StackPanel Margin="0,12,0,0">
+                <TextBlock Style="{StaticResource Budget.SectionLabel}" Text="Nome" />
+                <TextBox Style="{StaticResource Budget.FieldBox}"
+                         Margin="0,6,0,0"
+                         Text="{Binding Name}" />
+
+                <Grid Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Budget.SectionLabel}" Text="Início" />
+                        <DatePicker Margin="0,6,0,0"
+                                    SelectedDate="{Binding StartDate, Mode=TwoWay}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource Budget.SectionLabel}" Text="Fim" />
+                        <DatePicker Margin="0,6,0,0"
+                                    SelectedDate="{Binding EndDate, Mode=TwoWay}" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Budget.SectionLabel}" Text="Hora de reinício" />
+                        <ComboBox x:Name="HourBox"
+                                  Margin="0,6,0,0"
+                                  SelectedItem="{Binding ResetHour, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StringFormat='{}{0}h'}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Style="{StaticResource Budget.SectionLabel}" Text="Total (%)" />
+                        <TextBox Style="{StaticResource Budget.FieldBox}"
+                                 Margin="0,6,0,0"
+                                 Text="{Binding TotalText}" />
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Style="{StaticResource Budget.SectionLabel}" Margin="0,14,0,0" Text="Modo" />
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                    <RadioButton GroupName="EntryMode"
+                                 Style="{StaticResource Budget.SegmentedItem}"
+                                 Content="Consumido"
+                                 IsChecked="{Binding IsConsumedMode, Mode=TwoWay}" />
+                    <RadioButton GroupName="EntryMode"
+                                 Style="{StaticResource Budget.SegmentedItem}"
+                                 Margin="8,0,0,0"
+                                 Content="Restante"
+                                 IsChecked="{Binding IsRemainingMode, Mode=TwoWay}" />
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource Budget.SectionLabel}" Margin="0,14,0,0" Text="{Binding EntryLabel}" />
+                <TextBox Style="{StaticResource Budget.FieldBox}"
+                         Margin="0,6,0,0"
+                         Text="{Binding EnteredText}" />
+
+                <Button Style="{StaticResource Budget.GhostButton}"
+                        Margin="0,20,0,0"
+                        HorizontalAlignment="Left"
+                        Content="Excluir esta IA"
+                        Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+            </StackPanel>
+        </Expander>
+    </Border>
+</UserControl>

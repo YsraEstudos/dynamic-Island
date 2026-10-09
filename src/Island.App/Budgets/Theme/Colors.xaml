@@ -1,0 +1,35 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Cores base (Color) -->
+    <Color x:Key="Budget.Bg">#0B0D10</Color>
+    <Color x:Key="Budget.Surface">#14171C</Color>
+    <Color x:Key="Budget.SurfaceHi">#1B2027</Color>
+    <Color x:Key="Budget.Border">#1F242B</Color>
+    <Color x:Key="Budget.Text">#F3F5F7</Color>
+    <Color x:Key="Budget.TextMuted">#8A94A3</Color>
+    <Color x:Key="Budget.Accent">#22C55E</Color>
+    <Color x:Key="Budget.AccentHover">#4ADE80</Color>
+    <Color x:Key="Budget.AccentEnd">#14B8A6</Color>
+    <Color x:Key="Budget.AccentSoft">#2622C55E</Color>
+    <Color x:Key="Budget.Warn">#F59E0B</Color>
+
+    <!-- Pincéis (SolidColorBrush) -->
+    <SolidColorBrush x:Key="Budget.BgBrush" Color="{StaticResource Budget.Bg}"/>
+    <SolidColorBrush x:Key="Budget.SurfaceBrush" Color="{StaticResource Budget.Surface}"/>
+    <SolidColorBrush x:Key="Budget.SurfaceHiBrush" Color="{StaticResource Budget.SurfaceHi}"/>
+    <SolidColorBrush x:Key="Budget.BorderBrush" Color="{StaticResource Budget.Border}"/>
+    <SolidColorBrush x:Key="Budget.TextBrush" Color="{StaticResource Budget.Text}"/>
+    <SolidColorBrush x:Key="Budget.TextMutedBrush" Color="{StaticResource Budget.TextMuted}"/>
+    <SolidColorBrush x:Key="Budget.AccentBrush" Color="{StaticResource Budget.Accent}"/>
+    <SolidColorBrush x:Key="Budget.AccentHoverBrush" Color="{StaticResource Budget.AccentHover}"/>
+    <SolidColorBrush x:Key="Budget.AccentSoftBrush" Color="{StaticResource Budget.AccentSoft}"/>
+    <SolidColorBrush x:Key="Budget.WarnBrush" Color="{StaticResource Budget.Warn}"/>
+
+    <!-- Gradiente verde -> teal (números e barra) -->
+    <LinearGradientBrush x:Key="Budget.AccentGradient" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="{StaticResource Budget.Accent}" Offset="0"/>
+        <GradientStop Color="{StaticResource Budget.AccentEnd}" Offset="1"/>
+    </LinearGradientBrush>
+
+</ResourceDictionary>

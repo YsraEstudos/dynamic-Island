@@ -1,0 +1,127 @@
+<Window x:Class="Island.App.Shell.BudgetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:Island.App.Budgets.Views"
+        Title="Dynamic Island — Orçamento das IAs"
+        ThemeMode="Dark"
+        Language="pt-BR"
+        Width="560" Height="780"
+        MinWidth="460" MinHeight="620"
+        Background="{StaticResource Budget.BgBrush}"
+        FontFamily="Segoe UI Variable Text"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True">
+
+    <Window.Resources>
+        <!-- Aba em pílula para os orçamentos (ListBoxItem). Não reusa Chip, que é de RadioButton. -->
+        <Style x:Key="TabPill" TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="{StaticResource Budget.TextMutedBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Pill"
+                                Padding="16,8"
+                                CornerRadius="16"
+                                Background="{StaticResource Budget.SurfaceBrush}"
+                                BorderBrush="{StaticResource Budget.BorderBrush}"
+                                BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Pill" Property="Background" Value="{StaticResource Budget.SurfaceHiBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Pill" Property="Background" Value="{StaticResource Budget.AccentSoftBrush}" />
+                                <Setter TargetName="Pill" Property="BorderBrush" Value="{StaticResource Budget.AccentBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource Budget.TextBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20,16,20,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Faixa de abas + botão de nova IA -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ListBox ItemsSource="{Binding Budgets}"
+                     SelectedItem="{Binding Selected, Mode=TwoWay}"
+                     ItemContainerStyle="{StaticResource TabPill}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Padding="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"
+                                   MaxWidth="160"
+                                   TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Button Grid.Column="1"
+                    Style="{StaticResource Budget.IconButton}"
+                    Content="+"
+                    FontSize="20"
+                    ToolTip="Nova IA"
+                    Command="{Binding AddCommand}"
+                    Margin="8,0,0,0" />
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,20,0,0">
+            <!-- Estado vazio -->
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        MaxWidth="320"
+                        Visibility="{Binding HasBudgets, Converter={StaticResource Budget.InvBoolToVis}}">
+                <TextBlock Text="Nenhuma IA por aqui ainda"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource Budget.TextBrush}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+                <TextBlock Margin="0,8,0,0"
+                           Text="Crie um orçamento para dividir a porcentagem da IA pelos dias restantes do período."
+                           Foreground="{StaticResource Budget.TextMutedBrush}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+                <Button Style="{StaticResource Budget.PrimaryButton}"
+                        Content="Adicionar primeira IA"
+                        Command="{Binding AddCommand}"
+                        Margin="0,20,0,0"
+                        HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Orçamento selecionado -->
+            <Grid Visibility="{Binding HasBudgets, Converter={StaticResource Budget.BoolToVis}}">
+                <views:BudgetView DataContext="{Binding Selected}" />
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

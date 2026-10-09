@@ -1,0 +1,87 @@
+<UserControl x:Class="Island.App.Budgets.Views.DaysTable"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             UseLayoutRounding="True"
+             TextOptions.TextFormattingMode="Display">
+
+    <Border Style="{StaticResource Budget.Card}">
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource Budget.SectionLabel}" Text="Dia" />
+                <TextBlock Grid.Column="1" Style="{StaticResource Budget.SectionLabel}" Text="Quanto pode gastar" />
+            </Grid>
+
+            <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding Days}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <!-- DayRowItem lê Tag "Today" (destaque) e "Past" (esmaecido). -->
+                        <Border x:Name="Row" Style="{StaticResource Budget.DayRowItem}"
+                                BorderBrush="{StaticResource Budget.BorderBrush}"
+                                BorderThickness="0,0,0,1"
+                                CornerRadius="0">
+                            <Border.InputBindings>
+                                <MouseBinding MouseAction="LeftClick" Command="{Binding ToggleCommand}" />
+                            </Border.InputBindings>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Barrinha lateral do dia de hoje -->
+                                <Border Width="3"
+                                        CornerRadius="2"
+                                        Background="{StaticResource Budget.AccentBrush}"
+                                        Visibility="{Binding IsToday, Converter={StaticResource Budget.BoolToVis}}" />
+
+                                <TextBlock x:Name="LabelText"
+                                           Grid.Column="2"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource Budget.TextBrush}"
+                                           Text="{Binding Label}"
+                                           TextTrimming="CharacterEllipsis" />
+
+                                <TextBlock x:Name="ValueText"
+                                           Grid.Column="3"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource Budget.TextMutedBrush}"
+                                           Text="{Binding ValueText}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Grid>
+                        </Border>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                    <Setter TargetName="Row" Property="Tag" Value="Today" />
+                                    <Setter TargetName="LabelText" Property="FontWeight" Value="SemiBold" />
+                                    <Setter TargetName="ValueText" Property="Foreground" Value="{StaticResource Budget.AccentBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPast}" Value="True">
+                                    <Setter TargetName="Row" Property="Tag" Value="Past" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CanToggle}" Value="True">
+                                    <Setter TargetName="Row" Property="Cursor" Value="Hand" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsExcluded}" Value="True">
+                                    <Setter TargetName="ValueText" Property="Foreground" Value="{StaticResource Budget.WarnBrush}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Margin="0,12,0,0"
+                       FontSize="12"
+                       Foreground="{StaticResource Budget.TextMutedBrush}"
+                       Text="Toque num dia para marcar que não vai usar"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+    </Border>
+</UserControl>

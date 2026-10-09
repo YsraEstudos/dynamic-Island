@@ -3,6 +3,7 @@ using Island.App.Widgets;
 using Island.App.Shell;
 using Island.Core.Clipboard;
 using Island.Core.Calendar;
+using Island.Core.Budgets;
 using Island.Core.Notes;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
@@ -14,6 +15,7 @@ using Island.Core.Fakes;
 using Island.Windows.Audio;
 using Island.Windows.Configuration;
 using Island.Windows.Calendar;
+using Island.Windows.Budgets;
 using Island.Windows.Notes;
 using Island.Windows.Display;
 using Island.Windows.Devices;
@@ -73,6 +75,10 @@ public static class ServiceRegistration
         s.AddSingleton(sp => new QuickNotesWindowManager(
             sp.GetRequiredService<QuickNotesService>(), () => sp.GetRequiredService<SettingsHolder>().Current.ReduceAnimations));
         s.AddSingleton<IQuickNotesWindowHost>(sp => sp.GetRequiredService<QuickNotesWindowManager>());
+        s.AddSingleton<IBudgetStore>(_ => new JsonBudgetStore());
+        s.AddSingleton(sp => new BudgetBook(sp.GetRequiredService<IBudgetStore>()));
+        s.AddSingleton<BudgetWindowManager>();
+        s.AddSingleton<IBudgetWindowHost>(sp => sp.GetRequiredService<BudgetWindowManager>());
         s.AddSingleton<ICalendarStore>(_ => new JsonCalendarStore());
         s.AddSingleton<CalendarAgenda>();
         s.AddSingleton(sp => new SettingsHolder(sp.GetRequiredService<ISettingsStore>().Load()));
@@ -121,7 +127,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<IMediaService>(), sp.GetRequiredService<CalendarAgenda>(),
             sp.GetRequiredService<QuickNotesService>(), sp.GetRequiredService<IQuickNotesWindowHost>(),
             sp.GetRequiredService<Func<IslandSettings>>(),
-            sp.GetRequiredService<SettingsApplier>().Apply));
+            sp.GetRequiredService<SettingsApplier>().Apply,
+            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,

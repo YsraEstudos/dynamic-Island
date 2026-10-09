@@ -1,0 +1,75 @@
+<UserControl x:Class="Island.App.Views.Widgets.BudgetWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wid="clr-namespace:Island.App.Widgets"
+             Width="280"
+             Height="152"
+             AutomationProperties.Name="Widget de orçamento das IAs">
+    <Grid>
+        <Border Background="#161616" BorderBrush="#303033" BorderThickness="1" CornerRadius="16"/>
+
+        <Grid Margin="14,11,14,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="26"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Viewbox Width="18" Height="18" Margin="0,0,8,0">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="{StaticResource Icon.Widget.Budget}"
+                                  Stroke="#22C55E" StrokeThickness="1.8"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                    <TextBlock x:Name="NameText" Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="13" FontWeight="SemiBold" MaxWidth="92"
+                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <wid:ShelfButton x:Name="PrevButton" Width="24" Height="24" CornerRadius="12"
+                                     Background="#2C2C2E" LabelText="‹"
+                                     LabelBrush="{StaticResource TextSecondaryBrush}"
+                                     AutomationProperties.Name="IA anterior"/>
+                    <wid:ShelfButton x:Name="NextButton" Width="24" Height="24" CornerRadius="12"
+                                     Margin="4,0,0,0" Background="#2C2C2E" LabelText="›"
+                                     LabelBrush="{StaticResource TextSecondaryBrush}"
+                                     AutomationProperties.Name="Próxima IA"/>
+                    <wid:ShelfButton x:Name="OpenButton" Width="52" Height="24" CornerRadius="12"
+                                     Margin="6,0,0,0" Background="#1F3A2A" LabelText="Abrir"
+                                     LabelBrush="#22C55E"
+                                     AutomationProperties.Name="Abrir orçamento das IAs"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="0,2,0,0">
+                <TextBlock x:Name="HeroText" FontSize="30" FontWeight="SemiBold"
+                           Foreground="{StaticResource Budget.AccentGradient}"
+                           TextTrimming="CharacterEllipsis"/>
+                <TextBlock x:Name="DetailText" Margin="0,2,0,0" FontSize="11"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           TextTrimming="CharacterEllipsis"/>
+            </StackPanel>
+
+            <Grid Grid.Row="2">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Usei" FontSize="11" VerticalAlignment="Center"
+                               Foreground="{StaticResource TextTertiaryBrush}" Margin="0,0,6,0"/>
+                    <wid:ShelfButton x:Name="Use1Button" Width="40" Height="22" CornerRadius="11"
+                                     Background="#2C2C2E" LabelText="+1%"
+                                     LabelBrush="{StaticResource TextSecondaryBrush}"
+                                     AutomationProperties.Name="Registrar 1 por cento usado"/>
+                    <wid:ShelfButton x:Name="Use5Button" Width="40" Height="22" CornerRadius="11"
+                                     Margin="4,0,0,0" Background="#2C2C2E" LabelText="+5%"
+                                     LabelBrush="{StaticResource TextSecondaryBrush}"
+                                     AutomationProperties.Name="Registrar 5 por cento usado"/>
+                </StackPanel>
+                <TextBlock x:Name="RemainingText" HorizontalAlignment="Right" VerticalAlignment="Center"
+                           FontSize="11" Foreground="{StaticResource TextTertiaryBrush}"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

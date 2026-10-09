@@ -59,9 +59,12 @@ O script sobe `<Version>`, roda `dotnet publish` (win-x64, dependente de framewo
 Ver `docs/architecture.md`.
 
 ## Estante (shelf)
-Clique na ilha para abrir. Widgets: Now Playing, Pomodoro, Calendar, File Tray. Clique direito: Customize Shelf, Open Clipboard
+Clique na ilha para abrir. Widgets: Now Playing, Pomodoro, Calendar, Notas, Orçamento IA, File Tray. Clique direito: Customize Shelf, Open Clipboard
 (atalho global Ctrl+Alt+V), Check for updates / Install update (este só aparece quando há uma Release mais nova com `.zip` no GitHub), Open Settings, Quit. Histórico do clipboard fica só na memória (itens de gerenciadores de senha são ignorados).
 Não implementado: Weather e conversão de arquivos.
+
+## Orçamento IA
+Widget da estante (adicione em Customize Shelf) que divide a porcentagem restante de cada IA pelos dias úteis até o reinício e mostra "Pode usar hoje" (sempre arredondado para baixo) e "Sobra no fim do dia". Botões **+1%** / **+5%** registram uso, ‹ › trocam de IA e **Abrir** abre a janela de edição (período, hora de reinício, dias sem uso, total, modo Consumido/Restante). Dados em `%LocalAppData%\DynamicIslandudgets.json`. Código: `Island.Core/Budgets` (cálculo e `BudgetBook`), `Island.Windows/Budgets` (JSON), `Island.App/Budgets` (janela) e `Views/Widgets/BudgetWidget`.
 
 ## Pomodoro com ciclos
 No widget Pomodoro, escolha a duração do foco (pílula **Focus** + régua) e do descanso (pílula **Break** + régua) e a quantidade de pomodoros na pílula **×N** (clique soma 1, a roda do mouse sobe/desce; 1 a 12). **Play** com o foco intacto inicia o plano: foco → descanso → foco … → descanso, tudo automático. A cada troca a ilha abre um aviso ("Hora do descanso" / "Volte ao foco" / "Sessão concluída"), mesmo se estiver recolhida ou com a estante aberta, e toca um som se o botão de som estiver ligado. Durante o plano a pílula mostra o progresso (2/3); Pause mantém o plano e Reset o cancela. Os pomodoros e descansos são contados com o relógio do sistema, sem deriva.
