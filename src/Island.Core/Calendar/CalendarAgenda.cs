@@ -1,4 +1,5 @@
 using Island.Core.Abstractions;
+using System.Security;
 
 namespace Island.Core.Calendar;
 
@@ -8,15 +9,30 @@ public sealed class CalendarAgenda
     private readonly object _gate = new();
     private readonly ICalendarStore _store;
     private CalendarData _data;
+    private readonly Exception? _loadError;
 
     public CalendarAgenda(ICalendarStore store)
     {
         ArgumentNullException.ThrowIfNull(store);
         _store = store;
-        _data = Normalize(store.Load());
+        try
+        {
+            _data = Normalize(store.Load());
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or SecurityException)
+        {
+            _data = CalendarData.Empty;
+            _loadError = exception;
+        }
     }
 
     public event Action? Changed;
+
+    /// <summary>Indicates whether calendar data loaded successfully and can be safely changed.</summary>
+    public bool IsAvailable => _loadError is null;
+
+    /// <summary>The storage error that prevented loading, if any.</summary>
+    public Exception? LoadError => _loadError;
 
     public bool HasPendingTasks
     {
@@ -100,6 +116,7 @@ public sealed class CalendarAgenda
         bool changed;
         lock (_gate)
         {
+            EnsureLoaded();
             CalendarTask? task = _data.Tasks.FirstOrDefault(item => item.Id == id);
             if (task is null) return false;
             found = true;
@@ -123,6 +140,7 @@ public sealed class CalendarAgenda
     {
         lock (_gate)
         {
+            EnsureLoaded();
             CalendarData next = createNext(_data);
             _store.Save(next);
             _data = next;
@@ -130,24 +148,45 @@ public sealed class CalendarAgenda
         Changed?.Invoke();
     }
 
+    private void EnsureLoaded()
+    {
+        if (_loadError is not null)
+            throw new IOException("Calendar data could not be loaded; writes are disabled to protect existing data.", _loadError);
+    }
+
     private static CalendarData Normalize(CalendarData? data)
     {
         return new CalendarData
         {
-            Tasks = (data?.Tasks ?? Array.Empty<CalendarTask>())
+            Tasks = NormalizeIds((data?.Tasks ?? Array.Empty<CalendarTask>())
                 .Where(task => task is not null && !string.IsNullOrWhiteSpace(task.Title))
                 .Select(task => task with { Title = task.Title.Trim() })
-                .ToArray(),
-            Events = (data?.Events ?? Array.Empty<CalendarEvent>())
+                .ToArray(), task => task.Id, (task, id) => task with { Id = id }),
+            Events = NormalizeIds((data?.Events ?? Array.Empty<CalendarEvent>())
                 .Where(calendarEvent => calendarEvent is not null && !string.IsNullOrWhiteSpace(calendarEvent.Title))
                 .Select(calendarEvent => calendarEvent with { Title = calendarEvent.Title.Trim() })
-                .ToArray(),
-            Birthdays = (data?.Birthdays ?? Array.Empty<CalendarBirthday>())
+                .ToArray(), calendarEvent => calendarEvent.Id, (calendarEvent, id) => calendarEvent with { Id = id }),
+            Birthdays = NormalizeIds((data?.Birthdays ?? Array.Empty<CalendarBirthday>())
                 .Where(birthday => birthday is not null && !string.IsNullOrWhiteSpace(birthday.Name)
                     && IsValidBirthday(birthday.Month, birthday.Day))
                 .Select(birthday => birthday with { Name = birthday.Name.Trim() })
-                .ToArray(),
+                .ToArray(), birthday => birthday.Id, (birthday, id) => birthday with { Id = id }),
         };
+    }
+
+    private static IReadOnlyList<T> NormalizeIds<T>(T[] entries, Func<T, Guid> getId, Func<T, Guid, T> withId)
+    {
+        var ids = new HashSet<Guid>();
+        return entries.Select(entry =>
+        {
+            Guid id = getId(entry);
+            if (id != Guid.Empty && ids.Add(id)) return entry;
+
+            Guid replacement;
+            do { replacement = Guid.NewGuid(); }
+            while (!ids.Add(replacement));
+            return withId(entry, replacement);
+        }).ToArray();
     }
 
     private static bool IsValidBirthday(int month, int day)

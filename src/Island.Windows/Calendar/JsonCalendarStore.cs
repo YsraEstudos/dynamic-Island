@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Globalization;
 using Island.Core.Abstractions;
 using Island.Core.Calendar;
 
@@ -56,7 +57,7 @@ public sealed class JsonCalendarStore : ICalendarStore
             catch (JsonException)
             {
                 // Preserve malformed user data before exposing an empty agenda.
-                File.Move(_path, _badPath, overwrite: true);
+                File.Move(_path, GetRecoveryPath());
                 return CalendarData.Empty;
             }
 
@@ -100,5 +101,14 @@ public sealed class JsonCalendarStore : ICalendarStore
         {
             // Cleanup is best-effort; the next save recreates the temp file.
         }
+    }
+
+    private string GetRecoveryPath()
+    {
+        if (!File.Exists(_badPath)) return _badPath;
+
+        string suffix = DateTimeOffset.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture)
+            + "-" + Guid.NewGuid().ToString("N");
+        return _badPath + "-" + suffix;
     }
 }

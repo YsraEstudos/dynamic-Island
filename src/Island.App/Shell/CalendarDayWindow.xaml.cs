@@ -104,8 +104,33 @@ public partial class CalendarDayWindow : Window
     {
         CultureInfo culture = CultureInfo.CurrentCulture;
         DateTitle.Text = _date.ToDateTime(TimeOnly.MinValue).ToString("dddd, d 'de' MMMM 'de' yyyy", culture);
+        AddTaskButton.IsEnabled = _agenda.IsAvailable;
+        AddEventButton.IsEnabled = _agenda.IsAvailable;
+        AddBirthdayButton.IsEnabled = _agenda.IsAvailable;
         CalendarDayItems items = _agenda.GetDay(_date);
         DayContent.Children.Clear();
+        if (!_agenda.IsAvailable)
+        {
+            DayContent.Children.Add(new Border
+            {
+                Background = (Brush)FindResource("ShelfTileBrush"),
+                CornerRadius = new CornerRadius(14),
+                Padding = new Thickness(18),
+                Child = new StackPanel
+                {
+                    Children =
+                    {
+                        new TextBlock { Text = "Calendário indisponível", FontSize = 16, FontWeight = FontWeights.SemiBold,
+                            Foreground = (Brush)FindResource("TextPrimaryBrush") },
+                        new TextBlock { Text = "Não foi possível ler o calendário. Os dados originais foram preservados e nenhuma alteração pode ser salva.",
+                            Margin = new Thickness(0, 5, 0, 0), TextWrapping = TextWrapping.Wrap,
+                            Foreground = (Brush)FindResource("TextSecondaryBrush") },
+                    },
+                },
+            });
+            return;
+        }
+
         if (_saveError is not null)
         {
             DayContent.Children.Add(new Border

@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Island.App.Shell;
 using Island.App.Widgets;
 using Island.Core.Calendar;
@@ -21,7 +22,6 @@ namespace Island.App.Views.Widgets;
 /// <summary>Compact month calendar (280 x 152) backed by the shared local agenda.</summary>
 public partial class CalendarWidget : UserControl
 {
-    private const int DayCount = 42;
     private const double TodayDisc = 16.0;
 
     private static readonly Brush Primary = Brushes.White;
@@ -32,6 +32,7 @@ public partial class CalendarWidget : UserControl
     private static readonly Brush MarkerFill = Frozen(0x30, 0xD1, 0x58);
 
     private readonly ShelfContext _context;
+    private readonly DispatcherTimer _dateTimer;
     private DateTime _today;
     private DateTime _shown;
     private DateOnly? _selectedDate;
@@ -44,6 +45,11 @@ public partial class CalendarWidget : UserControl
         ArgumentNullException.ThrowIfNull(context);
         InitializeComponent();
         _context = context;
+        _dateTimer = new DispatcherTimer(DispatcherPriority.Background, Dispatcher)
+        {
+            Interval = TimeSpan.FromMinutes(1),
+        };
+        _dateTimer.Tick += (_, _) => RefreshToday(DateTime.Today);
 
         _today = DateTime.Today;
         _shown = FirstOfMonth(_today);
@@ -51,7 +57,13 @@ public partial class CalendarWidget : UserControl
         PrevButton.Click += () => ChangeMonth(-1);
         NextButton.Click += () => ChangeMonth(1);
         Loaded += OnLoaded;
-        Unloaded += (_, _) => Unsubscribe();
+        Unloaded += (_, _) =>
+        {
+            Unsubscribe();
+            _dateTimer.Stop();
+            DayGrid.BeginAnimation(UIElement.OpacityProperty, null);
+            _isMonthTransition = false;
+        };
 
         Build();
     }
@@ -63,6 +75,15 @@ public partial class CalendarWidget : UserControl
         _today = DateTime.Today;
         if (_followToday) _shown = FirstOfMonth(_today);
         Subscribe();
+        Build();
+        _dateTimer.Start();
+    }
+
+    private void RefreshToday(DateTime today)
+    {
+        if (_today == today.Date) return;
+        _today = today.Date;
+        if (_followToday) _shown = FirstOfMonth(_today);
         Build();
     }
 
@@ -93,8 +114,8 @@ public partial class CalendarWidget : UserControl
     private void ChangeMonth(int offset)
     {
         if (_isMonthTransition) return;
-        if ((_shown.Year == 1 && offset < 0) || (_shown.Year == 9999 && offset > 0)) return;
-        _shown = _shown.AddMonths(offset);
+        if (!CalendarMonthGrid.TryMoveMonth(DateOnly.FromDateTime(_shown), offset, out DateOnly next)) return;
+        _shown = next.ToDateTime(TimeOnly.MinValue);
         _followToday = false;
 
         if (ReduceAnimations)
@@ -133,6 +154,10 @@ public partial class CalendarWidget : UserControl
 
         string month = culture.TextInfo.ToTitleCase(format.GetMonthName(_shown.Month));
         MonthTitle.Text = $"{month} {_shown.Year.ToString(culture)}";
+        string? loadError = _context.Calendar.IsAvailable ? null
+            : "Não foi possível ler o calendário. Abra um dia para ver o problema de armazenamento.";
+        MonthTitle.ToolTip = loadError;
+        AutomationProperties.SetHelpText(this, loadError ?? "Selecione um dia para ver tarefas, eventos e aniversários.");
 
         WeekdayGrid.Children.Clear();
         for (int i = 0; i < 7; i++)
@@ -143,12 +168,14 @@ public partial class CalendarWidget : UserControl
 
         IReadOnlySet<DateOnly> markedDates = _context.Calendar.GetMarkedDates(_shown.Year, _shown.Month);
         DayGrid.Children.Clear();
-        int lead = ((int)_shown.DayOfWeek - firstDay + 7) % 7;
-        DateTime start = _shown.AddDays(-lead);
-        for (int i = 0; i < DayCount; i++)
+        foreach (DateOnly? gridDate in CalendarMonthGrid.GetDates(DateOnly.FromDateTime(_shown), format.FirstDayOfWeek))
         {
-            DateTime day = start.AddDays(i);
-            DateOnly date = DateOnly.FromDateTime(day);
+            if (gridDate is not { } date)
+            {
+                DayGrid.Children.Add(new Border { Width = 22, Height = 16 });
+                continue;
+            }
+            DateTime day = date.ToDateTime(TimeOnly.MinValue);
             bool inMonth = day.Month == _shown.Month && day.Year == _shown.Year;
             bool isToday = day.Date == _today.Date;
             bool isSelected = _selectedDate == date;

@@ -28,7 +28,12 @@ public partial class CalendarEntryWindow : Window
         _date = date;
         _kind = kind;
         _reduceAnimations = reduceAnimations;
-        Opacity = reduceAnimations ? 1 : 0;
+        if (!_agenda.IsAvailable)
+        {
+            SaveButton.IsEnabled = false;
+            SaveError.Text = "Não foi possível ler o calendário. Os dados originais foram preservados e nenhuma alteração pode ser salva.";
+            SaveError.Visibility = Visibility.Visible;
+        }
 
         bool isEvent = kind == CalendarEntryKind.Event;
         bool isBirthday = kind == CalendarEntryKind.Birthday;
@@ -46,7 +51,7 @@ public partial class CalendarEntryWindow : Window
         NameBox.TextChanged += (_, _) =>
         {
             if (!string.IsNullOrWhiteSpace(NameBox.Text)) NameError.Visibility = Visibility.Collapsed;
-            SaveError.Visibility = Visibility.Collapsed;
+            if (_agenda.IsAvailable) SaveError.Visibility = Visibility.Collapsed;
         };
         TimeBox.TextChanged += (_, _) =>
         {
@@ -55,7 +60,7 @@ public partial class CalendarEntryWindow : Window
                     DateTimeStyles.None, out _))
             {
                 TimeError.Visibility = Visibility.Collapsed;
-                SaveError.Visibility = Visibility.Collapsed;
+                if (_agenda.IsAvailable) SaveError.Visibility = Visibility.Collapsed;
             }
         };
 
@@ -92,6 +97,14 @@ public partial class CalendarEntryWindow : Window
 
     private void OnSaveClicked(object sender, RoutedEventArgs e)
     {
+        if (!_agenda.IsAvailable)
+        {
+            SaveError.Text = "Não foi possível ler o calendário. Os dados originais foram preservados e nenhuma alteração pode ser salva.";
+            SaveError.Visibility = Visibility.Visible;
+            SaveButton.IsEnabled = false;
+            return;
+        }
+
         string name = NameBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -145,15 +158,16 @@ public partial class CalendarEntryWindow : Window
     {
         if (_reduceAnimations)
         {
-            Opacity = 1;
+            Surface.Opacity = 1;
+            SurfaceTranslation.Y = 0;
             return;
         }
 
-        var offset = new TranslateTransform(0, 8);
-        RenderTransform = offset;
+        Surface.Opacity = 0;
+        SurfaceTranslation.Y = 8;
         var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
-        BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)) { EasingFunction = easing });
-        offset.BeginAnimation(TranslateTransform.YProperty,
+        Surface.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(180)) { EasingFunction = easing });
+        SurfaceTranslation.BeginAnimation(TranslateTransform.YProperty,
             new DoubleAnimation(8, 0, TimeSpan.FromMilliseconds(180)) { EasingFunction = easing });
     }
 

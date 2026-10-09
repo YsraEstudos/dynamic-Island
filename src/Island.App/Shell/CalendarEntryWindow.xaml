@@ -43,7 +43,10 @@
         </Style>
     </Window.Resources>
 
-    <Grid Margin="24,22,24,20">
+    <Grid x:Name="Surface" Margin="24,22,24,20" Opacity="1">
+        <Grid.RenderTransform>
+            <TranslateTransform x:Name="SurfaceTranslation" Y="0" />
+        </Grid.RenderTransform>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -57,7 +60,7 @@
 
         <TextBlock x:Name="KindTitle" Grid.Row="0" FontSize="20" FontWeight="SemiBold" />
         <TextBlock x:Name="DateText" Grid.Row="1" Margin="0,5,0,0"
-                   Foreground="{StaticResource TextSecondaryBrush}" />
+                   Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
 
         <TextBlock x:Name="NameLabel" Grid.Row="2" Margin="0,18,0,0"
                    Foreground="{StaticResource TextSecondaryBrush}" />
@@ -85,7 +88,7 @@
             </Border>
             <TextBlock x:Name="TimeError" Margin="0,5,0,0"
                        Text="Use HH:mm, por exemplo 14:30. Deixe vazio para dia inteiro."
-                       FontSize="11" Foreground="{StaticResource MutedRedBrush}" Visibility="Collapsed" />
+                       FontSize="11" Foreground="{StaticResource MutedRedBrush}" TextWrapping="Wrap" Visibility="Collapsed" />
         </StackPanel>
 
         <Border x:Name="BirthdayInfo" Grid.Row="5" Margin="0,16,0,0" Padding="12,10"
@@ -104,9 +107,9 @@
                 <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="1" Content="Cancelar" Style="{StaticResource EntryActionButtonStyle}"
+            <Button x:Name="CancelButton" Grid.Column="1" Content="Cancelar" Style="{StaticResource EntryActionButtonStyle}"
                     Click="OnCancelClicked" />
-            <Button Grid.Column="3" Content="Salvar" IsDefault="True"
+            <Button x:Name="SaveButton" Grid.Column="3" Content="Salvar" IsDefault="True"
                     Background="{StaticResource AccentBlueBrush}"
                     Style="{StaticResource EntryActionButtonStyle}" Click="OnSaveClicked" />
         </Grid>
