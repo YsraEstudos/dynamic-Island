@@ -5,6 +5,7 @@ using Island.Core.Configuration;
 using Island.Core.Calendar;
 using Island.Core.GameNotes;
 using Island.Core.Notes;
+using Island.Core.Performance;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
 
@@ -27,7 +28,8 @@ public sealed class ShelfContext(
     BudgetBook? budgets = null,
     IBudgetWindowHost? budgetHost = null,
     GameNotesService? gameNotes = null,
-    IGameNotesWindowHost? gameNotesHost = null)
+    IGameNotesWindowHost? gameNotesHost = null,
+    PerformanceMonitor? performance = null)
 {
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
@@ -45,6 +47,8 @@ public sealed class ShelfContext(
     public IBudgetWindowHost? BudgetHost { get; } = budgetHost;
     public GameNotesService? GameNotes { get; } = gameNotes;
     public IGameNotesWindowHost? GameNotesHost { get; } = gameNotesHost;
+    /// <summary>Temperature and load sampler for the Desempenho widget. Samples only while the widget is on screen or alerts are on.</summary>
+    public PerformanceMonitor? Performance { get; } = performance;
     public Func<IslandSettings> Settings { get; } = settings;
     /// <summary>Persists + applies new settings (updates the holder, saves JSON, re-applies to the window).</summary>
     public Action<IslandSettings> ApplySettings { get; } = applySettings;

@@ -6,6 +6,7 @@ using Island.Core.Calendar;
 using Island.Core.Budgets;
 using Island.Core.GameNotes;
 using Island.Core.Notes;
+using Island.Core.Performance;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
 using Island.Windows.Clipboard;
@@ -24,6 +25,7 @@ using Island.Windows.Devices;
 using Island.Windows.Focus;
 using Island.Windows.Input;
 using Island.Windows.Media;
+using Island.Windows.Performance;
 using Island.Windows.Phone;
 using Island.Windows.Updates;
 using Microsoft.Extensions.DependencyInjection;
@@ -140,6 +142,14 @@ public static class ServiceRegistration
         s.AddSingleton<FileTray>();
         if (demo) s.AddSingleton<IClipboardService, FakeClipboardService>();
         else s.AddSingleton<IClipboardService, WindowsClipboardService>();
+        // Performance
+        s.AddSingleton<IPerformanceSettingsStore>(_ => new JsonPerformanceSettingsStore());
+        if (demo) s.AddSingleton<IPerformanceSampler, FakePerformanceSampler>();
+        else s.AddSingleton<IPerformanceSampler>(_ => new WindowsPerformanceSampler());
+        s.AddSingleton(sp => new PerformanceMonitor(
+            sp.GetRequiredService<IPerformanceSampler>(), sp.GetRequiredService<IPerformanceSettingsStore>(),
+            sp.GetRequiredService<IIslandScheduler>()));
+
         s.AddSingleton(sp => new ShelfContext(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<PomodoroSchedule>(),
             sp.GetRequiredService<FileTray>(),
@@ -149,7 +159,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<Func<IslandSettings>>(),
             sp.GetRequiredService<SettingsApplier>().Apply,
             sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>(),
-            sp.GetRequiredService<GameNotesService>(), sp.GetRequiredService<IGameNotesWindowHost>()));
+            sp.GetRequiredService<GameNotesService>(), sp.GetRequiredService<IGameNotesWindowHost>(),
+            sp.GetRequiredService<PerformanceMonitor>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,

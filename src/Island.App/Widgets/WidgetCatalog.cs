@@ -34,6 +34,8 @@ public static class WidgetCatalog
             (ctx, vm) => new GameNotesWidget(ctx)),
         new WidgetDescriptor("budget", "Orçamento IA", "Icon.Widget.Budget", 280,
             (ctx, vm) => new BudgetWidget(ctx)),
+        new WidgetDescriptor("performance", "Desempenho", "Icon.Widget.Performance", 300,
+            (ctx, vm) => new PerformanceWidget(ctx)),
         new WidgetDescriptor("filetray", "File Tray", "Icon.Widget.FileTray", 280,
             (ctx, vm) => new FileTrayWidget(ctx)),
     };

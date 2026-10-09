@@ -14,6 +14,7 @@
     <StreamGeometry x:Key="Icon.Widget.QuickNotes">M6,3.5 H14 L19,8.5 V19 A1.5,1.5 0 0 1 17.5,20.5 H6 A1.5,1.5 0 0 1 4.5,19 V5 A1.5,1.5 0 0 1 6,3.5 Z M14,3.5 V8.5 H19 M8,12 H16 M8,15.5 H15</StreamGeometry>
     <StreamGeometry x:Key="Icon.Widget.GameNotes">M7,8 H17 A4,4 0 0 1 21,12 V13 A3.5,3.5 0 0 1 17.5,16.5 L16,15 H8 L6.5,16.5 A3.5,3.5 0 0 1 3,13 V12 A4,4 0 0 1 7,8 Z M7.5,11 V13.5 M6.25,12.25 H8.75 M16,11 H16.01 M17.5,13 H17.51</StreamGeometry>
 
+    <StreamGeometry x:Key="Icon.Widget.Performance">M4,16 A8,8 0 0 1 20,16 M12,16 L15.5,10.5 M8,19.5 H16</StreamGeometry>
     <StreamGeometry x:Key="Icon.Widget.Budget">M12,4 A8,8 0 1 0 12.01,4 Z M8.5,15.5 L15.5,8.5 M9,9 H9.01 M15,15 H15.01</StreamGeometry>
 
     <!-- Pomodoro and general controls. -->
