@@ -19,6 +19,7 @@ using Island.Core.Configuration;
 using Island.Core.Fakes;
 using Island.Core.Models;
 using Island.Core.Notes;
+using Island.Core.Performance;
 using Island.Windows.Display;
 using Island.Windows.Shell;
 using Microsoft.Extensions.DependencyInjection;
@@ -142,6 +143,9 @@ public partial class App : System.Windows.Application
             try { source.Start(); }
             catch (Exception ex) { Log.Warning(ex, "System notice source failed to start"); }
         }
+
+        // Performance: temperature alerts are normal notices; sampling starts here (alerts on, or the widget on screen).
+        PerformanceWiring.Attach(sp.GetRequiredService<PerformanceMonitor>(), coordinator);
 
         // Angry pomodoro: while locked, browsers on distracting sites are minimized; a blocked site raises a notice.
         var angry = sp.GetRequiredService<AngryPomodoro>();
