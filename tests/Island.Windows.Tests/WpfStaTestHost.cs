@@ -22,6 +22,24 @@ internal static class WpfStaTestHost
             TimeSpan.FromSeconds(30));
     }
 
+    // Far outside every monitor (Windows itself parks minimized windows here), so a test window never shows on the user's desktop.
+    private const double OffscreenCoordinate = -32000;
+
+    /// <summary>
+    /// Parks a test window off-screen and stops it from taking focus. Call it before Show/ShowDialog.
+    /// Layout, rendering to a bitmap and input events still work off-screen. A window with CenterOwner follows its owner.
+    /// </summary>
+    public static T KeepOffscreen<T>(T window) where T : Window
+    {
+        ArgumentNullException.ThrowIfNull(window);
+        window.WindowStartupLocation = WindowStartupLocation.Manual;
+        window.Left = OffscreenCoordinate;
+        window.Top = OffscreenCoordinate;
+        window.ShowActivated = false;
+        window.ShowInTaskbar = false;
+        return window;
+    }
+
     private sealed class Host
     {
         private readonly ManualResetEventSlim _ready = new();

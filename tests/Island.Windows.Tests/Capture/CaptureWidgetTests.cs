@@ -97,7 +97,7 @@ public sealed class CaptureWidgetTests
         var controller = new CaptureController(fake, Path.GetTempPath(), _ => { }, latestScreenshotPath: null, fileExists: _ => false);
         var settings = new IslandSettings { ReduceAnimations = true };
         var context = new ShelfContext(null!, null!, null!, null!, null!, new FakeClipboardService(), null!, null!, null!, null!,
-            () => settings, _ => { }, null, null, controller, shortcuts);
+            () => settings, _ => { }, capture: controller, captureShortcuts: shortcuts);
         return (new CaptureWidget(context), controller);
     }
 

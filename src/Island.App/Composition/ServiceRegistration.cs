@@ -164,7 +164,8 @@ public static class ServiceRegistration
         s.AddSingleton(sp => new CaptureHotkeys(
             sp.GetRequiredService<CaptureController>(),
             key => new GlobalHotkey(GlobalHotkey.ModControl | GlobalHotkey.ModAlt, key),
-            action => System.Windows.Application.Current.Dispatcher.BeginInvoke(action),
+            action => System.Windows.Application.Current.Dispatcher.BeginInvoke(action)));
+
         // Mixer
         if (demo) s.AddSingleton<IAudioMixerService, FakeAudioMixerService>();
         else s.AddSingleton<IAudioMixerService, WindowsAudioMixerService>();
