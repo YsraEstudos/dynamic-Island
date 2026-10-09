@@ -216,6 +216,8 @@ public partial class App : System.Windows.Application
             _hotkey.Pressed += () => coordinator.Post(new IslandEvent.ClipboardRequested());
             if (!_hotkey.Register()) Log.Warning("Ctrl+Alt+V is already taken; clipboard hotkey disabled");
         }
+        // Capture shortcuts (Ctrl+Alt+P / Ctrl+Alt+R). Not registered in demo mode, so a demo run cannot take the keys.
+        if (!demo) sp.GetRequiredService<CaptureHotkeys>().Start();
         if (demo && soak is null && !smoke) StartDemo(sp);
 
         _tray = new TrayIconService(

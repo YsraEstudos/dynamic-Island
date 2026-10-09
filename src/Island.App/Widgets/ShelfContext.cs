@@ -1,5 +1,6 @@
 using Island.Core.Abstractions;
 using Island.Core.Budgets;
+using Island.Core.Capture;
 using Island.Core.Clipboard;
 using Island.Core.Configuration;
 using Island.Core.Calendar;
@@ -29,7 +30,9 @@ public sealed class ShelfContext(
     IBudgetWindowHost? budgetHost = null,
     GameNotesService? gameNotes = null,
     IGameNotesWindowHost? gameNotesHost = null,
-    PerformanceMonitor? performance = null)
+    PerformanceMonitor? performance = null,
+    CaptureController? capture = null,
+    ICaptureShortcutStatus? captureShortcuts = null)
 {
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
@@ -49,6 +52,10 @@ public sealed class ShelfContext(
     public IGameNotesWindowHost? GameNotesHost { get; } = gameNotesHost;
     /// <summary>Temperature and load sampler for the Desempenho widget. Samples only while the widget is on screen or alerts are on.</summary>
     public PerformanceMonitor? Performance { get; } = performance;
+    /// <summary>Screenshot and recording use cases for the Capture widget.</summary>
+    public CaptureController? Capture { get; } = capture;
+    /// <summary>Whether the Ctrl+Alt+P and Ctrl+Alt+R shortcuts are registered, so the widget can explain a conflict.</summary>
+    public ICaptureShortcutStatus? CaptureShortcuts { get; } = captureShortcuts;
     public Func<IslandSettings> Settings { get; } = settings;
     /// <summary>Persists + applies new settings (updates the holder, saves JSON, re-applies to the window).</summary>
     public Action<IslandSettings> ApplySettings { get; } = applySettings;
