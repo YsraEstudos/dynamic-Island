@@ -1,5 +1,6 @@
 using Island.App.ViewModels;
 using Island.App.Widgets;
+using Island.App.Shell;
 using Island.Core.Clipboard;
 using Island.Core.Notes;
 using Island.Core.Pomodoro;
@@ -59,6 +60,8 @@ public static class ServiceRegistration
 
         s.AddSingleton<ISettingsStore>(_ => new JsonSettingsStore());
         s.AddSingleton<IQuickNotesStore>(sp => new JsonQuickNotesStore(log: sp.GetService<ILogger<JsonQuickNotesStore>>()));
+        s.AddSingleton<QuickNotesWindowManager>();
+        s.AddSingleton<IQuickNotesWindowHost>(sp => sp.GetRequiredService<QuickNotesWindowManager>());
         s.AddSingleton<QuickNotesService>();
         s.AddSingleton(sp => new SettingsHolder(sp.GetRequiredService<ISettingsStore>().Load()));
         s.AddSingleton<Func<IslandSettings>>(sp => () => sp.GetRequiredService<SettingsHolder>().Current);
@@ -103,7 +106,9 @@ public static class ServiceRegistration
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<PomodoroSchedule>(),
             sp.GetRequiredService<FileTray>(),
             sp.GetRequiredService<ClipboardHistory>(), sp.GetRequiredService<IClipboardService>(),
-            sp.GetRequiredService<IMediaService>(), sp.GetRequiredService<Func<IslandSettings>>(),
+            sp.GetRequiredService<IMediaService>(),
+            sp.GetRequiredService<QuickNotesService>(), sp.GetRequiredService<IQuickNotesWindowHost>(),
+            sp.GetRequiredService<Func<IslandSettings>>(),
             sp.GetRequiredService<SettingsApplier>().Apply));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(

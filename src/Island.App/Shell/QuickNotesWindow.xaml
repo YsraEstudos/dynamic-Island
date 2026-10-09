@@ -140,6 +140,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <Border Width="44" Height="44" CornerRadius="14" Background="#172A3B" Margin="0,0,12,0">
@@ -152,7 +153,18 @@
                                Foreground="{StaticResource NotesMutedBrush}" Margin="0,3,0,0"/>
                 </StackPanel>
             </StackPanel>
-            <Button Grid.Column="1" Style="{StaticResource NotesPrimaryButton}"
+            <Border x:Name="HotkeyConflictBanner" Grid.Column="1" Background="#3B2528"
+                    BorderBrush="#704148" BorderThickness="1" CornerRadius="9"
+                    Padding="10,7" Margin="0,0,10,0" VerticalAlignment="Center"
+                    Visibility="Collapsed"
+                    AutomationProperties.Name="Atalho global de notas indisponível">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="!" Foreground="{StaticResource NotesErrorBrush}"
+                               FontWeight="Bold" Margin="0,0,6,0"/>
+                    <TextBlock Text="Ctrl+Alt+N indisponível" Foreground="#FFD4D7" FontSize="11"/>
+                </StackPanel>
+            </Border>
+            <Button Grid.Column="2" Style="{StaticResource NotesPrimaryButton}"
                     Command="{Binding BeginNewCommand}"
                     AutomationProperties.Name="Criar nota rápida">
                 <StackPanel Orientation="Horizontal">
@@ -408,7 +420,40 @@
                                                   Foreground="{StaticResource NotesTextBrush}"
                                                   BorderBrush="{StaticResource NotesBorderBrush}"
                                                   Padding="7,5"
-                                                  AutomationProperties.Name="Cor da nota"/>
+                                                  AutomationProperties.Name="Cor da nota">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <Border x:Name="ColorSwatch" Width="10" Height="10"
+                                                                CornerRadius="5" Background="#929CAA"
+                                                                Margin="0,0,8,0"/>
+                                                        <TextBlock x:Name="ColorLabel" Text="Padrão"/>
+                                                    </StackPanel>
+                                                    <DataTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding}" Value="{x:Static notes:QuickNoteColor.Blue}">
+                                                            <Setter TargetName="ColorSwatch" Property="Background" Value="#65B6FF"/>
+                                                            <Setter TargetName="ColorLabel" Property="Text" Value="Azul"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding}" Value="{x:Static notes:QuickNoteColor.Green}">
+                                                            <Setter TargetName="ColorSwatch" Property="Background" Value="#69C98E"/>
+                                                            <Setter TargetName="ColorLabel" Property="Text" Value="Verde"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding}" Value="{x:Static notes:QuickNoteColor.Yellow}">
+                                                            <Setter TargetName="ColorSwatch" Property="Background" Value="#F5C451"/>
+                                                            <Setter TargetName="ColorLabel" Property="Text" Value="Amarelo"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding}" Value="{x:Static notes:QuickNoteColor.Pink}">
+                                                            <Setter TargetName="ColorSwatch" Property="Background" Value="#F08AB5"/>
+                                                            <Setter TargetName="ColorLabel" Property="Text" Value="Rosa"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding}" Value="{x:Static notes:QuickNoteColor.Purple}">
+                                                            <Setter TargetName="ColorSwatch" Property="Background" Value="#BB9AF7"/>
+                                                            <Setter TargetName="ColorLabel" Property="Text" Value="Roxo"/>
+                                                        </DataTrigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>

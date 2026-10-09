@@ -18,6 +18,7 @@ using Island.Windows.Input;
 using Island.Core.Configuration;
 using Island.Core.Fakes;
 using Island.Core.Models;
+using Island.Core.Notes;
 using Island.Windows.Display;
 using Island.Windows.Shell;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,9 @@ public partial class App : System.Windows.Application
     private TrayIconService? _tray;
     private DispatcherTimer? _demoTimer;
     private GlobalHotkey? _hotkey;
+    private QuickNotesHotkeyController? _quickNotesHotkey;
+    private QuickNotesWindowManager? _quickNotesWindowManager;
+    private bool _quitRequestInProgress;
     private AngryPomodoro? _angry;
     private SoakRunner? _soak;
     private ISystemNoticeSource[] _systemNoticeSources = [];
@@ -65,6 +69,20 @@ public partial class App : System.Windows.Application
         _services = ServiceRegistration.Build(demo, loggerFactory);
         var sp = _services;
 
+        var quickNotes = sp.GetRequiredService<QuickNotesService>();
+        try { await quickNotes.InitializeAsync(); }
+        catch (Exception ex) { Log.Error(ex, "Quick notes failed to initialize"); }
+        _quickNotesWindowManager = sp.GetRequiredService<QuickNotesWindowManager>();
+        _quickNotesHotkey = new QuickNotesHotkeyController(
+            () => new GlobalHotkey(GlobalHotkey.ModControl | GlobalHotkey.ModAlt, 0x4E /* N */),
+            _quickNotesWindowManager.OpenForCapture,
+            action => Dispatcher.BeginInvoke(action),
+            conflict =>
+            {
+                _quickNotesWindowManager.SetHotkeyConflict(conflict);
+                if (conflict) Log.Warning("Ctrl+Alt+N is already taken; quick-notes hotkey is unavailable");
+            });
+
         var holder = sp.GetRequiredService<SettingsHolder>();
         var monitors = sp.GetRequiredService<MonitorService>();
         var media = sp.GetRequiredService<IMediaService>();
@@ -76,7 +94,12 @@ public partial class App : System.Windows.Application
         var vm = sp.GetRequiredService<IslandViewModel>();
         var updates = sp.GetRequiredService<IUpdateService>();
         _window = new IslandWindow(vm, monitors, sp.GetRequiredService<Func<IslandSettings>>(), applier.Apply, () => updates.Available);
-        applier.Applied = () => Dispatcher.BeginInvoke(() => _window?.ApplySettings());
+        applier.Applied = () => Dispatcher.BeginInvoke(() =>
+        {
+            _window?.ApplySettings();
+            _quickNotesHotkey?.SetEnabled(holder.Current.QuickNotesHotkeyEnabled);
+        });
+        _quickNotesHotkey.SetEnabled(holder.Current.QuickNotesHotkeyEnabled);
         _window.OpenSettingsRequested += () => OpenSettings(holder, applier, monitors);
         _window.QuitRequested += RequestQuit;
         _window.InstallUpdateRequested += () => _ = InstallUpdateAsync(updates, coordinator);
@@ -213,10 +236,29 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>Quit from the island menu or the tray. While an angry pomodoro is locked, the unlock dialog must release it first.</summary>
-    private void RequestQuit()
+    private async void RequestQuit()
     {
-        if (!ConfirmNotLocked()) return;
-        Shutdown();
+        if (_quitRequestInProgress) return;
+        _quitRequestInProgress = true;
+        try
+        {
+            if (!ConfirmNotLocked()) return;
+            if (_quickNotesWindowManager is { } notes)
+            {
+                await notes.FlushPendingSaveAsync();
+                if (notes.HasSaveError)
+                {
+                    notes.OpenNotes();
+                    return;
+                }
+            }
+
+            Shutdown();
+        }
+        finally
+        {
+            _quitRequestInProgress = false;
+        }
     }
 
     /// <summary>
@@ -377,7 +419,9 @@ public partial class App : System.Windows.Application
         _demoTimer?.Stop();
         _soak?.Dispose();
         _hotkey?.Dispose();
+        _quickNotesHotkey?.Dispose();
         _tray?.Dispose();
+        _quickNotesWindowManager?.CloseForShutdown();
         _settingsWindow?.CloseForShutdown();
         _window?.Close();
         _services?.Dispose();

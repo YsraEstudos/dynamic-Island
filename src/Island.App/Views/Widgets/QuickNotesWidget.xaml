@@ -1,0 +1,63 @@
+<UserControl x:Class="Island.App.Views.Widgets.QuickNotesWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wid="clr-namespace:Island.App.Widgets"
+             Width="280"
+             Height="152"
+             AutomationProperties.Name="Widget de notas rápidas">
+    <Grid>
+        <Border Background="#161616" BorderBrush="#303033" BorderThickness="1" CornerRadius="16"/>
+
+        <Grid Margin="14,11,14,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="18"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Viewbox Width="18" Height="18" Margin="0,0,8,0">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="{StaticResource Icon.Widget.QuickNotes}"
+                                  Stroke="#65B6FF" StrokeThickness="1.8"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                    <TextBlock Text="Notas" Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="CountText" Foreground="{StaticResource TextTertiaryBrush}"
+                               FontSize="11" Margin="7,1,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <wid:ShelfButton x:Name="OpenButton" Width="52" Height="24" CornerRadius="12"
+                                     Background="#2C2C2E" LabelText="Abrir"
+                                     LabelBrush="{StaticResource TextSecondaryBrush}"
+                                     AutomationProperties.Name="Abrir notas rápidas"/>
+                    <wid:ShelfButton x:Name="CaptureButton" Width="26" Height="24" CornerRadius="12"
+                                     Margin="5,0,0,0" Background="#25394D"
+                                     Icon="{StaticResource WidgetIcon.Plus}" IconBrush="#65B6FF"
+                                     IconSize="12" AutomationProperties.Name="Criar nota rápida"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel x:Name="NotesList" Grid.Row="1" Margin="0,8,0,4"
+                        VerticalAlignment="Stretch"/>
+
+            <TextBlock x:Name="EmptyText" Grid.Row="1" Text="Guarde aqui uma ideia rápida"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                       Visibility="Collapsed" IsHitTestVisible="False"/>
+
+            <Border x:Name="HotkeyConflictPanel" Grid.Row="2" Background="#352327"
+                    CornerRadius="6" Padding="7,1" VerticalAlignment="Bottom"
+                    Visibility="Collapsed"
+                    AutomationProperties.Name="Atalho global Ctrl+Alt+N indisponível">
+                <TextBlock Text="Ctrl+Alt+N está em uso. Use + para capturar uma nota."
+                           Foreground="#FFD4D7" FontSize="9.5" TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center"/>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

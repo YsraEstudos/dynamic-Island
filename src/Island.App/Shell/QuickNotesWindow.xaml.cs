@@ -33,6 +33,29 @@ public partial class QuickNotesWindow : Window
         TitleBox.CaretIndex = TitleBox.Text.Length;
     }
 
+    public bool HasSaveError => _viewModel.SaveState == QuickNotesSaveState.Error;
+
+    public void ShowOrActivate()
+    {
+        if (!IsVisible) Show();
+        if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
+        Activate();
+        Focus();
+    }
+
+    public Task FlushPendingSaveAsync() => _viewModel.FlushPendingSaveAsync();
+
+    public void BeginNewNote() => _viewModel.BeginNewCommand.Execute(null);
+
+    public void SetHotkeyConflict(bool conflict) =>
+        HotkeyConflictBanner.Visibility = conflict ? Visibility.Visible : Visibility.Collapsed;
+
+    public void CloseForShutdown()
+    {
+        _allowClose = true;
+        Close();
+    }
+
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         if (_reduceAnimations())

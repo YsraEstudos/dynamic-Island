@@ -10,7 +10,7 @@ namespace Island.App.Widgets;
 public sealed record WidgetDescriptor(string Id, string Title, string IconKey, double Width,
     Func<ShelfContext, IslandViewModel, FrameworkElement> Create);
 
-/// <summary>The shelf widgets. Ids: nowplaying, pomodoro, calendar, filetray. Every widget is WidgetHeight tall.</summary>
+/// <summary>The shelf widgets. Every widget is WidgetHeight tall.</summary>
 public static class WidgetCatalog
 {
     public const double WidgetHeight = 152;
@@ -28,6 +28,8 @@ public static class WidgetCatalog
             (ctx, vm) => new PomodoroWidget(ctx)),
         new WidgetDescriptor("calendar", "Calendar", "Icon.Widget.Calendar", 280,
             (ctx, vm) => new CalendarWidget()),
+        new WidgetDescriptor("quicknotes", "Notas", "Icon.Widget.QuickNotes", 280,
+            (ctx, vm) => new QuickNotesWidget(ctx)),
         new WidgetDescriptor("filetray", "File Tray", "Icon.Widget.FileTray", 280,
             (ctx, vm) => new FileTrayWidget(ctx)),
     };

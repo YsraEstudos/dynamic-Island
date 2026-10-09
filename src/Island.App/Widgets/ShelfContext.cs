@@ -1,6 +1,7 @@
 using Island.Core.Abstractions;
 using Island.Core.Clipboard;
 using Island.Core.Configuration;
+using Island.Core.Notes;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
 
@@ -15,6 +16,8 @@ public sealed class ShelfContext(
     ClipboardHistory clipboard,
     IClipboardService clipboardService,
     IMediaService media,
+    QuickNotesService quickNotes,
+    IQuickNotesWindowHost quickNotesHost,
     Func<IslandSettings> settings,
     Action<IslandSettings> applySettings)
 {
@@ -27,6 +30,8 @@ public sealed class ShelfContext(
     public ClipboardHistory Clipboard { get; } = clipboard;
     public IClipboardService ClipboardService { get; } = clipboardService;
     public IMediaService Media { get; } = media;
+    public QuickNotesService QuickNotes { get; } = quickNotes;
+    public IQuickNotesWindowHost QuickNotesHost { get; } = quickNotesHost;
     public Func<IslandSettings> Settings { get; } = settings;
     /// <summary>Persists + applies new settings (updates the holder, saves JSON, re-applies to the window).</summary>
     public Action<IslandSettings> ApplySettings { get; } = applySettings;

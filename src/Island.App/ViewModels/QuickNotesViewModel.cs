@@ -237,16 +237,25 @@ public sealed class QuickNotesViewModel : ObservableObject
 
     public async Task FlushPendingSaveAsync(CancellationToken cancellationToken = default)
     {
-        var pending = _pendingSave;
-        if (pending is null)
+        while (true)
         {
-            if (_pendingSaveTask is { IsCompleted: false } activeSave)
+            _debounceCancellation?.Cancel();
+            Task? activeSave = _pendingSaveTask;
+            if (activeSave is { IsCompleted: false })
                 await activeSave.WaitAsync(cancellationToken);
-            return;
-        }
 
-        _debounceCancellation?.Cancel();
-        await SaveSnapshotAsync(pending, cancellationToken);
+            if (SaveState == QuickNotesSaveState.Error) return;
+
+            PendingSave? pending = _pendingSave;
+            if (pending is null) return;
+
+            // An edit may arrive while an earlier write is in flight. Cancel its timer and flush the newest revision too.
+            if (_pendingSaveTask is { IsCompleted: false } newerSave && !ReferenceEquals(newerSave, activeSave))
+                continue;
+
+            await SaveSnapshotAsync(pending, cancellationToken);
+            if (SaveState == QuickNotesSaveState.Error || _pendingSave is null) return;
+        }
     }
 
     private async Task BeginNewAsync()
@@ -412,6 +421,7 @@ public sealed class QuickNotesViewModel : ObservableObject
         await _saveGate.WaitAsync(cancellationToken);
         try
         {
+            if (_pendingSave?.Revision != pending.Revision) return;
             if (pending.Revision == _editRevision) SaveState = QuickNotesSaveState.Saving;
 
             try

@@ -3,7 +3,7 @@ using Island.Windows.Interop;
 namespace Island.Windows.Input;
 
 /// <summary>Registers a system-wide hotkey through its own message-only window thread.</summary>
-public sealed class GlobalHotkey : IDisposable
+public sealed class GlobalHotkey : IGlobalHotkey
 {
     public const uint ModAlt = 0x1, ModControl = 0x2, ModShift = 0x4, ModWin = 0x8;
 

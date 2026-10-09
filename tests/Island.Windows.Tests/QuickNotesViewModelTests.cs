@@ -65,6 +65,27 @@ public sealed class QuickNotesViewModelTests
     }
 
     [Fact]
+    public async Task Flush_waits_for_an_in_progress_autosave_without_writing_it_twice()
+    {
+        var store = new BlockingMemoryQuickNotesStore();
+        var service = new QuickNotesService(store);
+        await service.InitializeAsync();
+        var note = Assert.IsType<QuickNote>(await service.SaveDraftAsync(null, Draft("before")));
+        var viewModel = new QuickNotesViewModel(service, autosaveDelay: TimeSpan.FromMilliseconds(10));
+        store.WriteCalls = 0;
+        store.BlockWrites = true;
+
+        viewModel.ContentDraft = "latest";
+        await store.WriteStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        Task flush = viewModel.FlushPendingSaveAsync();
+        store.ReleaseWrite.TrySetResult();
+        await flush;
+
+        Assert.Equal(1, store.WriteCalls);
+        Assert.Equal("latest", service.GetNotes().Single(item => item.Id == note.Id).Content);
+    }
+
+    [Fact]
     public async Task Search_includes_tags_and_content()
     {
         var (viewModel, _, note) = await CreateViewModelWithNoteAsync("receita", ["cozinha"]);
@@ -149,6 +170,30 @@ public sealed class QuickNotesViewModelTests
             if (ThrowOnSave) throw new IOException("The in-memory store rejected the write.");
             _notes = notes.ToArray();
             return Task.CompletedTask;
+        }
+    }
+
+    private sealed class BlockingMemoryQuickNotesStore : IQuickNotesStore
+    {
+        private IReadOnlyList<QuickNote> _notes = Array.Empty<QuickNote>();
+
+        public bool BlockWrites { get; set; }
+        public int WriteCalls { get; set; }
+        public TaskCompletionSource WriteStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource ReleaseWrite { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public Task<IReadOnlyList<QuickNote>> LoadAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult(_notes);
+
+        public async Task SaveAsync(IReadOnlyList<QuickNote> notes, CancellationToken cancellationToken = default)
+        {
+            WriteCalls++;
+            if (BlockWrites)
+            {
+                WriteStarted.TrySetResult();
+                await ReleaseWrite.Task.WaitAsync(cancellationToken);
+            }
+            _notes = notes.ToArray();
         }
     }
 }
