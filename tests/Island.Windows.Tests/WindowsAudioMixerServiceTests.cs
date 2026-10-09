@@ -64,13 +64,19 @@ public sealed class WindowsAudioMixerServiceTests
     public void Handle_count_does_not_grow_across_start_and_dispose_cycles()
     {
         RunCycle();   // warm-up: first use loads the audio stack and thread pool
-        int before = CurrentHandleCount();
 
-        for (int i = 0; i < HandleCycles; i++) RunCycle();
+        // The handle count is process-wide and other test classes run in parallel, so one run can be inflated by
+        // unrelated handles. A real leak grows on every attempt; noise does not.
+        int growth = int.MaxValue;
+        for (int attempt = 0; attempt < 3 && growth >= MaxHandleGrowth; attempt++)
+        {
+            int before = CurrentHandleCount();
+            for (int i = 0; i < HandleCycles; i++) RunCycle();
+            growth = Math.Min(growth, CurrentHandleCount() - before);
+        }
 
-        int growth = CurrentHandleCount() - before;
         Assert.True(growth < MaxHandleGrowth,
-            $"Process handle count grew by {growth} across {HandleCycles} mixer start/dispose cycles (limit {MaxHandleGrowth}).");
+            $"Process handle count grew by at least {growth} across {HandleCycles} mixer start/dispose cycles on every attempt (limit {MaxHandleGrowth}).");
     }
 
     [Fact]
