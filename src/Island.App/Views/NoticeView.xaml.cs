@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Media;
 using Island.App.ViewModels;
+using Island.Core.Capture;
 using Island.Core.Models;
 using Brush = System.Windows.Media.Brush;
 
@@ -72,6 +73,12 @@ public partial class NoticeView : System.Windows.Controls.UserControl
                 break;
             case "usb-off":
                 SetGlyph("NoticeIconUsbOff", "TextSecondaryBrush");
+                break;
+            case CaptureController.PrintGlyph:
+                SetGlyph("NoticeIconCapture", "AccentBlueBrush");
+                break;
+            case CaptureController.RecordGlyph:
+                SetGlyph("NoticeIconRecord", "AccentOrangeBrush");
                 break;
             default:
                 GlyphBox.Visibility = System.Windows.Visibility.Collapsed;

@@ -4,6 +4,7 @@ using Island.App.Shell;
 using Island.Core.Clipboard;
 using Island.Core.Calendar;
 using Island.Core.Budgets;
+using Island.Core.Capture;
 using Island.Core.Notes;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
@@ -12,9 +13,11 @@ using Island.Core.Abstractions;
 using Island.Core.Application;
 using Island.Core.Configuration;
 using Island.Core.Fakes;
+using Island.Core.Models;
 using Island.Windows.Audio;
 using Island.Windows.Configuration;
 using Island.Windows.Calendar;
+using Island.Windows.Capture;
 using Island.Windows.Budgets;
 using Island.Windows.Notes;
 using Island.Windows.Display;
@@ -120,6 +123,18 @@ public static class ServiceRegistration
         s.AddSingleton<FileTray>();
         if (demo) s.AddSingleton<IClipboardService, FakeClipboardService>();
         else s.AddSingleton<IClipboardService, WindowsClipboardService>();
+
+        // Capture: Ctrl+Alt+P print, Ctrl+Alt+R record. Demo mode uses the fake backend, which captures and writes nothing.
+        if (demo) s.AddSingleton<IScreenCaptureService, FakeScreenCaptureService>();
+        else s.AddSingleton<IScreenCaptureService, WindowsScreenCaptureService>();
+        s.AddSingleton(sp => new CaptureController(
+            sp.GetRequiredService<IScreenCaptureService>(), CaptureLibrary.DefaultFolder,
+            notice => sp.GetRequiredService<IslandCoordinator>().Post(new IslandEvent.NoticeRaised(notice)),
+            CaptureLibrary.LatestScreenshot(CaptureLibrary.DefaultFolder)));
+        s.AddSingleton(sp => new CaptureHotkeys(
+            sp.GetRequiredService<CaptureController>(),
+            key => new GlobalHotkey(GlobalHotkey.ModControl | GlobalHotkey.ModAlt, key),
+            action => System.Windows.Application.Current.Dispatcher.BeginInvoke(action)));
         s.AddSingleton(sp => new ShelfContext(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<PomodoroSchedule>(),
             sp.GetRequiredService<FileTray>(),
@@ -128,7 +143,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<QuickNotesService>(), sp.GetRequiredService<IQuickNotesWindowHost>(),
             sp.GetRequiredService<Func<IslandSettings>>(),
             sp.GetRequiredService<SettingsApplier>().Apply,
-            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>()));
+            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>(),
+            sp.GetRequiredService<CaptureController>(), sp.GetRequiredService<CaptureHotkeys>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,
