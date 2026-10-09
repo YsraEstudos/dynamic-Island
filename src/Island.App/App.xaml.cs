@@ -17,6 +17,7 @@ using Island.Windows.Focus;
 using Island.Windows.Input;
 using Island.Core.Configuration;
 using Island.Core.Fakes;
+using Island.Core.GameNotes;
 using Island.Core.Models;
 using Island.Core.Notes;
 using Island.Windows.Display;
@@ -83,6 +84,12 @@ public partial class App : System.Windows.Application
         var quickNotes = sp.GetRequiredService<QuickNotesService>();
         try { await quickNotes.InitializeAsync(); }
         catch (Exception ex) { Log.Error(ex, "Quick notes failed to initialize"); }
+
+        // GameNotes: the foreground game is tracked from launch, so its notes are ready when the widget or Ctrl+Alt+G opens them.
+        sp.GetRequiredService<IForegroundGameTracker>().Start();
+        sp.GetRequiredService<GameNotesHotkeyController>().Start();
+        try { await sp.GetRequiredService<GameNotesService>().InitializeAsync(); }
+        catch (Exception ex) { Log.Error(ex, "Game notes failed to initialize"); }
         _quickNotesWindowManager = sp.GetRequiredService<QuickNotesWindowManager>();
         _quickNotesHotkey = new QuickNotesHotkeyController(
             () => new GlobalHotkey(GlobalHotkey.ModControl | GlobalHotkey.ModAlt, 0x4E /* N */),
