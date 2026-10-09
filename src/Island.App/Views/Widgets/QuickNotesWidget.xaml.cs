@@ -1,9 +1,12 @@
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Island.App.Widgets;
 using Island.Core.Notes;
 using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace Island.App.Views.Widgets;
