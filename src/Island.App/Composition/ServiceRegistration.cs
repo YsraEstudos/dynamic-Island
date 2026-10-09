@@ -1,6 +1,7 @@
 using Island.App.ViewModels;
 using Island.App.Widgets;
 using Island.Core.Clipboard;
+using Island.Core.Notes;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
 using Island.Windows.Clipboard;
@@ -10,6 +11,7 @@ using Island.Core.Configuration;
 using Island.Core.Fakes;
 using Island.Windows.Audio;
 using Island.Windows.Configuration;
+using Island.Windows.Notes;
 using Island.Windows.Display;
 using Island.Windows.Devices;
 using Island.Windows.Focus;
@@ -56,6 +58,8 @@ public static class ServiceRegistration
         s.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         s.AddSingleton<ISettingsStore>(_ => new JsonSettingsStore());
+        s.AddSingleton<IQuickNotesStore>(sp => new JsonQuickNotesStore(log: sp.GetService<ILogger<JsonQuickNotesStore>>()));
+        s.AddSingleton<QuickNotesService>();
         s.AddSingleton(sp => new SettingsHolder(sp.GetRequiredService<ISettingsStore>().Load()));
         s.AddSingleton<Func<IslandSettings>>(sp => () => sp.GetRequiredService<SettingsHolder>().Current);
         s.AddSingleton<IIslandScheduler, SystemIslandScheduler>();

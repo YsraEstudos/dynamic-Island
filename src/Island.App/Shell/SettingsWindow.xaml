@@ -539,6 +539,30 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Quick notes -->
+                <Border Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SettingsSectionHeader}" Text="NOTAS RÁPIDAS"/>
+
+                        <Grid Margin="0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Atalho global de captura"/>
+                                <TextBlock Style="{StaticResource SettingsRowDescription}"
+                                           Text="Ctrl+Alt+N abre uma nota rápida de qualquer aplicativo."/>
+                            </StackPanel>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource SettingsSwitch}"
+                                          VerticalAlignment="Center"
+                                          AutomationProperties.Name="Atalho global de captura de notas rápidas"
+                                          AutomationProperties.HelpText="Ativa ou desativa Ctrl+Alt+N. A Estante continua disponível."
+                                          IsChecked="{Binding QuickNotesHotkeyEnabled, Mode=TwoWay}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
                 <!-- Phone -->
                 <Border Style="{StaticResource SettingsCard}">
                     <StackPanel>

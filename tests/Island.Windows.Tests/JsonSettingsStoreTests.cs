@@ -34,6 +34,7 @@ public sealed class JsonSettingsStoreTests : IDisposable
             StartWithWindows = true,
             ShowVolume = false,
             ShowMedia = false,
+            QuickNotesHotkeyEnabled = false,
         };
 
         new JsonSettingsStore(_dir).Save(original);
@@ -77,6 +78,17 @@ public sealed class JsonSettingsStoreTests : IDisposable
 
         Assert.Equal(new IslandSettings(), loaded);
         Assert.False(File.Exists(SettingsPath));
+    }
+
+    [Fact]
+    public void Settings_file_without_notes_hotkey_uses_enabled_default()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(SettingsPath, "{ \"compactWidth\": 180 }");
+
+        var loaded = new JsonSettingsStore(_dir).Load();
+
+        Assert.True(loaded.QuickNotesHotkeyEnabled);
     }
 
     [Fact]

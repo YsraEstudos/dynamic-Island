@@ -33,6 +33,7 @@ public sealed class SettingsViewModel : ObservableObject
     private bool _startWithWindows;
     private bool _showVolume;
     private bool _showMedia;
+    private bool _quickNotesHotkeyEnabled;
     private bool _phoneBlockEnabled;
     private string _phoneFcmToken = string.Empty;
     private string _phoneStatus = string.Empty;
@@ -229,6 +230,18 @@ public sealed class SettingsViewModel : ObservableObject
         }
     }
 
+    public bool QuickNotesHotkeyEnabled
+    {
+        get => _quickNotesHotkeyEnabled;
+        set
+        {
+            if (SetProperty(ref _quickNotesHotkeyEnabled, value))
+            {
+                Commit(s => s with { QuickNotesHotkeyEnabled = value });
+            }
+        }
+    }
+
     public bool PhoneBlockEnabled
     {
         get => _phoneBlockEnabled;
@@ -345,6 +358,7 @@ public sealed class SettingsViewModel : ObservableObject
         SetProperty(ref _startWithWindows, s.StartWithWindows, nameof(StartWithWindows));
         SetProperty(ref _showVolume, s.ShowVolume, nameof(ShowVolume));
         SetProperty(ref _showMedia, s.ShowMedia, nameof(ShowMedia));
+        SetProperty(ref _quickNotesHotkeyEnabled, s.QuickNotesHotkeyEnabled, nameof(QuickNotesHotkeyEnabled));
         SetProperty(ref _phoneBlockEnabled, s.PhoneBlockEnabled, nameof(PhoneBlockEnabled));
         SetProperty(ref _phoneFcmToken, s.PhoneFcmToken ?? string.Empty, nameof(PhoneFcmToken));
         OnPropertyChanged(nameof(CanSendPhoneTest));
