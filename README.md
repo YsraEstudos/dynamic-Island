@@ -59,9 +59,35 @@ O script sobe `<Version>`, roda `dotnet publish` (win-x64, dependente de framewo
 Ver `docs/architecture.md`.
 
 ## Estante (shelf)
-Clique na ilha para abrir. Widgets: Now Playing, Pomodoro, Calendar, Notas, Orçamento IA, File Tray. Clique direito: Customize Shelf, Open Clipboard
+Clique na ilha para abrir. Widgets: Now Playing, Pomodoro, Calendar, Notas, Orçamento IA, File Tray e os widgets para jogo (Captura, Desempenho, Mixer, Notas do Jogo; veja "Widgets para jogo"). Clique direito: Customize Shelf, Open Clipboard
 (atalho global Ctrl+Alt+V), Check for updates / Install update (este só aparece quando há uma Release mais nova com `.zip` no GitHub), Open Settings, Quit. Histórico do clipboard fica só na memória (itens de gerenciadores de senha são ignorados).
 Não implementado: Weather e conversão de arquivos.
+
+## Widgets para jogo
+Quatro widgets da estante pensados para quem joga com a ilha em outra tela ou num canto. Adicione-os em Customize Shelf. Nenhum lê a memória nem injeta código em outro processo (nada que um anticheat deva marcar). Em `--demo` todos usam serviços falsos. A ilha só amostra dados enquanto o widget está visível (ou, no Desempenho, enquanto o alerta está ligado): em repouso não há timer ligado.
+
+### Captura (`capture`)
+- **Print** (Ctrl+Alt+P ou botão): PNG do monitor em primeiro plano em `%UserProfile%\Pictures\DynamicIsland\Capturas`. A miniatura do último print aparece no widget; clicar abre o arquivo, e há botão para copiar a imagem.
+- **Gravação** (Ctrl+Alt+R ou botão): MP4 do monitor, com ponto vermelho pulsando e cronômetro mm:ss. A ilha avisa quando o print é salvo e quando a gravação começa/termina.
+- Implementação: GDI + Media Foundation (Sink Writer), sem dependência extra. 30 fps, no máximo 1920x1080, bitrate de 2 a 12 Mbps. Código em `Island.Core/Capture`, `Island.Windows/Capture` e `Views/Widgets/CaptureWidget`.
+- **Limites:** jogo em **tela cheia exclusiva (DirectX exclusivo) sai preto**, tanto no print quanto no vídeo; use janela sem bordas (borderless). Sem áudio, sem cursor, e o overlay da ilha aparece na captura. Atalhos fixos no código; se estiverem em uso por outro app o widget avisa. O próximo passo natural é migrar a captura para a Windows.Graphics.Capture.
+
+### Desempenho (`performance`)
+- Mostra CPU %, GPU %, temperaturas de CPU e GPU, RAM e VRAM, com barras animadas e um histórico (sparkline) de 60 amostras.
+- **Alerta de temperatura:** a ilha expande com "GPU 87 °C" (ou CPU) quando passa do limite. Padrão 85 °C (CPU) e 83 °C (GPU), com histerese de 5 °C para rearmar e no mínimo 60 s entre avisos do mesmo sensor. No widget: botão **Alerta**, ‹ › ajustam ±1 °C, a roda do mouse ±1 (Shift ±5). É um aviso normal: respeita pausa e tela cheia. Configuração em `%LocalAppData%\DynamicIsland\performance.json`.
+- Fontes (sem admin e sem driver próprio, de propósito: o WinRing0 do LibreHardwareMonitor é bloqueado pelo Defender e marcado por anticheats): CPU por `GetSystemTimes`, RAM por `GlobalMemoryStatusEx`, GPU NVIDIA por NVML (`nvml.dll` do driver; carga, temperatura e VRAM), GPU Intel/AMD pelos contadores "GPU Engine" via PDH (só carga), temperatura de CPU pelos contadores "Thermal Zone Information" (só zonas com "CPU" no nome).
+- **Limites:** sem sensor disponível o widget mostra "—", nunca falha. Em muitos PCs a zona térmica de CPU não existe, então a temperatura de CPU some. A temperatura de GPU só existe em NVIDIA. A leitura de temperatura de CPU e de GPU NVIDIA ainda não foi validada em hardware real. Com o alerta ligado (padrão) o app lê ~840 contadores de GPU a cada 3 s (custo de CPU não medido). O aviso não tem ícone.
+
+### Mixer (`mixer`)
+- Volume por aplicativo: ícone, nome, **slider**, **mudo** e **medidor de pico** animado. Ordem: app em primeiro plano, depois quem está tocando, depois sessões inativas (esmaecidas). Três linhas por vez, rolagem com a roda do mouse. O botão Mutar/Ligar Discord só aparece enquanto o Discord tem uma sessão de áudio.
+- Orientado a eventos (sessões novas, mudança de volume, troca do dispositivo de saída padrão). Todo o COM roda numa thread MTA própria; o medidor de pico (40 ms) só roda com o widget visível e som tocando.
+- **Limites:** sem seletor de dispositivo de saída (exigiria a API não documentada PolicyConfig) e sem volume preferido por app. A ordem pelo app em primeiro plano só atualiza quando algo muda (não há hook de foco). Código em `Island.Core/Audio`, `Island.Windows/Audio/WindowsAudioMixerService` e `Views/Widgets/MixerWidget`.
+
+### Notas do Jogo (`gamenotes`)
+- Notas (checklist com marcar, fixar e apagar) amarradas ao jogo em primeiro plano; voltando ao jogo, as notas dele reaparecem. O widget lembra o último jogo, então continua mostrando as notas dele quando você dá alt-tab para a ilha. ‹ › navegam entre jogos com notas e dá para fixar um jogo à mão se a detecção errar.
+- **Como digitar:** a ilha não ativa (WS_EX_NOACTIVATE), então não recebe teclado. O botão **+** e o atalho global **Ctrl+Alt+G** abrem uma janela própria (Enter adiciona, Esc fecha), a mesma solução das Notas. Se o atalho estiver em uso o widget avisa e o botão + continua funcionando.
+- **Detecção do jogo:** um jogo em `GameProcesses` (Settings) sempre vale; depois são descartados navegadores, editores, Office, shell e a própria ilha; depois vale processo em tela cheia ou borderless. **Um jogo em janela comum só é detectado se estiver em `GameProcesses` ou se for fixado à mão.** A chave do jogo é o nome do processo (sem `.exe`, minúsculo).
+- Dados em `%LocalAppData%\DynamicIsland\gamenotes.json` (escrita atômica; arquivo corrompido vai para `.bad`). Limites: 200 notas por jogo, 500 caracteres por nota. Apagar é definitivo.
 
 ## Orçamento IA
 Widget da estante (adicione em Customize Shelf) que divide a porcentagem restante de cada IA pelos dias úteis até o reinício e mostra "Pode usar hoje" (sempre arredondado para baixo) e "Sobra no fim do dia". Botões **+1%** / **+5%** registram uso, ‹ › trocam de IA e **Abrir** abre a janela de edição (período, hora de reinício, dias sem uso, total, modo Consumido/Restante). Dados em `%LocalAppData%\DynamicIslandudgets.json`. Código: `Island.Core/Budgets` (cálculo e `BudgetBook`), `Island.Windows/Budgets` (JSON), `Island.App/Budgets` (janela) e `Views/Widgets/BudgetWidget`.
