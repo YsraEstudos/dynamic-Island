@@ -30,6 +30,7 @@ $tag = "v$Version"
 
 if (git tag --list $tag) { throw "A tag $tag já existe." }
 
+$originalProps = $text
 $text = $text -replace '<Version>[^<]+</Version>', "<Version>$Version</Version>"
 Set-Content -LiteralPath $props -Value $text -NoNewline
 
@@ -42,6 +43,20 @@ New-Item -ItemType Directory -Force -Path $out | Out-Null
 Write-Host "Compilando $tag..."
 dotnet publish src/Island.App/Island.App.csproj -c Release -r win-x64 --self-contained false -o $publish
 if ($LASTEXITCODE -ne 0) { throw 'dotnet publish falhou.' }
+
+# Smoke test: abre o build publicado (serviços falsos, sem travar na instância aberta) e exige código de saída 0.
+# Pega "o app compila mas não abre" (ex.: serviço não registrado na injeção de dependência) ANTES de publicar.
+Write-Host 'Teste de abertura do build publicado...'
+$smoke = Start-Process -FilePath (Join-Path $publish 'DynamicIsland.exe') -ArgumentList '--smoke-test' -PassThru
+if (-not $smoke.WaitForExit(30000)) {
+    $smoke.Kill()
+    Set-Content -LiteralPath $props -Value $originalProps -NoNewline
+    throw 'O build publicado não terminou o teste de abertura em 30 s. Nada foi publicado.'
+}
+if ($smoke.ExitCode -ne 0) {
+    Set-Content -LiteralPath $props -Value $originalProps -NoNewline
+    throw "O build publicado NÃO abre (código $($smoke.ExitCode)). Veja %LocalAppData%\DynamicIsland\logs\island-*.log. Nada foi publicado."
+}
 
 [System.IO.Compression.ZipFile]::CreateFromDirectory($publish, $zip, [System.IO.Compression.CompressionLevel]::Optimal, $false)
 

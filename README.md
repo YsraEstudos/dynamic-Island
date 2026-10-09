@@ -46,6 +46,11 @@ O script sobe `<Version>`, roda `dotnet publish` (win-x64, dependente de framewo
 - O script que roda é o da versão **instalada**. Uma correção no script só vale para a atualização seguinte à versão que a contém; a passagem para ela ainda usa o script antigo.
 - Antes de culpar o update, leia `update-install.log`. `robocopy failed with code 8` ou `9` significa arquivos em uso, e quase sempre há uma instância antiga aberta.
 - Não publique sem testar a atualização de verdade: instale a versão anterior, rode "Install update" e confirme que o app volta na nova.
+- **v0.4.12 foi publicada com o app que não abre.** `QuickNotesWindowManager` pedia um `Func<bool>` que ninguém registrou na injeção de dependência (`ServiceRegistration`). Compila, os testes passavam, e o app fechava no `OnStartup`: o `DispatcherUnhandledException` engole o erro, então nem aparece janela de falha, só `Unable to resolve service for type ...` no `island-AAAAMMDD.log`. Quem foi o culpado não foi o auto-update: o build já estava quebrado. Regras para não repetir:
+  - Ao mexer em construtor de classe registrada em `ServiceRegistration.Configure`, registre também cada dependência (use `s.AddSingleton(sp => new X(...))` quando o construtor pede delegates, `Func<>` ou valores simples). `ServiceRegistrationTests` valida o grafo inteiro (`ValidateOnBuild`) em modo demo e real: se ele falhar, o app não abre.
+  - `release.ps1` agora abre o build **publicado** com `DynamicIsland.exe --smoke-test` (startup real com serviços falsos, ao lado da instância aberta, sai com 0 após ~3 s ou com 1 na primeira exceção) e **aborta antes do commit, tag e Release** se não abrir. Não remova esse passo nem publique zip gerado por outro caminho.
+  - Teste a abertura de qualquer build antes de publicar: `dotnet publish src/Island.App/Island.App.csproj -c Release -r win-x64 --self-contained false -o $env:TEMP\di-teste`, depois `& $env:TEMP\di-teste\DynamicIsland.exe --smoke-test; $LASTEXITCODE` (precisa imprimir 0).
+  - Se o app instalado "não abre", leia primeiro o `island-AAAAMMDD.log` (e `island-AAAAMMDD_001.log`): uma exceção `Unhandled UI exception` perto da hora da abertura é o build, não o update. Para voltar, reinstale o zip da Release anterior em `%LocalAppData%\Programs\DynamicIsland`.
 
 ## Estrutura
 - `Island.Core` – regras (IslandCoordinator, reducer, prioridades). Sem WPF/Win32.

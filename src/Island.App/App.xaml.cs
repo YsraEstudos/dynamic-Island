@@ -48,8 +48,14 @@ public partial class App : System.Windows.Application
     {
         base.OnStartup(e);
 
-        _guard = SingleInstanceGuard.TryAcquire("DynamicIsland");
-        if (_guard is null) { Shutdown(); return; }
+        // --smoke-test (used by release.ps1): run the real startup with fake services next to a running instance, then
+        // exit 0 after a few seconds, or 1 on the first unhandled exception. Catches an app that does not start before it is published.
+        bool smoke = e.Args.Contains("--smoke-test");
+        if (!smoke)
+        {
+            _guard = SingleInstanceGuard.TryAcquire("DynamicIsland");
+            if (_guard is null) { Shutdown(); return; }
+        }
 
         // Software rendering: the island is a small layered window, and the GPU path costs far more than it saves.
         // It loads the display driver (about 60 MB private memory and 1,200 handles here) and reads every frame back
@@ -62,10 +68,15 @@ public partial class App : System.Windows.Application
             .CreateLogger();
         var loggerFactory = new Serilog.Extensions.Logging.SerilogLoggerFactory(Log.Logger);
 
-        DispatcherUnhandledException += (_, ex) => { Log.Error(ex.Exception, "Unhandled UI exception"); ex.Handled = true; };
+        DispatcherUnhandledException += (_, ex) =>
+        {
+            Log.Error(ex.Exception, "Unhandled UI exception");
+            ex.Handled = true;
+            if (smoke) Shutdown(1);
+        };
 
         TimeSpan? soak = ParseSoak(e.Args);
-        bool demo = e.Args.Contains("--demo") || soak is not null;
+        bool demo = e.Args.Contains("--demo") || soak is not null || smoke;
         _services = ServiceRegistration.Build(demo, loggerFactory);
         var sp = _services;
 
@@ -194,7 +205,7 @@ public partial class App : System.Windows.Application
             _hotkey.Pressed += () => coordinator.Post(new IslandEvent.ClipboardRequested());
             if (!_hotkey.Register()) Log.Warning("Ctrl+Alt+V is already taken; clipboard hotkey disabled");
         }
-        if (demo && soak is null) StartDemo(sp);
+        if (demo && soak is null && !smoke) StartDemo(sp);
 
         _tray = new TrayIconService(
             openSettings: () => OpenSettings(holder, applier, monitors),
@@ -212,6 +223,13 @@ public partial class App : System.Windows.Application
                 sp.GetRequiredService<FakeVolumeService>(), Dispatcher, soakDuration,
                 () => Dispatcher.BeginInvoke(new Action(ShutdownAfterQuickNotesFlush)));
             _soak.Start();
+        }
+
+        if (smoke)
+        {
+            var done = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+            done.Tick += (_, _) => { done.Stop(); Log.Information("Smoke test passed"); Shutdown(0); };
+            done.Start();
         }
     }
 

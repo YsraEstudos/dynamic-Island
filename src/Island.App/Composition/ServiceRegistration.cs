@@ -57,13 +57,21 @@ public static class ServiceRegistration
     public static ServiceProvider Build(bool demo, ILoggerFactory loggerFactory)
     {
         var s = new ServiceCollection();
+        Configure(s, demo, loggerFactory);
+        return s.BuildServiceProvider();
+    }
+
+    /// <summary>Registers every service. Split from <see cref="Build"/> so tests can validate the whole graph (ValidateOnBuild).</summary>
+    public static void Configure(IServiceCollection s, bool demo, ILoggerFactory loggerFactory)
+    {
         s.AddSingleton(loggerFactory);
         s.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         s.AddSingleton<ISettingsStore>(_ => new JsonSettingsStore());
         s.AddSingleton<IQuickNotesStore>(sp => new JsonQuickNotesStore(log: sp.GetService<ILogger<JsonQuickNotesStore>>()));
         s.AddSingleton<QuickNotesService>();
-        s.AddSingleton<QuickNotesWindowManager>();
+        s.AddSingleton(sp => new QuickNotesWindowManager(
+            sp.GetRequiredService<QuickNotesService>(), () => sp.GetRequiredService<SettingsHolder>().Current.ReduceAnimations));
         s.AddSingleton<IQuickNotesWindowHost>(sp => sp.GetRequiredService<QuickNotesWindowManager>());
         s.AddSingleton<ICalendarStore>(_ => new JsonCalendarStore());
         s.AddSingleton<CalendarAgenda>();
@@ -120,6 +128,5 @@ public static class ServiceRegistration
             GitHubUpdateService.RunningVersion(typeof(ServiceRegistration).Assembly), log: sp.GetService<ILogger<GitHubUpdateService>>()));
         s.AddSingleton<IslandCoordinator>();
         s.AddSingleton<IslandViewModel>();
-        return s.BuildServiceProvider();
     }
 }
