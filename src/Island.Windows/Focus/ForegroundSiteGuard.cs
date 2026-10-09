@@ -16,9 +16,12 @@ namespace Island.Windows.Focus;
 /// </summary>
 public sealed class ForegroundSiteGuard : IDisposable
 {
+    private static readonly TimeSpan ReopenedBrowserGracePeriod = TimeSpan.FromSeconds(3);
+
     private readonly ILogger<ForegroundSiteGuard>? _logger;
     private readonly BrowserTitleReader _browserTitles;
     private readonly object _gate = new();
+    private readonly Dictionary<IntPtr, CancellationTokenSource> _foregroundGracePeriods = new();
     // Rooted here for the lifetime of the instance; the OS keeps only a raw function pointer.
     private readonly NativeMethods.WinEventDelegate _winEventProc;
     private IntPtr _foregroundHook;
@@ -97,6 +100,8 @@ public sealed class ForegroundSiteGuard : IDisposable
     private void RemoveHooksLocked()
     {
         _browserTitles.Cancel();
+        foreach (var cancellation in _foregroundGracePeriods.Values) cancellation.Cancel();
+        _foregroundGracePeriods.Clear();
         if (_foregroundHook != IntPtr.Zero) NativeMethods.UnhookWinEvent(_foregroundHook);
         if (_nameChangeHook != IntPtr.Zero) NativeMethods.UnhookWinEvent(_nameChangeHook);
         _foregroundHook = IntPtr.Zero;
@@ -120,7 +125,7 @@ public sealed class ForegroundSiteGuard : IDisposable
                 if (hwnd != NativeMethods.GetForegroundWindow()) return;
             }
 
-            EvaluateWindow(hwnd);
+            EvaluateWindow(hwnd, foregroundChanged: eventType == NativeMethods.EVENT_SYSTEM_FOREGROUND);
         }
         catch (Exception ex)
         {
@@ -128,7 +133,7 @@ public sealed class ForegroundSiteGuard : IDisposable
         }
     }
 
-    private void EvaluateWindow(IntPtr hwnd)
+    private void EvaluateWindow(IntPtr hwnd, bool foregroundChanged = false)
     {
         if (hwnd == IntPtr.Zero) return;
 
@@ -136,15 +141,95 @@ public sealed class ForegroundSiteGuard : IDisposable
         string? processName = TryGetProcessName(hwnd);
         if (!BlockedSites.IsBrowserProcess(processName)) return;
 
+        if (foregroundChanged) StartForegroundGracePeriod(hwnd);
+        if (IsInForegroundGracePeriod(hwnd)) return;
+
         if (ShouldBlock(processName, title, out string? siteName)) MinimizeWindow(hwnd, siteName);
         else _browserTitles.Queue(hwnd, SynchronizationContext.Current);
     }
 
     private void OnBrowserTitleRead(IntPtr hwnd, string? browserTitle)
     {
-        if (!_active || hwnd != NativeMethods.GetForegroundWindow()) return;
+        if (!_active || hwnd != NativeMethods.GetForegroundWindow() || IsInForegroundGracePeriod(hwnd)) return;
         if (ShouldBlock(TryGetProcessName(hwnd), NativeMethods.GetWindowTitle(hwnd), browserTitle, out string? siteName))
             MinimizeWindow(hwnd, siteName);
+    }
+
+    private void StartForegroundGracePeriod(IntPtr hwnd)
+    {
+        var cancellation = new CancellationTokenSource();
+        var context = SynchronizationContext.Current;
+        lock (_gate)
+        {
+            if (_disposed || !_active)
+            {
+                cancellation.Dispose();
+                return;
+            }
+
+            if (_foregroundGracePeriods.Remove(hwnd, out var previous)) previous.Cancel();
+            _foregroundGracePeriods[hwnd] = cancellation;
+        }
+
+        _ = ReevaluateAfterForegroundGracePeriodAsync(hwnd, cancellation, context);
+    }
+
+    private bool IsInForegroundGracePeriod(IntPtr hwnd)
+    {
+        lock (_gate) return _foregroundGracePeriods.ContainsKey(hwnd);
+    }
+
+    private async Task ReevaluateAfterForegroundGracePeriodAsync(IntPtr hwnd,
+        CancellationTokenSource cancellation, SynchronizationContext? context)
+    {
+        bool cancellationDisposedByCallback = false;
+        try
+        {
+            await Task.Delay(ReopenedBrowserGracePeriod, cancellation.Token).ConfigureAwait(false);
+
+            void Reevaluate()
+            {
+                try
+                {
+                    lock (_gate)
+                    {
+                        if (_disposed || !_active
+                            || !_foregroundGracePeriods.TryGetValue(hwnd, out var current)
+                            || !ReferenceEquals(current, cancellation)) return;
+                        _foregroundGracePeriods.Remove(hwnd);
+                    }
+
+                    if (hwnd == NativeMethods.GetForegroundWindow()) EvaluateWindow(hwnd);
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogDebug(ex, "Browser site check failed after its reopen grace period.");
+                }
+            }
+
+            if (context is null) Reevaluate();
+            else
+            {
+                context.Post(_ =>
+                {
+                    try { Reevaluate(); }
+                    finally { cancellation.Dispose(); }
+                }, null);
+                cancellationDisposedByCallback = true;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // A newer foreground event or disabling Angry superseded this grace period.
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Browser site check could not resume after its reopen grace period.");
+        }
+        finally
+        {
+            if (!cancellationDisposedByCallback) cancellation.Dispose();
+        }
     }
 
     private void MinimizeWindow(IntPtr hwnd, string siteName)

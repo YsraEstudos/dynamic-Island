@@ -418,6 +418,7 @@ public static class IslandShapeTable
     public const double CustomizeMinWidth = 640.0;
     public const double ShelfRadius = 38.0;
     public const double PomodoroCompactWidth = 150.0;
+    public const double PendingTaskCompactLength = 140.0;
 
     /// <summary>Known widgets among <paramref name="ids"/>, in order, each id at most once.</summary>
     public static IReadOnlyList<WidgetDescriptor> Resolve(IEnumerable<string> ids)
@@ -483,7 +484,8 @@ public static class IslandShapeTable
     /// Target shape for a mode. <paramref name="shelfIds"/> is the saved list for Expanded and the working list for Customize.
     /// <paramref name="vertical"/> is the docked form: only Compact, Volume and Mini change, the other modes stay horizontal.
     /// </summary>
-    public static ShapeSize For(IslandMode mode, IslandSettings settings, bool pomodoroRunning, IEnumerable<string> shelfIds, bool vertical = false) =>
+    public static ShapeSize For(IslandMode mode, IslandSettings settings, bool pomodoroRunning,
+        bool hasPendingTasks, IEnumerable<string> shelfIds, bool vertical = false) =>
         mode switch
         {
             IslandMode.Mini => vertical ? new ShapeSize(16.0, 56.0, 8.0) : new ShapeSize(56.0, 16.0, 8.0),
@@ -494,13 +496,19 @@ public static class IslandShapeTable
             IslandMode.Customize => new ShapeSize(
                 Math.Max(CustomizeMinWidth, ShelfWidth(shelfIds)), ShelfHeight + TrayHeight, ShelfRadius),
             IslandMode.Clipboard => new ShapeSize(760.0, 232.0, 34.0),
-            _ => CompactShape(settings, pomodoroRunning, vertical),
+            _ => CompactShape(settings, pomodoroRunning, hasPendingTasks, vertical),
         };
 
-    private static ShapeSize CompactShape(IslandSettings settings, bool pomodoroRunning, bool vertical)
+    /// <summary>Compatibility overload for callers that do not provide calendar state.</summary>
+    public static ShapeSize For(IslandMode mode, IslandSettings settings, bool pomodoroRunning,
+        IEnumerable<string> shelfIds, bool vertical = false) =>
+        For(mode, settings, pomodoroRunning, false, shelfIds, vertical);
+
+    private static ShapeSize CompactShape(IslandSettings settings, bool pomodoroRunning, bool hasPendingTasks, bool vertical)
     {
         double height = settings.CompactHeight;
-        double width = pomodoroRunning ? PomodoroCompactWidth : settings.CompactWidth;
+        double width = Math.Max(settings.CompactWidth, hasPendingTasks ? PendingTaskCompactLength : 0.0);
+        if (pomodoroRunning) width = Math.Max(width, PomodoroCompactWidth);
         // Docked, the capsule's thickness runs across the screen and its length runs along the edge.
         return vertical
             ? new ShapeSize(height, width, height / 2.0)

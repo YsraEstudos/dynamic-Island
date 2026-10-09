@@ -260,6 +260,10 @@ public partial class IslandWindow : System.Windows.Window
                 // The compact capsule widens while a pomodoro runs.
                 if (_vm.Mode == IslandMode.Compact) ApplyShape(IslandMode.Compact, _settings(), instant: false);
                 break;
+            case nameof(IslandViewModel.HasPendingTasks):
+                // Reserve room for the task indicator in either compact orientation.
+                if (_vm.Mode == IslandMode.Compact) ApplyShape(IslandMode.Compact, _settings(), instant: false);
+                break;
             case nameof(IslandViewModel.Notice):
                 // Notice is bound through a snapshot: update it during the same layer transition, after the old
                 // toast has faded out. This keeps back-to-back notices visually legible.
@@ -323,7 +327,8 @@ public partial class IslandWindow : System.Windows.Window
     private void ApplyShape(IslandMode mode, IslandSettings settings, bool instant)
     {
         IEnumerable<string> shelfIds = ShelfLayer.PageIds(editing: mode == IslandMode.Customize);
-        ShapeSize shape = IslandShapeTable.For(mode, settings, _vm.PomodoroRunning, shelfIds, vertical: _dock != DockEdge.None);
+        ShapeSize shape = IslandShapeTable.For(mode, settings, _vm.PomodoroRunning, _vm.HasPendingTasks,
+            shelfIds, vertical: _dock != DockEdge.None);
         _transitions.SetShape(shape.Width, shape.Height, shape.Radius, instant);
     }
 
@@ -639,7 +644,7 @@ public partial class IslandWindow : System.Windows.Window
         {
             // Docking or undocking moves the island's centre to the pointer, so it does not jump away from it.
             _grabX = 0.0;
-            _grabY = IslandShapeTable.For(_vm.Mode, _settings(), _vm.PomodoroRunning, Array.Empty<string>(),
+            _grabY = IslandShapeTable.For(_vm.Mode, _settings(), _vm.PomodoroRunning, _vm.HasPendingTasks, Array.Empty<string>(),
                 vertical: dock != DockEdge.None).Height / 2.0 * scale;
             SetDock(dock, instant: false);
         }

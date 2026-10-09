@@ -43,12 +43,19 @@
                        HorizontalAlignment="Center" />
         </StackPanel>
 
-        <!-- Static glyph only: no animation in the compact state. Sits at the bottom of the capsule. -->
-        <controls:EqualizerGlyph Grid.Row="2"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Bottom"
-                                 Margin="0,0,0,16"
-                                 BarBrush="{StaticResource WaveBrush}"
-                                 Visibility="{Binding IsEqualizerActive, Converter={StaticResource BoolToVisibility}}" />
+        <!-- Static status glyphs stack at the bottom and keep the pomodoro counter at the top. -->
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,13">
+            <Path Data="{StaticResource UiIconTaskPending}"
+                  Width="14" Height="14" Stretch="Uniform"
+                  Stroke="{StaticResource AccentGreenBrush}" StrokeThickness="1.8"
+                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  HorizontalAlignment="Center" Margin="0,0,0,5"
+                  AutomationProperties.Name="Há tarefas pendentes"
+                  Visibility="{Binding HasPendingTasks, Converter={StaticResource BoolToVisibility}}" />
+            <controls:EqualizerGlyph HorizontalAlignment="Center"
+                                     BarBrush="{StaticResource WaveBrush}"
+                                     AutomationProperties.Name="Áudio em reprodução"
+                                     Visibility="{Binding IsEqualizerActive, Converter={StaticResource BoolToVisibility}}" />
+        </StackPanel>
     </Grid>
 </UserControl>

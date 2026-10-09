@@ -1,6 +1,7 @@
 using Island.Core.Abstractions;
 using Island.Core.Clipboard;
 using Island.Core.Configuration;
+using Island.Core.Calendar;
 using Island.Core.Notes;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
@@ -16,6 +17,7 @@ public sealed class ShelfContext(
     ClipboardHistory clipboard,
     IClipboardService clipboardService,
     IMediaService media,
+    CalendarAgenda calendar,
     QuickNotesService quickNotes,
     IQuickNotesWindowHost quickNotesHost,
     Func<IslandSettings> settings,
@@ -30,6 +32,7 @@ public sealed class ShelfContext(
     public ClipboardHistory Clipboard { get; } = clipboard;
     public IClipboardService ClipboardService { get; } = clipboardService;
     public IMediaService Media { get; } = media;
+    public CalendarAgenda Calendar { get; } = calendar;
     public QuickNotesService QuickNotes { get; } = quickNotes;
     public IQuickNotesWindowHost QuickNotesHost { get; } = quickNotesHost;
     public Func<IslandSettings> Settings { get; } = settings;

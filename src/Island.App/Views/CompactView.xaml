@@ -21,11 +21,23 @@
                        VerticalAlignment="Center" />
         </StackPanel>
 
-        <!-- Static glyph only: no animation in the compact state. -->
-        <controls:EqualizerGlyph HorizontalAlignment="Right"
-                                 VerticalAlignment="Center"
-                                 Margin="0,0,16,0"
-                                 BarBrush="{StaticResource WaveBrush}"
-                                 Visibility="{Binding IsEqualizerActive, Converter={StaticResource BoolToVisibility}}" />
+        <!-- Static status glyphs share the right side of the capsule without replacing the equalizer. -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="0,0,16,0"
+                    AutomationProperties.Name="Status da ilha">
+            <Path Data="{StaticResource UiIconTaskPending}"
+                  Width="14" Height="14" Stretch="Uniform"
+                  Stroke="{StaticResource AccentGreenBrush}" StrokeThickness="1.8"
+                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  Margin="0,0,8,0"
+                  AutomationProperties.Name="Há tarefas pendentes"
+                  Visibility="{Binding HasPendingTasks, Converter={StaticResource BoolToVisibility}}" />
+            <controls:EqualizerGlyph VerticalAlignment="Center"
+                                     BarBrush="{StaticResource WaveBrush}"
+                                     AutomationProperties.Name="Áudio em reprodução"
+                                     Visibility="{Binding IsEqualizerActive, Converter={StaticResource BoolToVisibility}}" />
+        </StackPanel>
     </Grid>
 </UserControl>

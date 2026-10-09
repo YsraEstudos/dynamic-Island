@@ -78,6 +78,7 @@
 
     <!-- Shelf, notice and menu icons (24-unit boxes). Outline style, 1.8 stroke, like the utility icons above. -->
     <StreamGeometry x:Key="UiIconCheck">M5,12.5 L9.8,17 L19,7.5</StreamGeometry>
+    <StreamGeometry x:Key="UiIconTaskPending">M8,5 H6.5 A1.5,1.5 0 0 0 5,6.5 V19 A1.5,1.5 0 0 0 6.5,20.5 H17.5 A1.5,1.5 0 0 0 19,19 V6.5 A1.5,1.5 0 0 0 17.5,5 H16 M9,9 L10.5,10.5 L13,8 M14.5,9 H16.5 M9,14 H16.5 M9,17 H14.5</StreamGeometry>
     <StreamGeometry x:Key="UiIconClose">M7,7 L17,17 M17,7 L7,17</StreamGeometry>
     <StreamGeometry x:Key="UiIconTimer">M12,6.5 A6.5,6.5 0 1 0 12,19.5 A6.5,6.5 0 1 0 12,6.5 Z M12,9.5 V13 L14.5,14.8 M9.5,3.5 H14.5</StreamGeometry>
     <StreamGeometry x:Key="UiIconMenuShelf">M4,5 H10 V11 H4 Z M14,5 H20 V19 H14 Z M4,14 H10 V19 H4 Z</StreamGeometry>

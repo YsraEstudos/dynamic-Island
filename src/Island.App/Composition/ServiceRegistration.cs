@@ -2,6 +2,7 @@ using Island.App.ViewModels;
 using Island.App.Widgets;
 using Island.App.Shell;
 using Island.Core.Clipboard;
+using Island.Core.Calendar;
 using Island.Core.Notes;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
@@ -12,6 +13,7 @@ using Island.Core.Configuration;
 using Island.Core.Fakes;
 using Island.Windows.Audio;
 using Island.Windows.Configuration;
+using Island.Windows.Calendar;
 using Island.Windows.Notes;
 using Island.Windows.Display;
 using Island.Windows.Devices;
@@ -60,9 +62,11 @@ public static class ServiceRegistration
 
         s.AddSingleton<ISettingsStore>(_ => new JsonSettingsStore());
         s.AddSingleton<IQuickNotesStore>(sp => new JsonQuickNotesStore(log: sp.GetService<ILogger<JsonQuickNotesStore>>()));
+        s.AddSingleton<QuickNotesService>();
         s.AddSingleton<QuickNotesWindowManager>();
         s.AddSingleton<IQuickNotesWindowHost>(sp => sp.GetRequiredService<QuickNotesWindowManager>());
-        s.AddSingleton<QuickNotesService>();
+        s.AddSingleton<ICalendarStore>(_ => new JsonCalendarStore());
+        s.AddSingleton<CalendarAgenda>();
         s.AddSingleton(sp => new SettingsHolder(sp.GetRequiredService<ISettingsStore>().Load()));
         s.AddSingleton<Func<IslandSettings>>(sp => () => sp.GetRequiredService<SettingsHolder>().Current);
         s.AddSingleton<IIslandScheduler, SystemIslandScheduler>();
@@ -106,7 +110,7 @@ public static class ServiceRegistration
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<PomodoroSchedule>(),
             sp.GetRequiredService<FileTray>(),
             sp.GetRequiredService<ClipboardHistory>(), sp.GetRequiredService<IClipboardService>(),
-            sp.GetRequiredService<IMediaService>(),
+            sp.GetRequiredService<IMediaService>(), sp.GetRequiredService<CalendarAgenda>(),
             sp.GetRequiredService<QuickNotesService>(), sp.GetRequiredService<IQuickNotesWindowHost>(),
             sp.GetRequiredService<Func<IslandSettings>>(),
             sp.GetRequiredService<SettingsApplier>().Apply));

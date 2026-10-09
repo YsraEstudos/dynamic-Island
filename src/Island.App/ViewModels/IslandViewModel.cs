@@ -58,6 +58,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
     [ObservableProperty] private PomodoroPhase _pomodoroPhase = PomodoroPhase.Focus;
     [ObservableProperty] private bool _pomodoroAngry;
     [ObservableProperty] private bool _pomodoroReduceMotion;
+    [ObservableProperty] private bool _hasPendingTasks;
 
     public IslandViewModel(IslandCoordinator coordinator, IMediaService media, IVolumeService volume,
         Func<IslandSettings> settings, ShelfContext shelf)
@@ -71,6 +72,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         _ticker = new DispatcherTimer(DispatcherPriority.Normal, _dispatcher) { Interval = TickInterval };
         _ticker.Tick += (_, _) => Position = ComputePosition();
         _pomodoroSignal = new UiSignal(_dispatcher, RefreshPomodoro);
+        HasPendingTasks = Shelf.Calendar.HasPendingTasks;
 
         VolumeLevel = volume.Current.Level;
         IsMuted = volume.Current.IsMuted;
@@ -78,6 +80,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         _coordinator.StateChanged += OnStateChanged;
         Shelf.Pomodoro.Changed += _pomodoroSignal.Signal;
         Shelf.Angry.LockChanged += _pomodoroSignal.Signal;
+        Shelf.Calendar.Changed += OnCalendarChanged;
         SystemParameters.StaticPropertyChanged += OnSystemParametersChanged;
         RefreshPomodoro();
         Apply(_coordinator.State);
@@ -196,6 +199,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         _coordinator.StateChanged -= OnStateChanged;
         Shelf.Pomodoro.Changed -= _pomodoroSignal.Signal;
         Shelf.Angry.LockChanged -= _pomodoroSignal.Signal;
+        Shelf.Calendar.Changed -= OnCalendarChanged;
         SystemParameters.StaticPropertyChanged -= OnSystemParametersChanged;
         _pomodoroSignal.Dispose();
         _ticker.Stop();
@@ -242,6 +246,15 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
     public void RefreshMotionPreferences() => _pomodoroSignal.Signal();
 
     private void OnSystemParametersChanged(object? sender, PropertyChangedEventArgs e) => _pomodoroSignal.Signal();
+
+    private void OnCalendarChanged()
+    {
+        if (_disposed) return;
+        _ = _dispatcher.BeginInvoke(() =>
+        {
+            if (!_disposed) HasPendingTasks = Shelf.Calendar.HasPendingTasks;
+        });
+    }
 
     private void ApplyMedia(MediaInfo? media)
     {
