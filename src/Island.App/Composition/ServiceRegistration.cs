@@ -4,6 +4,7 @@ using Island.App.Shell;
 using Island.Core.Clipboard;
 using Island.Core.Calendar;
 using Island.Core.Budgets;
+using Island.Core.GameNotes;
 using Island.Core.Notes;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
@@ -17,6 +18,7 @@ using Island.Windows.Configuration;
 using Island.Windows.Calendar;
 using Island.Windows.Budgets;
 using Island.Windows.Notes;
+using Island.Windows.GameNotes;
 using Island.Windows.Display;
 using Island.Windows.Devices;
 using Island.Windows.Focus;
@@ -75,6 +77,24 @@ public static class ServiceRegistration
         s.AddSingleton(sp => new QuickNotesWindowManager(
             sp.GetRequiredService<QuickNotesService>(), () => sp.GetRequiredService<SettingsHolder>().Current.ReduceAnimations));
         s.AddSingleton<IQuickNotesWindowHost>(sp => sp.GetRequiredService<QuickNotesWindowManager>());
+        // GameNotes
+        if (demo)
+        {
+            s.AddSingleton<IGameNotesStore>(_ => new InMemoryGameNotesStore(DemoGameNotes.Seed()));
+            s.AddSingleton<IForegroundGameTracker>(_ => new FakeForegroundGameTracker(DemoGameNotes.InitialGame));
+        }
+        else
+        {
+            s.AddSingleton<IGameNotesStore>(sp => new JsonGameNotesStore(log: sp.GetService<ILogger<JsonGameNotesStore>>()));
+            s.AddSingleton<IForegroundGameTracker>(sp => new WinEventForegroundGameTracker(
+                () => sp.GetRequiredService<SettingsHolder>().Current.GameProcesses,
+                sp.GetService<ILogger<WinEventForegroundGameTracker>>()));
+        }
+        s.AddSingleton<GameNotesService>();
+        s.AddSingleton(sp => new GameNotesWindowManager(
+            sp.GetRequiredService<GameNotesService>(), () => sp.GetRequiredService<SettingsHolder>().Current.ReduceAnimations));
+        s.AddSingleton<IGameNotesWindowHost>(sp => sp.GetRequiredService<GameNotesWindowManager>());
+        s.AddSingleton<GameNotesHotkeyController>();
         s.AddSingleton<IBudgetStore>(_ => new JsonBudgetStore());
         s.AddSingleton(sp => new BudgetBook(sp.GetRequiredService<IBudgetStore>()));
         s.AddSingleton<BudgetWindowManager>();
@@ -128,7 +148,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<QuickNotesService>(), sp.GetRequiredService<IQuickNotesWindowHost>(),
             sp.GetRequiredService<Func<IslandSettings>>(),
             sp.GetRequiredService<SettingsApplier>().Apply,
-            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>()));
+            sp.GetRequiredService<BudgetBook>(), sp.GetRequiredService<IBudgetWindowHost>(),
+            sp.GetRequiredService<GameNotesService>(), sp.GetRequiredService<IGameNotesWindowHost>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,
