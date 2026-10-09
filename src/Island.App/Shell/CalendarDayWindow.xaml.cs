@@ -35,7 +35,6 @@ public partial class CalendarDayWindow : Window
         _agenda = agenda;
         _date = date;
         _reduceAnimations = reduceAnimations;
-        Opacity = reduceAnimations ? 1 : 0;
 
         CloseButton.Click += (_, _) => Close();
         AddTaskButton.Click += (_, _) => OpenEntry(CalendarEntryKind.Task);
@@ -289,15 +288,17 @@ public partial class CalendarDayWindow : Window
     {
         if (_reduceAnimations)
         {
-            Opacity = 1;
+            Surface.Opacity = 1;
+            SurfaceTranslation.Y = 0;
             return;
         }
 
-        var offset = new TranslateTransform(0, 8);
-        RenderTransform = offset;
+        Surface.Opacity = 0;
+        SurfaceTranslation.Y = 8;
         var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
-        BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(190)) { EasingFunction = easing });
-        offset.BeginAnimation(TranslateTransform.YProperty,
+        Surface.BeginAnimation(UIElement.OpacityProperty,
+            new DoubleAnimation(1, TimeSpan.FromMilliseconds(190)) { EasingFunction = easing });
+        SurfaceTranslation.BeginAnimation(TranslateTransform.YProperty,
             new DoubleAnimation(8, 0, TimeSpan.FromMilliseconds(190)) { EasingFunction = easing });
     }
 

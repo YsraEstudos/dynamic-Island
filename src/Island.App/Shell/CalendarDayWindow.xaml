@@ -70,7 +70,10 @@
         </Style>
     </Window.Resources>
 
-    <Grid Margin="22,20,22,20">
+    <Grid x:Name="Surface" Margin="22,20,22,20" Opacity="1">
+        <Grid.RenderTransform>
+            <TranslateTransform x:Name="SurfaceTranslation" Y="0" />
+        </Grid.RenderTransform>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
