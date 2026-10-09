@@ -223,7 +223,7 @@ The test fixture owns a unique temp directory, `priorRecovery`, and helpers `Cre
 
 ## Evidências de aceitação
 
-- Suíte completa no snapshot dos commits de Notas, incluindo o alias WPF corrigido: Core 422/422 e Windows 179/179.
+- Suíte completa no snapshot do commit final de Notas, incluindo o alias WPF corrigido e a regressão de autosave: Core 422/422 e Windows 180/180.
 - Build Release da solução no mesmo snapshot: sucesso, zero avisos e zero erros.
 - No checkout compartilhado, a suíte completa e o build Release param em `CalendarDayWindow.xaml.cs:232` (`Brush`) e `CalendarWidget.xaml.cs:18` (`UserControl`). Os arquivos do Calendário permaneceram intactos.
 - Os testes de aceitação visual e de uso real após reiniciar não foram executados: este ambiente não disponibilizou uma sessão de automação da interface nativa. As etapas 2–4 da Task 6 permanecem abertas para smoke test interativo.
