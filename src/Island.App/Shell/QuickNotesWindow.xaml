@@ -1,0 +1,444 @@
+<Window x:Class="Island.App.Shell.QuickNotesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:notes="clr-namespace:Island.Core.Notes;assembly=Island.Core"
+        Title="Dynamic Island — Notas rápidas"
+        Width="1040"
+        Height="700"
+        MinWidth="840"
+        MinHeight="540"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="True"
+        Background="#101318"
+        Foreground="#F4F6FA"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
+        FontSize="13"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True"
+        KeyDown="OnWindowKeyDown"
+        Closing="OnWindowClosing">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="NotesSurfaceBrush" Color="#171B23"/>
+        <SolidColorBrush x:Key="NotesRaisedBrush" Color="#202630"/>
+        <SolidColorBrush x:Key="NotesBorderBrush" Color="#303846"/>
+        <SolidColorBrush x:Key="NotesTextBrush" Color="#F4F6FA"/>
+        <SolidColorBrush x:Key="NotesMutedBrush" Color="#929CAA"/>
+        <SolidColorBrush x:Key="NotesAccentBrush" Color="#65B6FF"/>
+        <SolidColorBrush x:Key="NotesErrorBrush" Color="#FF8B8B"/>
+
+        <Style x:Key="NotesButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource NotesTextBrush}"/>
+            <Setter Property="Background" Value="{StaticResource NotesRaisedBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource NotesBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonChrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="9"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="{StaticResource NotesAccentBrush}"/>
+                                <Setter TargetName="ButtonChrome" Property="Background" Value="#293442"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonChrome" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonChrome" Property="Opacity" Value="0.42"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="{StaticResource NotesAccentBrush}"/>
+                                <Setter TargetName="ButtonChrome" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="NotesPrimaryButton" TargetType="Button" BasedOn="{StaticResource NotesButton}">
+            <Setter Property="Background" Value="#23517A"/>
+            <Setter Property="BorderBrush" Value="#3977A8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style x:Key="NotesTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource NotesRaisedBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource NotesTextBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource NotesBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CaretBrush" Value="{StaticResource NotesAccentBrush}"/>
+            <Setter Property="Padding" Value="11,9"/>
+            <Setter Property="SelectionBrush" Value="#5572B8E8"/>
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource NotesAccentBrush}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.62"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="NotesListItem" TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="{StaticResource NotesTextBrush}"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="ItemChrome" Background="Transparent" CornerRadius="10" Padding="10,9">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemChrome" Property="Background" Value="#202833"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemChrome" Property="Background" Value="#25394D"/>
+                                <Setter TargetName="ItemChrome" Property="BorderBrush" Value="#456C8C"/>
+                                <Setter TargetName="ItemChrome" Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ItemChrome" Property="BorderBrush" Value="{StaticResource NotesAccentBrush}"/>
+                                <Setter TargetName="ItemChrome" Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="Surface" Margin="20" RenderTransformOrigin="0.5,0.5" Opacity="1">
+        <Grid.RenderTransform>
+            <TranslateTransform x:Name="SurfaceTranslation" Y="0"/>
+        </Grid.RenderTransform>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="2,0,2,18">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Border Width="44" Height="44" CornerRadius="14" Background="#172A3B" Margin="0,0,12,0">
+                    <TextBlock Text="✎" FontSize="23" Foreground="{StaticResource NotesAccentBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Notas rápidas" FontSize="21" FontWeight="SemiBold"/>
+                    <TextBlock Text="Suas ideias ficam salvas neste dispositivo" FontSize="12"
+                               Foreground="{StaticResource NotesMutedBrush}" Margin="0,3,0,0"/>
+                </StackPanel>
+            </StackPanel>
+            <Button Grid.Column="1" Style="{StaticResource NotesPrimaryButton}"
+                    Command="{Binding BeginNewCommand}"
+                    AutomationProperties.Name="Criar nota rápida">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="＋" FontSize="17" Margin="0,-2,6,0"/>
+                    <TextBlock Text="Nova nota"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Search and note collections -->
+            <Border Grid.Column="0" Background="{StaticResource NotesSurfaceBrush}"
+                    BorderBrush="{StaticResource NotesBorderBrush}" BorderThickness="1" CornerRadius="15" Padding="14">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox x:Name="SearchBox" Grid.Row="0" Style="{StaticResource NotesTextBox}"
+                             Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.Name="Buscar notas"
+                             ToolTip="Buscar por título, conteúdo ou etiqueta"/>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,12,0,10">
+                        <Button Style="{StaticResource NotesButton}" Padding="10,6" Margin="0,0,6,0"
+                                Content="Notas" Command="{Binding SelectCollectionCommand}"
+                                CommandParameter="{x:Static notes:QuickNoteCollection.Active}"
+                                AutomationProperties.Name="Mostrar notas ativas"/>
+                        <Button Style="{StaticResource NotesButton}" Padding="10,6" Margin="0,0,6,0"
+                                Content="Arquivo" Command="{Binding SelectCollectionCommand}"
+                                CommandParameter="{x:Static notes:QuickNoteCollection.Archived}"
+                                AutomationProperties.Name="Mostrar notas arquivadas"/>
+                        <Button Style="{StaticResource NotesButton}" Padding="10,6"
+                                Content="Lixeira" Command="{Binding SelectCollectionCommand}"
+                                CommandParameter="{x:Static notes:QuickNoteCollection.Trash}"
+                                AutomationProperties.Name="Mostrar notas na lixeira"/>
+                    </StackPanel>
+
+                    <ListBox x:Name="NotesList" Grid.Row="2" ItemsSource="{Binding Notes}"
+                             SelectedValuePath="Id" SelectedValue="{Binding SelectedNoteId, Mode=OneWay}"
+                             SelectionChanged="OnNotesSelectionChanged"
+                             Background="Transparent" BorderThickness="0" Padding="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ItemContainerStyle="{StaticResource NotesListItem}"
+                             AutomationProperties.Name="Lista de notas">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Content}" Foreground="{StaticResource NotesMutedBrush}"
+                                                   FontSize="11.5" Margin="0,4,0,0" MaxHeight="32"
+                                                   TextWrapping="Wrap" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="★" Foreground="{StaticResource NotesAccentBrush}"
+                                               FontSize="12" Margin="5,0,0,0" VerticalAlignment="Top">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPinned}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock Grid.Row="3" Text="{Binding SaveStateText}" Foreground="{StaticResource NotesMutedBrush}"
+                               FontSize="11" Margin="2,8,0,0"/>
+                </Grid>
+            </Border>
+
+            <!-- Editor -->
+            <Border Grid.Column="2" Background="{StaticResource NotesSurfaceBrush}"
+                    BorderBrush="{StaticResource NotesBorderBrush}" BorderThickness="1" CornerRadius="15" Padding="20">
+                <Grid>
+                    <Border x:Name="EmptyState">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasSelectedNote}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="340">
+                            <TextBlock Text="✦" FontSize="32" Foreground="{StaticResource NotesAccentBrush}"
+                                       HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBlock Text="Um espaço para suas ideias" FontSize="20" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Crie uma nota, uma lista rápida ou guarde algo para lembrar depois."
+                                       Foreground="{StaticResource NotesMutedBrush}" TextAlignment="Center"
+                                       TextWrapping="Wrap" Margin="0,8,0,18"/>
+                            <Button Style="{StaticResource NotesPrimaryButton}" Content="Criar nota"
+                                    Command="{Binding BeginNewCommand}" HorizontalAlignment="Center"
+                                    AutomationProperties.Name="Criar primeira nota"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Grid x:Name="EditorPanel">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasSelectedNote}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.RenderTransform>
+                            <TranslateTransform x:Name="EditorTranslation" Y="0"/>
+                        </Grid.RenderTransform>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="EDITANDO NOTA" FontSize="10" FontWeight="Bold"
+                                       Foreground="{StaticResource NotesMutedBrush}" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Style="{StaticResource NotesButton}" Padding="9,6" Margin="0,0,6,0"
+                                        Command="{Binding TogglePinCommand}"
+                                        IsEnabled="{Binding IsEditorEnabled}"
+                                        AutomationProperties.Name="Fixar ou desafixar nota">
+                                    <TextBlock Text="★" FontSize="14"/>
+                                </Button>
+                                <Button Style="{StaticResource NotesButton}" Padding="10,6" Margin="0,0,6,0"
+                                        Content="{Binding ArchiveActionText}"
+                                        Command="{Binding ArchiveSelectedCommand}"
+                                        IsEnabled="{Binding IsEditorEnabled}"
+                                        AutomationProperties.Name="Arquivar ou desarquivar nota"/>
+                                <Button Style="{StaticResource NotesButton}" Padding="10,6"
+                                        Content="Mover para lixeira"
+                                        Command="{Binding TrashSelectedCommand}"
+                                        IsEnabled="{Binding IsEditorEnabled}"
+                                        AutomationProperties.Name="Mover nota para a lixeira"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBox x:Name="TitleBox" Grid.Row="1" Style="{StaticResource NotesTextBox}"
+                                 Background="Transparent" BorderThickness="0" Padding="0,5"
+                                 FontSize="25" FontWeight="SemiBold"
+                                 Text="{Binding TitleDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 IsEnabled="{Binding IsEditorEnabled}"
+                                 AutomationProperties.Name="Título da nota"
+                                 ToolTip="Título"/>
+
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="0,10,4,10">
+                                <TextBox Style="{StaticResource NotesTextBox}"
+                                         MinHeight="150" AcceptsReturn="True" TextWrapping="Wrap"
+                                         VerticalScrollBarVisibility="Auto" BorderThickness="0"
+                                         Background="Transparent" Padding="0"
+                                         Text="{Binding ContentDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding IsEditorEnabled}"
+                                         AutomationProperties.Name="Conteúdo da nota"
+                                         ToolTip="Escreva sua nota"/>
+
+                                <Border Background="#141921" BorderBrush="{StaticResource NotesBorderBrush}"
+                                        BorderThickness="1" CornerRadius="11" Padding="13" Margin="0,16,0,0">
+                                    <StackPanel>
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Checklist" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                            <Button Grid.Column="1" Style="{StaticResource NotesButton}" Padding="9,5"
+                                                    Content="＋ Item" Command="{Binding AddChecklistItemCommand}"
+                                                    IsEnabled="{Binding IsEditorEnabled}"
+                                                    AutomationProperties.Name="Adicionar item ao checklist"/>
+                                        </Grid>
+                                        <ItemsControl ItemsSource="{Binding ChecklistDraft}" AutomationProperties.Name="Itens do checklist">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,3">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox IsChecked="{Binding IsCompleted, Mode=TwoWay}"
+                                                                  IsEnabled="{Binding DataContext.IsEditorEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                  VerticalAlignment="Center" Margin="0,0,9,0"
+                                                                  AutomationProperties.Name="Concluir item"/>
+                                                        <TextBox Grid.Column="1" Style="{StaticResource NotesTextBox}"
+                                                                 Padding="8,6" BorderThickness="0"
+                                                                 Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 IsEnabled="{Binding DataContext.IsEditorEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                 AutomationProperties.Name="Texto do item"/>
+                                                        <Button Grid.Column="2" Style="{StaticResource NotesButton}"
+                                                                Padding="8,4" Margin="5,0,0,0" Content="×"
+                                                                Command="{Binding DataContext.RemoveChecklistItemCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                CommandParameter="{Binding}"
+                                                                AutomationProperties.Name="Remover item do checklist"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+
+                                <Grid Margin="0,15,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="160"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="0,0,14,0">
+                                        <TextBlock Text="Etiquetas" Foreground="{StaticResource NotesMutedBrush}"
+                                                   FontSize="11" Margin="0,0,0,6"/>
+                                        <TextBox Style="{StaticResource NotesTextBox}"
+                                                 Text="{Binding TagsDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 IsEnabled="{Binding IsEditorEnabled}"
+                                                 AutomationProperties.Name="Etiquetas separadas por vírgula"
+                                                 ToolTip="Separe as etiquetas com vírgulas"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Cor" Foreground="{StaticResource NotesMutedBrush}"
+                                                   FontSize="11" Margin="0,0,0,6"/>
+                                        <ComboBox ItemsSource="{Binding AvailableColors}"
+                                                  SelectedItem="{Binding ColorDraft, Mode=TwoWay}"
+                                                  IsEnabled="{Binding IsEditorEnabled}"
+                                                  Background="{StaticResource NotesRaisedBrush}"
+                                                  Foreground="{StaticResource NotesTextBrush}"
+                                                  BorderBrush="{StaticResource NotesBorderBrush}"
+                                                  Padding="7,5"
+                                                  AutomationProperties.Name="Cor da nota"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <Grid Grid.Row="3" Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding SaveStateText}" Foreground="{StaticResource NotesMutedBrush}"
+                                           FontSize="11"/>
+                                <TextBlock Text="{Binding SaveErrorMessage}" Foreground="{StaticResource NotesErrorBrush}"
+                                           FontSize="11" TextWrapping="Wrap" Margin="0,3,10,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Style="{StaticResource NotesButton}" Content="Restaurar"
+                                        Command="{Binding RestoreSelectedCommand}"
+                                        Visibility="{Binding IsTrashView, Converter={StaticResource BoolToVisibility}}"
+                                        Margin="0,0,7,0" AutomationProperties.Name="Restaurar nota da lixeira"/>
+                                <Button Style="{StaticResource NotesButton}" Content="Apagar permanentemente"
+                                        Command="{Binding DeleteSelectedPermanentlyCommand}"
+                                        Visibility="{Binding IsTrashView, Converter={StaticResource BoolToVisibility}}"
+                                        AutomationProperties.Name="Apagar nota permanentemente"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

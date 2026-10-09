@@ -8,6 +8,7 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
     <ProjectReference Include="..\..\src\Island.Windows\Island.Windows.csproj" />
+    <ProjectReference Include="..\..\src\Island.App\Island.App.csproj" />
   </ItemGroup>
   <ItemGroup><Using Include="Xunit" /></ItemGroup>
 </Project>
