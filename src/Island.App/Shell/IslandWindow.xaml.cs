@@ -27,6 +27,7 @@ public partial class IslandWindow : System.Windows.Window
     private readonly IslandTransitions _transitions;
     private readonly IslandContextMenu _menu;
     private readonly OutsideClickWatcher _menuOutsideClicks;
+    private readonly OutsideClickWatcher _islandOutsideClicks;
     private readonly Action<IslandSettings>? _saveSettings;
     private readonly Func<UpdateInfo?> _availableUpdate;
     private System.Windows.Interop.HwndSource? _hwndSource;
@@ -36,10 +37,6 @@ public partial class IslandWindow : System.Windows.Window
     private bool _menuOpen;
     private bool _dragActive;
     private bool _interactionSent;
-
-    // After the pointer leaves the shelf or clipboard, the island closes quickly instead of waiting out the idle timer.
-    private static readonly TimeSpan LeaveCollapseDelay = TimeSpan.FromMilliseconds(250);
-    private System.Windows.Threading.DispatcherTimer _leaveTimer = null!;
 
     // Hold-and-drag: a press that stays within HoldSlop pixels for HoldDuration turns into a drag of the island.
     private static readonly TimeSpan HoldDuration = TimeSpan.FromMilliseconds(350);
@@ -112,7 +109,11 @@ public partial class IslandWindow : System.Windows.Window
         _menu.Opened += (_, _) => SetMenuOpen(true);
         _menu.Closed += (_, _) => SetMenuOpen(false);
         // The overlay never activates, so WPF cannot dismiss the menu on a click elsewhere; watch for those clicks.
-        _menuOutsideClicks = new OutsideClickWatcher(Dispatcher, MenuScreenBounds, () => _menu.IsOpen = false);
+        _menuOutsideClicks = new OutsideClickWatcher(Dispatcher, (x, y) => Contains(MenuScreenBounds(), x, y), () => _menu.IsOpen = false);
+        // The shelf and the Clipboard close only on a press outside the island. A press on the open menu is not outside.
+        _islandOutsideClicks = new OutsideClickWatcher(Dispatcher,
+            (x, y) => Contains(IslandScreenBounds(), x, y) || (_menuOpen && Contains(MenuScreenBounds(), x, y)),
+            OnOutsideIslandClick);
 
         // The saved dock is aligned first, so the first mode is shown already in its docked form.
         ApplyDock(DockFrom(initial));
@@ -131,29 +132,17 @@ public partial class IslandWindow : System.Windows.Window
         IslandShape.MouseEnter += (_, _) =>
         {
             _pointerInside = true;
-            _leaveTimer.Stop();
             UpdateInteraction(_vm.Mode);
         };
         IslandShape.MouseLeave += (_, _) =>
         {
             _pointerInside = false;
             UpdateInteraction(_vm.Mode);
-            ScheduleLeaveCollapse();
         };
 
         _holdTimer = new System.Windows.Threading.DispatcherTimer { Interval = HoldDuration };
         _holdTimer.Tick += OnHoldElapsed;
 
-        _leaveTimer = new System.Windows.Threading.DispatcherTimer { Interval = LeaveCollapseDelay };
-        _leaveTimer.Tick += (_, _) =>
-        {
-            _leaveTimer.Stop();
-            bool collapsible = _vm.Mode is IslandMode.Expanded or IslandMode.Clipboard;
-            if (collapsible && !_pointerInside && !_menuOpen && !_dragActive && _vm.CollapseCommand.CanExecute(null))
-            {
-                _vm.CollapseCommand.Execute(null);
-            }
-        };
         IslandShape.MouseWheel += OnIslandWheel;
         IslandShape.MouseLeftButtonDown += OnIslandPressed;
         IslandShape.MouseMove += OnIslandMouseMove;
@@ -304,6 +293,7 @@ public partial class IslandWindow : System.Windows.Window
                 : null;
         _transitions.ShowLayer(layer, instant, beforeIn);
 
+        UpdateOutsideClickWatch(mode);
         UpdateInteraction(mode);
     }
 
@@ -462,6 +452,18 @@ public partial class IslandWindow : System.Windows.Window
         return (r.Left, r.Top, r.Right, r.Bottom);
     }
 
+    /// <summary>Screen rectangle (physical pixels) of the island shape. A press inside it never closes the island.</summary>
+    private (int Left, int Top, int Right, int Bottom)? IslandScreenBounds()
+    {
+        if (!IslandShape.IsLoaded) return null;
+        System.Windows.Point topLeft = IslandShape.PointToScreen(new System.Windows.Point(0.0, 0.0));
+        System.Windows.Point bottomRight = IslandShape.PointToScreen(new System.Windows.Point(IslandShape.ActualWidth, IslandShape.ActualHeight));
+        return ((int)Math.Floor(topLeft.X), (int)Math.Floor(topLeft.Y), (int)Math.Ceiling(bottomRight.X), (int)Math.Ceiling(bottomRight.Y));
+    }
+
+    private static bool Contains((int Left, int Top, int Right, int Bottom)? bounds, int x, int y) =>
+        bounds is { } b && x >= b.Left && x < b.Right && y >= b.Top && y < b.Bottom;
+
     [StructLayout(LayoutKind.Sequential)]
     private struct RectStruct
     {
@@ -481,16 +483,21 @@ public partial class IslandWindow : System.Windows.Window
         if (open) _menuOutsideClicks.Start();
         else _menuOutsideClicks.Stop();
         UpdateInteraction(_vm.Mode);
-        // Closing the menu with the pointer outside (e.g. by clicking elsewhere) should also close the island.
-        if (!open) ScheduleLeaveCollapse();
     }
 
-    private void ScheduleLeaveCollapse()
+    /// <summary>The shelf and the Clipboard watch for presses outside the island; no other mode closes on a press.</summary>
+    private void UpdateOutsideClickWatch(IslandMode mode)
     {
-        if (_vm.Mode is IslandMode.Expanded or IslandMode.Clipboard)
+        if (mode is IslandMode.Expanded or IslandMode.Clipboard) _islandOutsideClicks.Start();
+        else _islandOutsideClicks.Stop();
+    }
+
+    /// <summary>A press outside the island closes the shelf or the Clipboard.</summary>
+    private void OnOutsideIslandClick()
+    {
+        if (_vm.Mode is IslandMode.Expanded or IslandMode.Clipboard && _vm.CollapseCommand.CanExecute(null))
         {
-            _leaveTimer.Stop();
-            _leaveTimer.Start();
+            _vm.CollapseCommand.Execute(null);
         }
     }
 
@@ -835,7 +842,7 @@ public partial class IslandWindow : System.Windows.Window
         ShelfLayer.DragActiveChanged -= OnShelfDragActiveChanged;
         _menu.IsOpen = false;
         _menuOutsideClicks.Dispose();
-        _leaveTimer.Stop();
+        _islandOutsideClicks.Dispose();
         CancelHold();
         _hwndSource?.RemoveHook(WndProc);
         _hwndSource = null;

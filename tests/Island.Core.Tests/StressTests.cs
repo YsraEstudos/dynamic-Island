@@ -49,10 +49,9 @@ public class StressTests
                     h.Media.SetMedia(CoordinatorHarness.Track($"Track {i}"));
                     h.Advance(4.0);
                     break;
-                default: // Shelf: expires on even cycles, collapsed explicitly on odd ones.
+                default: // Shelf: has no timer, so it is closed explicitly, as an outside click does.
                     h.Post(new IslandEvent.ExpandRequested());
-                    if (i % 2 == 0) h.Advance(7.0);
-                    else h.Post(new IslandEvent.CollapseRequested());
+                    h.Post(new IslandEvent.CollapseRequested());
                     break;
             }
 
@@ -62,8 +61,8 @@ public class StressTests
 
         Assert.Equal(IslandMode.Compact, h.Mode);
         Assert.Equal(0, h.Scheduler.PendingCount);
-        // 1000 volume expiries + 1000 preview expiries + 500 shelf expiries (even cycles only). Collapses cancel, never fire.
-        Assert.Equal(2500, h.Scheduler.FiredCount);
+        // 1000 volume expiries + 1000 preview expiries. The shelf has no timer, so its open and close never fire one.
+        Assert.Equal(2000, h.Scheduler.FiredCount);
     }
 
     [Fact]
@@ -218,7 +217,8 @@ public class StressTests
             h.Advance(0.05);
         }
 
-        // Make sure a live timer exists, so the zero count after Dispose is meaningful.
+        // Make sure a live timer exists, so the zero count after Dispose is meaningful. The shelf has no timer, so close it first.
+        h.Post(new IslandEvent.CollapseRequested());
         h.Volume.SetLevel(5);
         Assert.Equal(1, h.Scheduler.PendingCount);
 
@@ -252,14 +252,12 @@ public class StressTests
 
         h.Volume.SetLevel(10);                                     // timer A
         h.Volume.SetLevel(20);                                     // timer B, A disposed
-        h.Post(new IslandEvent.ExpandRequested());                 // timer C, B disposed
-        Assert.Equal(3, scheduler.All.Count);
+        h.Post(new IslandEvent.ExpandRequested());                 // no timer, B disposed
+        Assert.Equal(2, scheduler.All.Count);
         var a = scheduler.All[0];
         var b = scheduler.All[1];
-        var c = scheduler.All[2];
         Assert.True(a.Disposed);
         Assert.True(b.Disposed);
-        Assert.False(c.Disposed);
 
         // Callbacks from superseded arms, dispatched after their handles were disposed, must not touch the Expanded state.
         var emitted = h.Emitted.Count;
@@ -268,14 +266,13 @@ public class StressTests
         Assert.Equal(IslandMode.Expanded, h.Mode);
         Assert.Equal(emitted, h.Emitted.Count);
 
-        c.Callback();
+        h.Post(new IslandEvent.CollapseRequested());
         Assert.Equal(IslandMode.Compact, h.Mode);
         emitted = h.Emitted.Count;
 
         // Late callbacks from every earlier arm must not regress the settled state or emit anything.
         a.Callback();
         b.Callback();
-        c.Callback();
         Assert.Equal(IslandMode.Compact, h.Mode);
         Assert.Equal(emitted, h.Emitted.Count);
         Assert.Equal(20, h.State.Volume!.Level);

@@ -60,13 +60,12 @@ public class ShelfModesTests
     // ---- Reducer: Expanded, Customize, Clipboard ----
 
     [Fact]
-    public void Expand_without_media_opens_the_shelf_with_the_idle_timer()
+    public void Expand_without_media_opens_the_shelf_without_a_timer()
     {
         var result = Reduce(IslandState.Initial, new IslandEvent.ExpandRequested());
 
         Assert.Equal(IslandMode.Expanded, result.State.Mode);
-        Assert.Equal(TimerAction.Arm, result.Timer);
-        Assert.Equal(TimeSpan.FromSeconds(Settings.ExpandedIdleSeconds), result.Delay);
+        Assert.Equal(TimerAction.Cancel, result.Timer);
     }
 
     [Theory]
@@ -79,7 +78,7 @@ public class ShelfModesTests
         var result = Reduce(In(from), new IslandEvent.ExpandRequested());
 
         Assert.Equal(IslandMode.Expanded, result.State.Mode);
-        Assert.Equal(TimerAction.Arm, result.Timer);
+        Assert.Equal(TimerAction.Cancel, result.Timer);
     }
 
     [Fact]
@@ -112,13 +111,12 @@ public class ShelfModesTests
     }
 
     [Fact]
-    public void Clipboard_request_arms_twice_the_expanded_idle_duration()
+    public void Clipboard_request_opens_the_clipboard_without_a_timer()
     {
         var result = Reduce(IslandState.Initial, new IslandEvent.ClipboardRequested());
 
         Assert.Equal(IslandMode.Clipboard, result.State.Mode);
-        Assert.Equal(TimerAction.Arm, result.Timer);
-        Assert.Equal(TimeSpan.FromSeconds(Settings.ExpandedIdleSeconds * 2), result.Delay);
+        Assert.Equal(TimerAction.Cancel, result.Timer);
     }
 
     [Fact]
@@ -140,21 +138,22 @@ public class ShelfModesTests
     }
 
     [Fact]
-    public void Clipboard_request_from_expanded_switches_and_restarts_the_clipboard_timer()
+    public void Clipboard_request_from_expanded_switches_without_a_timer()
     {
         var result = Reduce(In(IslandMode.Expanded), new IslandEvent.ClipboardRequested());
 
         Assert.Equal(IslandMode.Clipboard, result.State.Mode);
-        Assert.Equal(TimerAction.Arm, result.Timer);
-        Assert.Equal(TimeSpan.FromSeconds(Settings.ExpandedIdleSeconds * 2), result.Delay);
+        Assert.Equal(TimerAction.Cancel, result.Timer);
     }
 
-    [Fact]
-    public void Clipboard_expiry_returns_to_compact()
+    [Theory]
+    [InlineData(IslandMode.Expanded)]
+    [InlineData(IslandMode.Clipboard)]
+    public void Temporary_expiry_does_not_close_the_shelf_or_clipboard(IslandMode open)
     {
-        var result = Reduce(In(IslandMode.Clipboard), new IslandEvent.TemporaryStateExpired());
+        var result = Reduce(In(open), new IslandEvent.TemporaryStateExpired());
 
-        Assert.Equal(IslandMode.Compact, result.State.Mode);
+        Assert.Equal(open, result.State.Mode);
     }
 
     // ---- Reducer: Notice ----
@@ -282,8 +281,8 @@ public class ShelfModesTests
     [InlineData(IslandMode.Compact, false)]
     [InlineData(IslandMode.Volume, true)]
     [InlineData(IslandMode.MediaPreview, true)]
-    [InlineData(IslandMode.Expanded, true)]
-    [InlineData(IslandMode.Clipboard, true)]
+    [InlineData(IslandMode.Expanded, false)]
+    [InlineData(IslandMode.Clipboard, false)]
     [InlineData(IslandMode.Notice, true)]
     [InlineData(IslandMode.Customize, false)]
     public void Only_timer_owned_modes_have_a_timer(IslandMode mode, bool hasTimer)
@@ -364,7 +363,7 @@ public class ShelfModesTests
     }
 
     [Fact]
-    public void Notice_is_dropped_while_expanded_and_the_shelf_keeps_its_own_timer()
+    public void Notice_is_dropped_while_expanded_and_the_shelf_has_no_timer()
     {
         using var h = new CoordinatorHarness();
         h.Start();
@@ -374,9 +373,9 @@ public class ShelfModesTests
 
         Assert.Equal(IslandMode.Expanded, h.Mode);
         Assert.Null(h.State.Notice);
-        Assert.Equal(1, h.Scheduler.PendingCount);
-        h.Advance(6.0);
-        Assert.Equal(IslandMode.Compact, h.Mode);
+        Assert.Equal(0, h.Scheduler.PendingCount);
+        h.Advance(60.0);
+        Assert.Equal(IslandMode.Expanded, h.Mode);
     }
 
     [Fact]
@@ -474,7 +473,7 @@ public class ShelfModesTests
     }
 
     [Fact]
-    public void Expand_from_customize_is_the_done_action_and_auto_collapses()
+    public void Expand_from_customize_is_the_done_action_and_stays_open()
     {
         using var h = new CoordinatorHarness();
         h.Start();
@@ -482,10 +481,10 @@ public class ShelfModesTests
         h.Post(new IslandEvent.CustomizeRequested());
         h.Post(new IslandEvent.ExpandRequested());
         Assert.Equal(IslandMode.Expanded, h.Mode);
-        Assert.Equal(1, h.Scheduler.PendingCount);
+        Assert.Equal(0, h.Scheduler.PendingCount);
 
-        h.Advance(6.0);
-        Assert.Equal(IslandMode.Compact, h.Mode);
+        h.Advance(600.0);
+        Assert.Equal(IslandMode.Expanded, h.Mode);
     }
 
     [Fact]
@@ -501,19 +500,17 @@ public class ShelfModesTests
     }
 
     [Fact]
-    public void Clipboard_stays_open_for_twice_the_expanded_idle_time()
+    public void Clipboard_stays_open_until_it_is_closed()
     {
         using var h = new CoordinatorHarness();
         h.Start();
 
         h.Post(new IslandEvent.ClipboardRequested());
         Assert.Equal(IslandMode.Clipboard, h.Mode);
-        Assert.Equal(1, h.Scheduler.PendingCount);
+        Assert.Equal(0, h.Scheduler.PendingCount);
 
-        h.Advance(11.9);
+        h.Advance(600.0);
         Assert.Equal(IslandMode.Clipboard, h.Mode);
-        h.Advance(0.2);
-        Assert.Equal(IslandMode.Compact, h.Mode);
     }
 
     [Fact]
@@ -528,7 +525,7 @@ public class ShelfModesTests
     }
 
     [Fact]
-    public void Clipboard_is_held_open_during_interaction_and_restarts_in_full_after()
+    public void Clipboard_stays_open_through_hover_and_after_it_ends()
     {
         using var h = new CoordinatorHarness();
         h.Start();
@@ -540,10 +537,9 @@ public class ShelfModesTests
         Assert.Equal(0, h.Scheduler.PendingCount);
 
         h.Post(new IslandEvent.InteractionChanged(false));
-        h.Advance(11.9);
+        h.Advance(100);
         Assert.Equal(IslandMode.Clipboard, h.Mode);
-        h.Advance(0.2);
-        Assert.Equal(IslandMode.Compact, h.Mode);
+        Assert.Equal(0, h.Scheduler.PendingCount);
     }
 
     [Fact]
@@ -573,10 +569,8 @@ public class ShelfModesTests
 
         h.Post(new IslandEvent.ExpandRequested());
         Assert.Equal(IslandMode.Expanded, h.Mode);
-        h.Advance(5.9);
+        h.Advance(600.0);
         Assert.Equal(IslandMode.Expanded, h.Mode);
-        h.Advance(0.2);
-        Assert.Equal(IslandMode.Compact, h.Mode);
     }
 
     [Fact]
@@ -590,6 +584,6 @@ public class ShelfModesTests
         h.Media.SetMedia(null);
 
         Assert.Equal(IslandMode.Expanded, h.Mode);
-        Assert.Equal(1, h.Scheduler.PendingCount);
+        Assert.Equal(0, h.Scheduler.PendingCount);
     }
 }

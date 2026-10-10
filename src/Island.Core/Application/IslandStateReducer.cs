@@ -108,8 +108,8 @@ public static class IslandStateReducer
                 break;
 
             case IslandEvent.TemporaryStateExpired:
-                // Timer-owned: temporary states and the idle collapse of Expanded/Clipboard all return to Compact.
-                if (!flags.Interacting && mode is not (IslandMode.Customize or IslandMode.Mini)) mode = IslandMode.Compact;
+                // Timer-owned: only the temporary states return to Compact. Expanded and Clipboard close on an outside click.
+                if (!flags.Interacting && EventPriorityPolicy.HasTimer(mode)) mode = IslandMode.Compact;
                 break;
         }
 
@@ -179,9 +179,6 @@ public static class IslandStateReducer
         IslandMode.Notice => Seconds(notice is { Urgent: true }
             ? Math.Max(s.NoticeSeconds, UrgentNoticeMinSeconds)
             : s.NoticeSeconds),
-        IslandMode.Expanded => Seconds(s.ExpandedIdleSeconds),
-        // The clipboard is read more slowly than the shelf, so it stays open twice as long.
-        IslandMode.Clipboard => Seconds(s.ExpandedIdleSeconds * 2),
         _ => TimeSpan.Zero,
     };
 

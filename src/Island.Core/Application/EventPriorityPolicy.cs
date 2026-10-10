@@ -29,9 +29,8 @@ public static class EventPriorityPolicy
         Rank(requested) >= Rank(current) ? requested : current;
 
     /// <summary>
-    /// Modes owned by the coordinator's single timer: temporary states, and the idle collapse of Expanded and Clipboard.
-    /// Customize has no timer: it stays until Expand or Collapse is requested.
+    /// Modes owned by the coordinator's single timer: the temporary states only. Expanded, Clipboard and Customize have no
+    /// timer: they stay until the user closes them (Expanded and Clipboard by a click outside the island).
     /// </summary>
-    public static bool HasTimer(IslandMode mode) => mode is IslandMode.Volume or IslandMode.MediaPreview
-        or IslandMode.Notice or IslandMode.Expanded or IslandMode.Clipboard;
+    public static bool HasTimer(IslandMode mode) => mode is IslandMode.Volume or IslandMode.MediaPreview or IslandMode.Notice;
 }

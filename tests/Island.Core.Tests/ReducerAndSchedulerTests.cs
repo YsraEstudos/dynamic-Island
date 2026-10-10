@@ -70,7 +70,7 @@ public class ReducerTests
     }
 
     [Fact]
-    public void Ending_interaction_in_expanded_arms_full_idle_duration()
+    public void Ending_interaction_in_expanded_arms_no_timer()
     {
         var expanded = IslandStateReducer.Reduce(
             IslandState.Initial with { Media = Playing("A") },
@@ -80,8 +80,8 @@ public class ReducerTests
             new IslandEvent.InteractionChanged(false), Settings);
 
         Assert.Equal(TimerAction.Cancel, expanded.Timer);
-        Assert.Equal(TimerAction.Arm, resumed.Timer);
-        Assert.Equal(TimeSpan.FromSeconds(Settings.ExpandedIdleSeconds), resumed.Delay);
+        Assert.Equal(TimerAction.Cancel, resumed.Timer);
+        Assert.Equal(IslandMode.Expanded, resumed.State.Mode);
     }
 
     [Fact]

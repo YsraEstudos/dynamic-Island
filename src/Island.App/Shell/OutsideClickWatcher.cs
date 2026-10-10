@@ -4,9 +4,9 @@ using System.Windows.Threading;
 namespace Island.App.Shell;
 
 /// <summary>
-/// Reports mouse presses that land outside a popup. The island never activates, so WPF's own light-dismiss for the
-/// context menu (which relies on activation/capture) misses clicks on other apps or the desktop; a low-level mouse hook
-/// sees them regardless of which window owns the cursor. Only active between <see cref="Start"/> and <see cref="Stop"/>.
+/// Reports mouse presses that land outside the popup or island it watches. The island never activates, so WPF's own
+/// light-dismiss for the context menu (which relies on activation/capture) misses clicks on other apps or the desktop; a
+/// low-level mouse hook sees them regardless of which window owns the cursor. Only active between <see cref="Start"/> and <see cref="Stop"/>.
 /// </summary>
 internal sealed class OutsideClickWatcher : IDisposable
 {
@@ -19,17 +19,17 @@ internal sealed class OutsideClickWatcher : IDisposable
     private delegate IntPtr LowLevelMouseProc(int code, IntPtr wParam, IntPtr lParam);
 
     private readonly Dispatcher _dispatcher;
-    private readonly Func<(int Left, int Top, int Right, int Bottom)?> _insideBounds;
+    private readonly Func<int, int, bool> _isInside;
     private readonly Action _onOutsideClick;
     private readonly LowLevelMouseProc _proc;   // kept in a field so the delegate outlives the hook
     private IntPtr _hook;
 
-    /// <param name="insideBounds">Screen rectangle (physical pixels) of the popup, or null when it cannot be measured.</param>
-    /// <param name="onOutsideClick">Called on the UI thread when a button goes down outside <paramref name="insideBounds"/>.</param>
-    public OutsideClickWatcher(Dispatcher dispatcher, Func<(int Left, int Top, int Right, int Bottom)?> insideBounds, Action onOutsideClick)
+    /// <param name="isInside">True when a physical screen point lies on the popup or island; a press there is not outside.</param>
+    /// <param name="onOutsideClick">Called on the UI thread when a button goes down outside <paramref name="isInside"/>.</param>
+    public OutsideClickWatcher(Dispatcher dispatcher, Func<int, int, bool> isInside, Action onOutsideClick)
     {
         _dispatcher = dispatcher;
-        _insideBounds = insideBounds;
+        _isInside = isInside;
         _onOutsideClick = onOutsideClick;
         _proc = HookProc;
     }
@@ -67,7 +67,7 @@ internal sealed class OutsideClickWatcher : IDisposable
     private void CheckClick(int x, int y)
     {
         if (_hook == IntPtr.Zero) return;
-        if (_insideBounds() is { } b && x >= b.Left && x < b.Right && y >= b.Top && y < b.Bottom) return;
+        if (_isInside(x, y)) return;
         _onOutsideClick();
     }
 

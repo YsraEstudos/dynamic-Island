@@ -148,7 +148,6 @@ public sealed class JsonSettingsStore : ISettingsStore
                 .Where(g => !string.IsNullOrWhiteSpace(g)).Select(g => g.Trim()).ToList(),
             VolumeDisplaySeconds = ClampSeconds(s.VolumeDisplaySeconds, d.VolumeDisplaySeconds),
             MediaPreviewSeconds = ClampSeconds(s.MediaPreviewSeconds, d.MediaPreviewSeconds),
-            ExpandedIdleSeconds = ClampSeconds(s.ExpandedIdleSeconds, d.ExpandedIdleSeconds),
             UpdateRepository = string.IsNullOrWhiteSpace(s.UpdateRepository) ? d.UpdateRepository : s.UpdateRepository.Trim(),
             WeatherCity = CleanCity(s.WeatherCity),
         };

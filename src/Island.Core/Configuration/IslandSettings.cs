@@ -18,7 +18,6 @@ public sealed record IslandSettings
     public int TopMargin { get; init; } = 8;
     public double VolumeDisplaySeconds { get; init; } = 1.8;
     public double MediaPreviewSeconds { get; init; } = 3.5;
-    public double ExpandedIdleSeconds { get; init; } = 6.0;
     public bool HideInFullscreen { get; init; } = true;
 
     /// <summary>When true the island sits at <see cref="PositionX"/>/<see cref="PositionY"/> (set by hold-and-drag) instead of top-centre.</summary>
@@ -71,7 +70,7 @@ public sealed record IslandSettings
     public IReadOnlyList<IReadOnlyList<string>> GetShelfRows() => ShelfLayout.ToRows(ShelfWidgets, ShelfRows);
 
     // Records compare collections by reference; settings must compare by value (ShelfWidgets, ShelfRows).
-    public bool Equals(IslandSettings? other) => other is not null && MonitorIndex == other.MonitorIndex && CompactWidth == other.CompactWidth && CompactHeight == other.CompactHeight && TopMargin == other.TopMargin && VolumeDisplaySeconds == other.VolumeDisplaySeconds && MediaPreviewSeconds == other.MediaPreviewSeconds && ExpandedIdleSeconds == other.ExpandedIdleSeconds && HideInFullscreen == other.HideInFullscreen && UseCustomPosition == other.UseCustomPosition && Dock == other.Dock && Minimized == other.Minimized && PositionX == other.PositionX && PositionY == other.PositionY && GameProcesses.SequenceEqual(other.GameProcesses) && ReduceAnimations == other.ReduceAnimations && StartWithWindows == other.StartWithWindows && ShowVolume == other.ShowVolume && ShowMedia == other.ShowMedia && ShelfWidgets.SequenceEqual(other.ShelfWidgets) && ShelfRows.SequenceEqual(other.ShelfRows) && PomodoroFocusMinutes == other.PomodoroFocusMinutes && PomodoroBreakMinutes == other.PomodoroBreakMinutes && PomodoroCycles == other.PomodoroCycles && PomodoroSound == other.PomodoroSound && ClipboardEnabled == other.ClipboardEnabled && ClipboardMaxItems == other.ClipboardMaxItems && QuickNotesHotkeyEnabled == other.QuickNotesHotkeyEnabled && NoticeSeconds == other.NoticeSeconds && PhoneBlockEnabled == other.PhoneBlockEnabled && PhoneFcmToken == other.PhoneFcmToken && UpdateRepository == other.UpdateRepository && IdleModeEnabled == other.IdleModeEnabled && WeatherCity == other.WeatherCity;
+    public bool Equals(IslandSettings? other) => other is not null && MonitorIndex == other.MonitorIndex && CompactWidth == other.CompactWidth && CompactHeight == other.CompactHeight && TopMargin == other.TopMargin && VolumeDisplaySeconds == other.VolumeDisplaySeconds && MediaPreviewSeconds == other.MediaPreviewSeconds && HideInFullscreen == other.HideInFullscreen && UseCustomPosition == other.UseCustomPosition && Dock == other.Dock && Minimized == other.Minimized && PositionX == other.PositionX && PositionY == other.PositionY && GameProcesses.SequenceEqual(other.GameProcesses) && ReduceAnimations == other.ReduceAnimations && StartWithWindows == other.StartWithWindows && ShowVolume == other.ShowVolume && ShowMedia == other.ShowMedia && ShelfWidgets.SequenceEqual(other.ShelfWidgets) && ShelfRows.SequenceEqual(other.ShelfRows) && PomodoroFocusMinutes == other.PomodoroFocusMinutes && PomodoroBreakMinutes == other.PomodoroBreakMinutes && PomodoroCycles == other.PomodoroCycles && PomodoroSound == other.PomodoroSound && ClipboardEnabled == other.ClipboardEnabled && ClipboardMaxItems == other.ClipboardMaxItems && QuickNotesHotkeyEnabled == other.QuickNotesHotkeyEnabled && NoticeSeconds == other.NoticeSeconds && PhoneBlockEnabled == other.PhoneBlockEnabled && PhoneFcmToken == other.PhoneFcmToken && UpdateRepository == other.UpdateRepository && IdleModeEnabled == other.IdleModeEnabled && WeatherCity == other.WeatherCity;
 
     public override int GetHashCode()
     {
@@ -82,7 +81,6 @@ public sealed record IslandSettings
         h.Add(TopMargin);
         h.Add(VolumeDisplaySeconds);
         h.Add(MediaPreviewSeconds);
-        h.Add(ExpandedIdleSeconds);
         h.Add(HideInFullscreen);
         h.Add(UseCustomPosition);
         h.Add(Dock);

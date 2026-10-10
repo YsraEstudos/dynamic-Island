@@ -20,7 +20,6 @@ public partial class ClipboardView : UserControl
     private readonly Dictionary<Guid, ClipboardEntry> _byId = new();
     private readonly UiSignal _signal;
     private ShelfContext? _shelf;
-    private IslandViewModel? _vm;
     private bool _subscribed;
 
     public ClipboardView()
@@ -86,10 +85,9 @@ public partial class ClipboardView : UserControl
     private void ScrollTo(double offset) =>
         Scroller.ScrollToHorizontalOffset(Math.Clamp(offset, 0.0, Scroller.ScrollableWidth));
 
-    /// <summary>Connects the panel to the shelf (history and clipboard service) and to the island (copy collapses it).</summary>
+    /// <summary>Connects the panel to the shelf (history and clipboard service).</summary>
     public void Attach(IslandViewModel vm)
     {
-        _vm = vm;
         _shelf = vm.Shelf;
         Subscribe();
     }
@@ -179,15 +177,9 @@ public partial class ClipboardView : UserControl
             {
                 shelf.ClipboardService.SetText(text ?? string.Empty);
             }
-            CollapseIsland();
         };
 
         Action delete = () => shelf.Clipboard.Remove(id);
         return new ClipboardEntry(item, copy, delete);
-    }
-
-    private void CollapseIsland()
-    {
-        if (_vm is not null && _vm.CollapseCommand.CanExecute(null)) _vm.CollapseCommand.Execute(null);
     }
 }

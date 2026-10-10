@@ -28,7 +28,6 @@ public sealed class JsonSettingsStoreTests : IDisposable
             TopMargin = 12,
             VolumeDisplaySeconds = 2.5,
             MediaPreviewSeconds = 4.0,
-            ExpandedIdleSeconds = 9.0,
             HideInFullscreen = false,
             ReduceAnimations = true,
             StartWithWindows = true,
@@ -126,8 +125,7 @@ public sealed class JsonSettingsStoreTests : IDisposable
               "compactHeight": 99999,
               "topMargin": -1,
               "volumeDisplaySeconds": 0,
-              "mediaPreviewSeconds": -2,
-              "expandedIdleSeconds": 1e9
+              "mediaPreviewSeconds": -2
             }
             """);
 
@@ -139,7 +137,6 @@ public sealed class JsonSettingsStoreTests : IDisposable
         Assert.Equal(0, loaded.TopMargin);
         Assert.True(loaded.VolumeDisplaySeconds > 0);
         Assert.True(loaded.MediaPreviewSeconds > 0);
-        Assert.True(loaded.ExpandedIdleSeconds <= 3600.0);
     }
 
     [Fact]

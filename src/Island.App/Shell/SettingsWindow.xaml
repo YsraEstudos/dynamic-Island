@@ -430,22 +430,6 @@
                                     SmallChange="0.1" LargeChange="1"
                                     Value="{Binding MediaPreviewSeconds, Mode=TwoWay}"/>
                         </StackPanel>
-
-                        <Border Style="{StaticResource SettingsDivider}"/>
-
-                        <StackPanel Margin="0,10,0,10">
-                            <Grid>
-                                <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Expanded idle"/>
-                                <TextBlock Style="{StaticResource SettingsRowValue}"
-                                           Text="{Binding ExpandedIdleSeconds, StringFormat={}{0:0.0} s}"/>
-                            </Grid>
-                            <Slider Style="{StaticResource SettingsSlider}"
-                                    Margin="0,8,0,0"
-                                    Minimum="2" Maximum="30"
-                                    TickFrequency="0.5" IsSnapToTickEnabled="True"
-                                    SmallChange="0.5" LargeChange="2"
-                                    Value="{Binding ExpandedIdleSeconds, Mode=TwoWay}"/>
-                        </StackPanel>
                     </StackPanel>
                 </Border>
 

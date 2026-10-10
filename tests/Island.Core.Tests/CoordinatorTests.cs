@@ -300,24 +300,23 @@ public class CoordinatorTests
         Assert.Equal(70, h.State.Volume!.Level);
     }
 
-    // ---- Expanded, interaction and idle collapse ----
+    // ---- Expanded, interaction and closing ----
 
     [Fact]
-    public void Expanded_auto_collapses_after_idle_seconds()
+    public void Expanded_stays_open_without_any_timer()
     {
         using var h = new CoordinatorHarness();
         h.Start();
 
         h.Media.SetMedia(CoordinatorHarness.Track("A"));
         h.Post(new IslandEvent.ExpandRequested());
-        h.Advance(5.9);
+        h.Advance(600.0);
         Assert.Equal(IslandMode.Expanded, h.Mode);
-        h.Advance(0.2);
-        Assert.Equal(IslandMode.Compact, h.Mode);
+        Assert.Equal(0, h.Scheduler.PendingCount);
     }
 
     [Fact]
-    public void Expanded_is_preserved_during_interaction_and_idle_timer_restarts_in_full_after()
+    public void Expanded_is_preserved_during_interaction_and_after_it_ends()
     {
         using var h = new CoordinatorHarness();
         h.Start();
@@ -338,12 +337,10 @@ public class CoordinatorTests
 
         h.Post(new IslandEvent.InteractionChanged(false));
         Assert.Equal(IslandMode.Expanded, h.Mode);
+        Assert.Equal(0, h.Scheduler.PendingCount);
 
-        // Full duration again, not the 2 s that were left before the interaction.
-        h.Advance(5.9);
+        h.Advance(600.0);
         Assert.Equal(IslandMode.Expanded, h.Mode);
-        h.Advance(0.2);
-        Assert.Equal(IslandMode.Compact, h.Mode);
     }
 
     [Fact]
@@ -365,7 +362,7 @@ public class CoordinatorTests
     }
 
     [Fact]
-    public void Expand_requested_while_interacting_starts_idle_timer_only_when_interaction_ends()
+    public void Expand_requested_while_interacting_has_no_timer_when_interaction_ends()
     {
         using var h = new CoordinatorHarness();
         h.Start();
@@ -380,22 +377,23 @@ public class CoordinatorTests
         Assert.Equal(IslandMode.Expanded, h.Mode);
 
         h.Post(new IslandEvent.InteractionChanged(false));
-        h.Advance(6.0);
-        Assert.Equal(IslandMode.Compact, h.Mode);
+        h.Advance(600.0);
+        Assert.Equal(IslandMode.Expanded, h.Mode);
+        Assert.Equal(0, h.Scheduler.PendingCount);
     }
 
     [Fact]
-    public void Expand_opens_the_shelf_without_media_and_auto_collapses()
+    public void Expand_opens_the_shelf_without_media_and_it_stays_open()
     {
         using var h = new CoordinatorHarness();
         h.Start();
 
         h.Post(new IslandEvent.ExpandRequested());
         Assert.Equal(IslandMode.Expanded, h.Mode);
-        Assert.Equal(1, h.Scheduler.PendingCount);
+        Assert.Equal(0, h.Scheduler.PendingCount);
 
-        h.Advance(6.0);
-        Assert.Equal(IslandMode.Compact, h.Mode);
+        h.Advance(600.0);
+        Assert.Equal(IslandMode.Expanded, h.Mode);
     }
 
     [Fact]
@@ -428,7 +426,7 @@ public class CoordinatorTests
         h.Media.SetMedia(null);
         Assert.Equal(IslandMode.Expanded, h.Mode);
         Assert.Null(h.State.Media);
-        Assert.Equal(1, h.Scheduler.PendingCount);
+        Assert.Equal(0, h.Scheduler.PendingCount);
     }
 
     [Fact]

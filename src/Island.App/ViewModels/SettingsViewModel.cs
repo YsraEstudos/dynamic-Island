@@ -16,7 +16,6 @@ public sealed class SettingsViewModel : ObservableObject
     private const int TopMarginMin = 0, TopMarginMax = 80;
     private const double VolumeSecondsMin = 0.5, VolumeSecondsMax = 6;
     private const double MediaSecondsMin = 1, MediaSecondsMax = 10;
-    private const double IdleSecondsMin = 2, IdleSecondsMax = 30;
 
     private readonly Action<IslandSettings> _apply;
     private IslandSettings _current;
@@ -27,7 +26,6 @@ public sealed class SettingsViewModel : ObservableObject
     private int _topMargin;
     private double _volumeDisplaySeconds;
     private double _mediaPreviewSeconds;
-    private double _expandedIdleSeconds;
     private bool _hideInFullscreen;
     private bool _reduceAnimations;
     private bool _startWithWindows;
@@ -155,19 +153,6 @@ public sealed class SettingsViewModel : ObservableObject
             if (SetProperty(ref _mediaPreviewSeconds, next))
             {
                 Commit(s => s with { MediaPreviewSeconds = next });
-            }
-        }
-    }
-
-    public double ExpandedIdleSeconds
-    {
-        get => _expandedIdleSeconds;
-        set
-        {
-            double next = SnapSeconds(value, IdleSecondsMin, IdleSecondsMax);
-            if (SetProperty(ref _expandedIdleSeconds, next))
-            {
-                Commit(s => s with { ExpandedIdleSeconds = next });
             }
         }
     }
@@ -380,7 +365,6 @@ public sealed class SettingsViewModel : ObservableObject
         SetProperty(ref _topMargin, s.TopMargin, nameof(TopMargin));
         SetProperty(ref _volumeDisplaySeconds, s.VolumeDisplaySeconds, nameof(VolumeDisplaySeconds));
         SetProperty(ref _mediaPreviewSeconds, s.MediaPreviewSeconds, nameof(MediaPreviewSeconds));
-        SetProperty(ref _expandedIdleSeconds, s.ExpandedIdleSeconds, nameof(ExpandedIdleSeconds));
         SetProperty(ref _hideInFullscreen, s.HideInFullscreen, nameof(HideInFullscreen));
         SetProperty(ref _reduceAnimations, s.ReduceAnimations, nameof(ReduceAnimations));
         SetProperty(ref _startWithWindows, s.StartWithWindows, nameof(StartWithWindows));
@@ -403,7 +387,6 @@ public sealed class SettingsViewModel : ObservableObject
         TopMargin = Math.Clamp(s.TopMargin, TopMarginMin, TopMarginMax),
         VolumeDisplaySeconds = SnapSeconds(s.VolumeDisplaySeconds, VolumeSecondsMin, VolumeSecondsMax),
         MediaPreviewSeconds = SnapSeconds(s.MediaPreviewSeconds, MediaSecondsMin, MediaSecondsMax),
-        ExpandedIdleSeconds = SnapSeconds(s.ExpandedIdleSeconds, IdleSecondsMin, IdleSecondsMax),
         WeatherCity = (s.WeatherCity ?? string.Empty).Trim(),
     };
 
