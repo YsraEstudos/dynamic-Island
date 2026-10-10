@@ -563,6 +563,46 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Idle capsule: weather or the start of a scheduled pomodoro, when nothing else is showing -->
+                <Border Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SettingsSectionHeader}" Text="CÁPSULA OCIOSA"/>
+
+                        <Grid Margin="0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                                <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Clima e horário do pomodoro"/>
+                                <TextBlock Style="{StaticResource SettingsRowDescription}"
+                                           Text="Com a ilha recolhida e sem música nem pomodoro, mostra a temperatura e a chance de chuva, ou o horário de um pomodoro agendado. Usa a internet."/>
+                            </StackPanel>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource SettingsSwitch}"
+                                          VerticalAlignment="Center"
+                                          AutomationProperties.Name="Clima e horário do pomodoro na cápsula ociosa"
+                                          IsChecked="{Binding IdleModeEnabled, Mode=TwoWay}"/>
+                        </Grid>
+
+                        <Border Style="{StaticResource SettingsDivider}"/>
+
+                        <StackPanel Margin="0,10,0,10">
+                            <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Cidade do clima"/>
+                            <TextBlock Style="{StaticResource SettingsRowDescription}"
+                                       Text="Em branco, usa a localização aproximada pelo IP (uma consulta ao ipwho.is)."/>
+                            <TextBox Margin="0,8,0,0"
+                                     Padding="10,7"
+                                     Background="{StaticResource SettingsRaisedBrush}"
+                                     BorderBrush="{StaticResource SettingsBorderBrush}"
+                                     Foreground="{StaticResource SettingsTextBrush}"
+                                     CaretBrush="{StaticResource SettingsTextBrush}"
+                                     AutomationProperties.Name="Cidade do clima"
+                                     KeyDown="OnCommitOnEnter"
+                                     Text="{Binding WeatherCity, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Phone -->
                 <Border Style="{StaticResource SettingsCard}">
                     <StackPanel>

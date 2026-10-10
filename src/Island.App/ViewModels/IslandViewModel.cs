@@ -61,12 +61,13 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _hasPendingTasks;
 
     public IslandViewModel(IslandCoordinator coordinator, IMediaService media, IVolumeService volume,
-        Func<IslandSettings> settings, ShelfContext shelf)
+        Func<IslandSettings> settings, ShelfContext shelf, IdlePresenter idle)
     {
         _coordinator = coordinator;
         _media = media;
         _settings = settings;
         Shelf = shelf;
+        Idle = idle;
         _dispatcher = System.Windows.Application.Current?.Dispatcher
                       ?? System.Windows.Threading.Dispatcher.CurrentDispatcher;
         _ticker = new DispatcherTimer(DispatcherPriority.Normal, _dispatcher) { Interval = TickInterval };
@@ -81,6 +82,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         Shelf.Pomodoro.Changed += _pomodoroSignal.Signal;
         Shelf.Angry.LockChanged += _pomodoroSignal.Signal;
         Shelf.Calendar.Changed += OnCalendarChanged;
+        Shelf.Schedule.Changed += _pomodoroSignal.Signal;
         SystemParameters.StaticPropertyChanged += OnSystemParametersChanged;
         RefreshPomodoro();
         Apply(_coordinator.State);
@@ -88,6 +90,9 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
 
     /// <summary>Services and shelf widget context (pomodoro, file tray, clipboard, media).</summary>
     public ShelfContext Shelf { get; }
+
+    /// <summary>Idle content of the compact capsule: the weather, or the start of a scheduled pomodoro.</summary>
+    public IdlePresenter Idle { get; }
 
     /// <summary>Current settings snapshot (read from the lead's settings source).</summary>
     public IslandSettings Settings => _settings();
@@ -200,6 +205,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         Shelf.Pomodoro.Changed -= _pomodoroSignal.Signal;
         Shelf.Angry.LockChanged -= _pomodoroSignal.Signal;
         Shelf.Calendar.Changed -= OnCalendarChanged;
+        Shelf.Schedule.Changed -= _pomodoroSignal.Signal;
         SystemParameters.StaticPropertyChanged -= OnSystemParametersChanged;
         _pomodoroSignal.Dispose();
         _ticker.Stop();
@@ -228,6 +234,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         }
         ApplyMedia(state.Media);
         UpdateTicker();
+        Idle.Refresh();
     }
 
     /// <summary>Reads the pomodoro timer on the UI thread. Property setters raise only when the value changes.</summary>
@@ -240,6 +247,8 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         PomodoroPhase = timer.Phase;
         PomodoroAngry = Shelf.Angry.IsLocked;
         PomodoroReduceMotion = Settings.ReduceAnimations || !SystemParameters.ClientAreaAnimation;
+        // A pomodoro starting or stopping also decides whether the idle content shows.
+        Idle.Refresh();
     }
 
     /// <summary>Refreshes compact motion preferences immediately after settings are applied.</summary>

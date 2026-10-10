@@ -8,6 +8,8 @@ namespace Island.Windows.Configuration;
 public sealed class JsonSettingsStore : ISettingsStore
 {
     private const string FileName = "settings.json";
+    /// <summary>Longest city name kept; the weather lookup is a free-text search, so a pasted essay is cut short.</summary>
+    private const int MaxWeatherCityLength = 80;
 
     private static readonly JsonSerializerOptions ReadOptions = new()
     {
@@ -148,7 +150,15 @@ public sealed class JsonSettingsStore : ISettingsStore
             MediaPreviewSeconds = ClampSeconds(s.MediaPreviewSeconds, d.MediaPreviewSeconds),
             ExpandedIdleSeconds = ClampSeconds(s.ExpandedIdleSeconds, d.ExpandedIdleSeconds),
             UpdateRepository = string.IsNullOrWhiteSpace(s.UpdateRepository) ? d.UpdateRepository : s.UpdateRepository.Trim(),
+            WeatherCity = CleanCity(s.WeatherCity),
         };
+    }
+
+    /// <summary>Trimmed and cut to <see cref="MaxWeatherCityLength"/>. A null city is empty.</summary>
+    private static string CleanCity(string? city)
+    {
+        string trimmed = (city ?? string.Empty).Trim();
+        return trimmed.Length > MaxWeatherCityLength ? trimmed[..MaxWeatherCityLength] : trimmed;
     }
 
     private static double ClampSeconds(double value, double fallback) =>

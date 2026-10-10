@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Island.App.Controls"
+             xmlns:views="clr-namespace:Island.App.Views"
              Width="36"
              HorizontalAlignment="Center"
              VerticalAlignment="Center">
@@ -42,6 +43,9 @@
                        FontSize="11"
                        HorizontalAlignment="Center" />
         </StackPanel>
+
+        <!-- Idle content (weather or a scheduled start), reduced to one value. Empty unless the capsule is idle. -->
+        <views:IdleContentVerticalView Grid.Row="0" Margin="0,14,0,0" DataContext="{Binding Idle}" />
 
         <!-- Static status glyphs stack at the bottom and keep the pomodoro counter at the top. -->
         <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,13">

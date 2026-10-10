@@ -35,6 +35,8 @@ public sealed class SettingsViewModel : ObservableObject
     private bool _showMedia;
     private bool _quickNotesHotkeyEnabled;
     private bool _phoneBlockEnabled;
+    private bool _idleModeEnabled;
+    private string _weatherCity = string.Empty;
     private string _phoneFcmToken = string.Empty;
     private string _phoneStatus = string.Empty;
     private bool _sendingPhoneTest;
@@ -242,6 +244,32 @@ public sealed class SettingsViewModel : ObservableObject
         }
     }
 
+    public bool IdleModeEnabled
+    {
+        get => _idleModeEnabled;
+        set
+        {
+            if (SetProperty(ref _idleModeEnabled, value))
+            {
+                Commit(s => s with { IdleModeEnabled = value });
+            }
+        }
+    }
+
+    /// <summary>City for the weather; empty uses the approximate location. The window commits it on focus loss, so typing does not read the weather per key.</summary>
+    public string WeatherCity
+    {
+        get => _weatherCity;
+        set
+        {
+            string next = (value ?? string.Empty).Trim();
+            if (SetProperty(ref _weatherCity, next))
+            {
+                Commit(s => s with { WeatherCity = next });
+            }
+        }
+    }
+
     public bool PhoneBlockEnabled
     {
         get => _phoneBlockEnabled;
@@ -359,6 +387,8 @@ public sealed class SettingsViewModel : ObservableObject
         SetProperty(ref _showVolume, s.ShowVolume, nameof(ShowVolume));
         SetProperty(ref _showMedia, s.ShowMedia, nameof(ShowMedia));
         SetProperty(ref _quickNotesHotkeyEnabled, s.QuickNotesHotkeyEnabled, nameof(QuickNotesHotkeyEnabled));
+        SetProperty(ref _idleModeEnabled, s.IdleModeEnabled, nameof(IdleModeEnabled));
+        SetProperty(ref _weatherCity, s.WeatherCity ?? string.Empty, nameof(WeatherCity));
         SetProperty(ref _phoneBlockEnabled, s.PhoneBlockEnabled, nameof(PhoneBlockEnabled));
         SetProperty(ref _phoneFcmToken, s.PhoneFcmToken ?? string.Empty, nameof(PhoneFcmToken));
         OnPropertyChanged(nameof(CanSendPhoneTest));
@@ -374,6 +404,7 @@ public sealed class SettingsViewModel : ObservableObject
         VolumeDisplaySeconds = SnapSeconds(s.VolumeDisplaySeconds, VolumeSecondsMin, VolumeSecondsMax),
         MediaPreviewSeconds = SnapSeconds(s.MediaPreviewSeconds, MediaSecondsMin, MediaSecondsMax),
         ExpandedIdleSeconds = SnapSeconds(s.ExpandedIdleSeconds, IdleSecondsMin, IdleSecondsMax),
+        WeatherCity = (s.WeatherCity ?? string.Empty).Trim(),
     };
 
     private bool IsValidMonitor(int index) => index >= 0 && index < Math.Max(1, MonitorNames.Count);

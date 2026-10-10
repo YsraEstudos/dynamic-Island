@@ -1,7 +1,8 @@
 <UserControl x:Class="Island.App.Views.CompactView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="clr-namespace:Island.App.Controls">
+             xmlns:controls="clr-namespace:Island.App.Controls"
+             xmlns:views="clr-namespace:Island.App.Views">
     <Grid>
         <!-- Pomodoro countdown: shown only while a pomodoro runs (the capsule is then 150 DIPs wide). -->
         <StackPanel Orientation="Horizontal"
@@ -20,6 +21,9 @@
                        Style="{StaticResource CompactTimerTextStyle}"
                        VerticalAlignment="Center" />
         </StackPanel>
+
+        <!-- Idle content (weather, or the start of a scheduled pomodoro): empty unless the capsule is idle. -->
+        <views:IdleContentView DataContext="{Binding Idle}" />
 
         <!-- Static status glyphs share the right side of the capsule without replacing the equalizer. -->
         <StackPanel Orientation="Horizontal"

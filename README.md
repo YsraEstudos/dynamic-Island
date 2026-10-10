@@ -61,7 +61,7 @@ Ver `docs/architecture.md`.
 ## Estante (shelf)
 Clique na ilha para abrir. Widgets: Now Playing, Pomodoro, Calendar, Notas, Orçamento IA, File Tray e os widgets para jogo (Captura, Desempenho, Mixer, Notas do Jogo; veja "Widgets para jogo"). Clique direito: Customize Shelf, Open Clipboard
 (atalho global Ctrl+Alt+V), Check for updates / Install update (este só aparece quando há uma Release mais nova com `.zip` no GitHub), Open Settings, Quit. Histórico do clipboard fica só na memória (itens de gerenciadores de senha são ignorados).
-Não implementado: Weather e conversão de arquivos.
+Não implementado: conversão de arquivos. O clima existe no modo ocioso (veja "Modo ocioso").
 
 ## Widgets para jogo
 Quatro widgets da estante pensados para quem joga com a ilha em outra tela ou num canto. Adicione-os em Customize Shelf. Nenhum lê a memória nem injeta código em outro processo (nada que um anticheat deva marcar). Em `--demo` todos usam serviços falsos. A ilha só amostra dados enquanto o widget está visível (ou, no Desempenho, enquanto o alerta está ligado): em repouso não há timer ligado.
@@ -116,3 +116,11 @@ Com **Block phone during Angry** ligado em Settings, iniciar o Angry também blo
 - A chave fica só nesse arquivo (nunca em `settings.json` nem nos logs).
 
 Limites: a detecção é pelo **título da janela ou pelo título acessível da aba ativa** do navegador (Chrome, Edge, Firefox, Brave, Opera, Vivaldi...). Janelas nomeadas no Edge também são verificadas pelo título acessível. A leitura roda fora da interface; se o provedor de acessibilidade do navegador travar, essa leitura aguarda sua resposta, enquanto a ilha e a detecção pelo título normal continuam disponíveis. Um site cujo título não cita o nome ainda pode escapar. Não é um bloqueio de rede: outros apps não são cobertos, e encerrar o processo no Gerenciador de Tarefas não é impedido.
+
+## Modo ocioso
+Com a cápsula recolhida e nada para mostrar, ela exibe o **clima** (temperatura em °C e chance de chuva) ou, se houver um pomodoro **agendado**, o horário em que ele começa. Prioridade do conteúdo: pomodoro rodando > música tocando (equalizador) > pomodoro agendado > clima. Quando o pomodoro roda, o contador de sempre continua. Desligue em Settings → **Clima e horário do pomodoro**.
+
+- **Clima:** Open-Meteo, sem chave. A chance de chuva é a maior entre a hora atual e as duas seguintes. Com **Cidade do clima** vazia, a localização aproximada vem do IP (uma consulta a `ipwho.is`, guardada em `%LocalAppData%\DynamicIsland\weather.json`); com uma cidade, ela é buscada no geocoding do Open-Meteo.
+- **Impacto:** não há timer nem consulta fora do ocioso. Enquanto ocioso, no máximo uma leitura a cada 30 min; se falhar, tenta de novo em 5 min. Ao sair do ocioso (pausa, tela cheia, música, pomodoro), o timer é cancelado. A última leitura fica no arquivo, então o app abre já mostrando algo, sem rede.
+- **Sem rede:** a última leitura aparece esmaecida depois de 45 min e some depois de 3 h. Nenhum erro é mostrado na ilha.
+- **Limites:** depende de internet. A localização por IP é aproximada e pode errar a cidade; ela também envia o IP ao ipwho.is. Uma cidade digitada errada não é encontrada, e o app tenta de novo a cada 5 min enquanto ocioso. A previsão usada é de hoje: perto da meia-noite a chance de chuva considera menos de três horas. Com a ilha encaixada na lateral, aparecem só a temperatura ou o horário. Um pomodoro pausado conta como em andamento, então o ocioso não aparece. Em `--demo` os dados são fixos, sem rede.

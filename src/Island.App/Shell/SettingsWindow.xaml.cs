@@ -27,6 +27,14 @@ public partial class SettingsWindow : Window
         };
     }
 
+    /// <summary>Enter in a text box commits its binding now instead of waiting for it to lose focus.</summary>
+    private void OnCommitOnEnter(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.Key != System.Windows.Input.Key.Enter || sender is not System.Windows.Controls.TextBox box) return;
+        box.GetBindingExpression(System.Windows.Controls.TextBox.TextProperty)?.UpdateSource();
+        e.Handled = true;
+    }
+
     private async void OnCheckForUpdates(object sender, RoutedEventArgs e)
     {
         if (DataContext is SettingsViewModel vm) await vm.CheckForUpdatesAsync();

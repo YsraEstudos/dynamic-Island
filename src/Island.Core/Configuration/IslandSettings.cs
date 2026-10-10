@@ -62,11 +62,16 @@ public sealed record IslandSettings
     /// <summary>GitHub repository ("owner/name") whose latest release is checked for a newer .zip. Older files without it get the default.</summary>
     public string UpdateRepository { get; init; } = "YsraEstudos/dynamic-Island";
 
+    /// <summary>Idle mode: when the compact capsule has nothing else to show, it shows the weather or a scheduled pomodoro start.</summary>
+    public bool IdleModeEnabled { get; init; } = true;
+    /// <summary>City for the weather. Empty = the approximate location of this PC, found by IP.</summary>
+    public string WeatherCity { get; init; } = string.Empty;
+
     /// <summary>The shelf as rows (see <see cref="ShelfLayout.ToRows"/>).</summary>
     public IReadOnlyList<IReadOnlyList<string>> GetShelfRows() => ShelfLayout.ToRows(ShelfWidgets, ShelfRows);
 
     // Records compare collections by reference; settings must compare by value (ShelfWidgets, ShelfRows).
-    public bool Equals(IslandSettings? other) => other is not null && MonitorIndex == other.MonitorIndex && CompactWidth == other.CompactWidth && CompactHeight == other.CompactHeight && TopMargin == other.TopMargin && VolumeDisplaySeconds == other.VolumeDisplaySeconds && MediaPreviewSeconds == other.MediaPreviewSeconds && ExpandedIdleSeconds == other.ExpandedIdleSeconds && HideInFullscreen == other.HideInFullscreen && UseCustomPosition == other.UseCustomPosition && Dock == other.Dock && Minimized == other.Minimized && PositionX == other.PositionX && PositionY == other.PositionY && GameProcesses.SequenceEqual(other.GameProcesses) && ReduceAnimations == other.ReduceAnimations && StartWithWindows == other.StartWithWindows && ShowVolume == other.ShowVolume && ShowMedia == other.ShowMedia && ShelfWidgets.SequenceEqual(other.ShelfWidgets) && ShelfRows.SequenceEqual(other.ShelfRows) && PomodoroFocusMinutes == other.PomodoroFocusMinutes && PomodoroBreakMinutes == other.PomodoroBreakMinutes && PomodoroCycles == other.PomodoroCycles && PomodoroSound == other.PomodoroSound && ClipboardEnabled == other.ClipboardEnabled && ClipboardMaxItems == other.ClipboardMaxItems && QuickNotesHotkeyEnabled == other.QuickNotesHotkeyEnabled && NoticeSeconds == other.NoticeSeconds && PhoneBlockEnabled == other.PhoneBlockEnabled && PhoneFcmToken == other.PhoneFcmToken && UpdateRepository == other.UpdateRepository;
+    public bool Equals(IslandSettings? other) => other is not null && MonitorIndex == other.MonitorIndex && CompactWidth == other.CompactWidth && CompactHeight == other.CompactHeight && TopMargin == other.TopMargin && VolumeDisplaySeconds == other.VolumeDisplaySeconds && MediaPreviewSeconds == other.MediaPreviewSeconds && ExpandedIdleSeconds == other.ExpandedIdleSeconds && HideInFullscreen == other.HideInFullscreen && UseCustomPosition == other.UseCustomPosition && Dock == other.Dock && Minimized == other.Minimized && PositionX == other.PositionX && PositionY == other.PositionY && GameProcesses.SequenceEqual(other.GameProcesses) && ReduceAnimations == other.ReduceAnimations && StartWithWindows == other.StartWithWindows && ShowVolume == other.ShowVolume && ShowMedia == other.ShowMedia && ShelfWidgets.SequenceEqual(other.ShelfWidgets) && ShelfRows.SequenceEqual(other.ShelfRows) && PomodoroFocusMinutes == other.PomodoroFocusMinutes && PomodoroBreakMinutes == other.PomodoroBreakMinutes && PomodoroCycles == other.PomodoroCycles && PomodoroSound == other.PomodoroSound && ClipboardEnabled == other.ClipboardEnabled && ClipboardMaxItems == other.ClipboardMaxItems && QuickNotesHotkeyEnabled == other.QuickNotesHotkeyEnabled && NoticeSeconds == other.NoticeSeconds && PhoneBlockEnabled == other.PhoneBlockEnabled && PhoneFcmToken == other.PhoneFcmToken && UpdateRepository == other.UpdateRepository && IdleModeEnabled == other.IdleModeEnabled && WeatherCity == other.WeatherCity;
 
     public override int GetHashCode()
     {
@@ -102,6 +107,8 @@ public sealed record IslandSettings
         h.Add(PhoneBlockEnabled);
         h.Add(PhoneFcmToken);
         h.Add(UpdateRepository);
+        h.Add(IdleModeEnabled);
+        h.Add(WeatherCity);
         return h.ToHashCode();
     }
 }

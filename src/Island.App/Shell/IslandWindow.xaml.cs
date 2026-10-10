@@ -164,6 +164,7 @@ public partial class IslandWindow : System.Windows.Window
         IslandShape.MouseRightButtonUp += OnIslandRightClicked;
 
         _vm.PropertyChanged += OnViewModelPropertyChanged;
+        _vm.Idle.PropertyChanged += OnIdlePropertyChanged;
     }
 
     /// <summary>"Open Settings" was chosen from the island context menu.</summary>
@@ -273,6 +274,15 @@ public partial class IslandWindow : System.Windows.Window
         }
     }
 
+    /// <summary>The idle content appears or goes: the Compact capsule widens or narrows (a spring; the content is not swapped).</summary>
+    private void OnIdlePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IdlePresenter.HasContent) && _vm.Mode == IslandMode.Compact)
+        {
+            ApplyShape(IslandMode.Compact, _settings(), instant: false);
+        }
+    }
+
     private void ApplyMode(IslandMode mode, bool instant)
     {
         // Entering edit mode starts from the saved rows; the shape must already see the working copy.
@@ -328,7 +338,7 @@ public partial class IslandWindow : System.Windows.Window
     {
         IEnumerable<string> shelfIds = ShelfLayer.PageIds(editing: mode == IslandMode.Customize);
         ShapeSize shape = IslandShapeTable.For(mode, settings, _vm.PomodoroRunning, _vm.HasPendingTasks,
-            shelfIds, vertical: _dock != DockEdge.None);
+            shelfIds, vertical: _dock != DockEdge.None, idleShown: _vm.Idle.HasContent);
         _transitions.SetShape(shape.Width, shape.Height, shape.Radius, instant);
     }
 

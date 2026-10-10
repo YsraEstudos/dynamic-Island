@@ -5,6 +5,7 @@ using Island.Core.Clipboard;
 using Island.Core.Calendar;
 using Island.Core.Budgets;
 using Island.Core.GameNotes;
+using Island.Core.Idle;
 using Island.Core.Capture;
 using Island.Core.Notes;
 using Island.Core.Performance;
@@ -31,6 +32,7 @@ using Island.Windows.Media;
 using Island.Windows.Performance;
 using Island.Windows.Phone;
 using Island.Windows.Updates;
+using Island.Windows.Weather;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -187,6 +189,22 @@ public static class ServiceRegistration
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,
             GitHubUpdateService.RunningVersion(typeof(ServiceRegistration).Assembly), log: sp.GetService<ILogger<GitHubUpdateService>>()));
+        // Weather for the idle capsule (Open-Meteo, no key). Demo uses fakes: no network and no file.
+        if (demo)
+        {
+            s.AddSingleton<IWeatherService, FakeWeatherService>();
+            s.AddSingleton<IWeatherCache>(_ => new InMemoryWeatherCache());
+        }
+        else
+        {
+            s.AddSingleton<IWeatherService>(sp => new OpenMeteoWeatherService(
+                OpenMeteoWeatherService.CreateHttpClient(), () => DateTimeOffset.Now, sp.GetService<ILogger<OpenMeteoWeatherService>>()));
+            s.AddSingleton<IWeatherCache>(_ => new JsonWeatherCache());
+        }
+        s.AddSingleton(sp => new WeatherRefresher(
+            sp.GetRequiredService<IWeatherService>(), sp.GetRequiredService<IWeatherCache>(),
+            sp.GetRequiredService<IIslandScheduler>(), () => DateTimeOffset.Now));
+        s.AddSingleton<IdlePresenter>();
         s.AddSingleton<IslandCoordinator>();
         s.AddSingleton<IslandViewModel>();
     }
