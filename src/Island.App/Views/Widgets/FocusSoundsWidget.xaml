@@ -1,0 +1,87 @@
+<UserControl x:Class="Island.App.Views.Widgets.FocusSoundsWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wid="clr-namespace:Island.App.Widgets"
+             xmlns:ctl="clr-namespace:Island.App.Controls"
+             xmlns:local="clr-namespace:Island.App.Views.Widgets"
+             Width="340"
+             Height="152"
+             AutomationProperties.Name="Widget de sons de foco">
+    <UserControl.Resources>
+        <!-- Glyphs of this widget only, drawn as 24-unit strokes like the shelf icons. -->
+        <StreamGeometry x:Key="FocusGlyph.Rain">M7.5,15.5 H17 A3.5,3.5 0 0 0 17.5,8.6 A5.5,5.5 0 0 0 7.2,8.2 A3.5,3.5 0 0 0 7.5,15.5 Z M8,18.5 L7.2,20.5 M12,18.5 L11.2,20.5 M16,18.5 L15.2,20.5</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.WhiteNoise">M4,11 V13 M7.5,8 V16 M11,5 V19 M14.5,9 V15 M18,7 V17 M20.5,11 V13</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.PinkNoise">M3,12 C6,7 9,7 12,12 S18,17 21,12</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.BrownNoise">M3,17 C6,17 7,6 12,7 S18,16 21,15</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.Waves">M3,9 Q6,6 9,9 T15,9 T21,9 M3,15 Q6,12 9,15 T15,15 T21,15</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.Fire">M12,4 C14,8 17,9 17,13.5 A5,5 0 0 1 7,13.5 C7,11 8.5,10 9,8 C10.5,10 11,10.5 12,11 C12,9 11,7 12,4 Z</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.Wind">M3,9 H13 A2.5,2.5 0 1 0 10.5,6.5 M3,13 H17 A2.5,2.5 0 1 1 14.5,15.5 M3,17 H9</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.Cafe">M5,9 H16 V14 A4,4 0 0 1 12,18 H9 A4,4 0 0 1 5,14 Z M16,10.5 H17.5 A1.8,1.8 0 0 1 17.5,14 H16 M9,4 V6 M12,4 V6</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.Play">M8,5.5 L18.5,12 L8,18.5 Z</StreamGeometry>
+        <StreamGeometry x:Key="FocusGlyph.Pause">M7.5,5 H10.5 V19 H7.5 Z M13.5,5 H16.5 V19 H13.5 Z</StreamGeometry>
+    </UserControl.Resources>
+
+    <Grid>
+        <Border Background="#161616" BorderBrush="#303033" BorderThickness="1" CornerRadius="16"/>
+
+        <Grid Margin="14,11,14,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="24"/>
+                <RowDefinition Height="6"/>
+                <RowDefinition Height="74"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="14"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header: title with the equalizer while playing, then the sleep timer and play/pause. -->
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Viewbox Width="18" Height="18" Margin="0,0,7,0">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="{StaticResource Icon.Widget.FocusSounds}"
+                                  Stroke="#64D2FF" StrokeThickness="1.8"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                    <TextBlock Text="Sons de foco" Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <ctl:EqualizerGlyph x:Name="Equalizer" Margin="8,0,0,0" BarBrush="#64D2FF"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <wid:ShelfButton x:Name="SleepButton" Width="92" Height="24" CornerRadius="12"
+                                     Background="#2C2C2E"
+                                     Icon="{StaticResource WidgetIcon.Clock}"
+                                     IconBrush="{StaticResource TextSecondaryBrush}" IconSize="12"
+                                     LabelBrush="{StaticResource TextSecondaryBrush}"
+                                     AutomationProperties.Name="Timer de dormir"/>
+                    <wid:ShelfButton x:Name="PlayButton" Width="30" Height="24" CornerRadius="12" Margin="4,0,0,0"
+                                     Background="#2C2C2E" IsFilled="True"
+                                     Icon="{StaticResource FocusGlyph.Play}"
+                                     AltIcon="{StaticResource FocusGlyph.Pause}"
+                                     IconBrush="{StaticResource TextPrimaryBrush}" IconSize="12"
+                                     AutomationProperties.Name="Tocar ou pausar"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Eight sounds in two rows of four. -->
+            <UniformGrid x:Name="ChipGrid" Grid.Row="2" Rows="2" Columns="4"/>
+
+            <!-- Footer: status or hint, general volume bar, percentage. -->
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="34"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="StatusText" Grid.Column="0" Margin="0,0,8,0"
+                           FontSize="10" Foreground="{StaticResource TextTertiaryBrush}"
+                           VerticalAlignment="Center" Visibility="Collapsed"/>
+                <local:FocusVolumeBar x:Name="VolumeBar" Grid.Column="1" VerticalAlignment="Center"
+                                      AutomationProperties.Name="Volume geral"/>
+                <TextBlock x:Name="VolumeText" Grid.Column="2" FontSize="10" TextAlignment="Right"
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

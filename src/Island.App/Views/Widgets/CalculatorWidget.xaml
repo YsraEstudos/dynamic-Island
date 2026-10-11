@@ -1,0 +1,33 @@
+<UserControl x:Class="Island.App.Views.Widgets.CalculatorWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="250"
+             Height="152"
+             AutomationProperties.Name="Calculadora">
+    <Grid>
+        <Border Background="#161616" BorderBrush="#303033" BorderThickness="1" CornerRadius="16"/>
+
+        <Grid Margin="10,6,10,4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36"/>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="DisplayPanel" Grid.Row="0" Background="Transparent" ClipToBounds="True">
+                <TextBlock x:Name="ExpressionText" VerticalAlignment="Top" TextAlignment="Right"
+                           FontSize="10" LineHeight="12"
+                           Foreground="{StaticResource TextTertiaryBrush}" IsHitTestVisible="False"/>
+                <TextBlock x:Name="ValueText" VerticalAlignment="Bottom" TextAlignment="Right"
+                           FontSize="22" FontWeight="SemiBold" LineHeight="24"
+                           Foreground="{StaticResource TextPrimaryBrush}" IsHitTestVisible="False">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform/>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
+            </Grid>
+
+            <Grid x:Name="KeypadHost" Grid.Row="2"/>
+        </Grid>
+    </Grid>
+</UserControl>

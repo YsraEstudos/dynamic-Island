@@ -10,6 +10,7 @@ using Island.Core.Capture;
 using Island.Core.Notes;
 using Island.Core.Performance;
 using Island.Core.Pomodoro;
+using Island.Core.Progress;
 using Island.Core.Shelf;
 using Island.Windows.Clipboard;
 using Island.Core.Abstractions;
@@ -17,6 +18,7 @@ using Island.Core.Application;
 using Island.Core.Configuration;
 using Island.Core.Fakes;
 using Island.Core.Models;
+using Island.Core.Tools.FocusSounds;
 using Island.Windows.Audio;
 using Island.Windows.Configuration;
 using Island.Windows.Calendar;
@@ -31,6 +33,7 @@ using Island.Windows.Input;
 using Island.Windows.Media;
 using Island.Windows.Performance;
 using Island.Windows.Phone;
+using Island.Windows.Progress;
 using Island.Windows.Updates;
 using Island.Windows.Weather;
 using Microsoft.Extensions.DependencyInjection;
@@ -184,7 +187,9 @@ public static class ServiceRegistration
             sp.GetRequiredService<GameNotesService>(), sp.GetRequiredService<IGameNotesWindowHost>(),
             sp.GetRequiredService<PerformanceMonitor>(),
             sp.GetRequiredService<CaptureController>(), sp.GetRequiredService<CaptureHotkeys>(),
-            sp.GetRequiredService<IAudioMixerService>()));
+            sp.GetRequiredService<IAudioMixerService>(),
+            // Simulated services stay silent: --demo never opens an audio device for the focus sounds.
+            focusAudioOutput: () => demo ? new NullFocusAudioOutput() : new FocusAudioOutput()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,
@@ -204,6 +209,17 @@ public static class ServiceRegistration
         s.AddSingleton(sp => new WeatherRefresher(
             sp.GetRequiredService<IWeatherService>(), sp.GetRequiredService<IWeatherCache>(),
             sp.GetRequiredService<IIslandScheduler>(), () => DateTimeOffset.Now));
+        // Progress of the SuperPrograma Suite (docs/progress-link.md): the real app listens on the named pipe, demo uses the fake feed.
+        if (demo)
+        {
+            s.AddSingleton<FakeProgressFeed>();
+            s.AddSingleton<IProgressFeed>(sp => sp.GetRequiredService<FakeProgressFeed>());
+        }
+        else s.AddSingleton<IProgressFeed>(sp => new NamedPipeProgressFeed(log: sp.GetService<ILogger<NamedPipeProgressFeed>>()));
+        s.AddSingleton(sp => new ProgressTracker(
+            sp.GetRequiredService<IProgressFeed>(), sp.GetRequiredService<IIslandScheduler>(), () => DateTimeOffset.Now));
+        s.AddSingleton(sp => new ProgressPresenter(
+            sp.GetRequiredService<ProgressTracker>(), sp.GetRequiredService<Func<IslandSettings>>()));
         s.AddSingleton<IdlePresenter>();
         s.AddSingleton<IslandCoordinator>();
         s.AddSingleton<IslandViewModel>();

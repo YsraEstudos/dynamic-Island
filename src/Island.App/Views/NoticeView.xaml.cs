@@ -80,6 +80,9 @@ public partial class NoticeView : System.Windows.Controls.UserControl
             case CaptureController.RecordGlyph:
                 SetGlyph("NoticeIconRecord", "AccentOrangeBrush");
                 break;
+            case "task-error":
+                SetGlyph("NoticeIconTaskError", "AccentOrangeBrush");
+                break;
             default:
                 GlyphBox.Visibility = System.Windows.Visibility.Collapsed;
                 GapColumn.Width = new GridLength(0);

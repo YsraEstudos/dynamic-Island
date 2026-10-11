@@ -61,5 +61,17 @@
                                      AutomationProperties.Name="Áudio em reprodução"
                                      Visibility="{Binding IsEqualizerActive, Converter={StaticResource BoolToVisibility}}" />
         </StackPanel>
+
+        <!-- Task progress bar along the right edge, inset like the horizontal one (same fade and pulse). No text here. -->
+        <Grid Grid.RowSpan="3"
+              Style="{StaticResource TaskProgressLayerStyle}"
+              HorizontalAlignment="Right"
+              Width="2"
+              Margin="0,18,3,18"
+              AutomationProperties.Name="{Binding TaskProgress.Description}">
+            <controls:FractionBar Style="{StaticResource TaskProgressFractionStyle}"
+                                  Orientation="Vertical"
+                                  Value="{Binding TaskProgress.Fraction}" />
+        </Grid>
     </Grid>
 </UserControl>

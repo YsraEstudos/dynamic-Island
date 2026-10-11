@@ -42,6 +42,18 @@ public static class WidgetCatalog
             (ctx, vm) => new CaptureWidget(ctx)),
         new WidgetDescriptor("mixer", "Mixer", "Icon.Widget.Mixer", 280,
             (ctx, vm) => new MixerWidget(ctx)),
+        new WidgetDescriptor("calculator", "Calculadora", "Icon.Widget.Calculator", 250,
+            (ctx, vm) => new CalculatorWidget(ctx)),
+        new WidgetDescriptor("counter", "Contador", "Icon.Widget.Counter", 240,
+            (ctx, vm) => new CounterWidget(ctx)),
+        new WidgetDescriptor("textanalyzer", "Analisador de Texto", "Icon.Widget.TextAnalyzer", 320,
+            (ctx, vm) => new TextAnalyzerWidget(ctx)),
+        new WidgetDescriptor("timer", "Timer e Cronômetro", "Icon.Widget.Timer", 300,
+            (ctx, vm) => new TimerWidget(ctx)),
+        new WidgetDescriptor("focussounds", "Sons de Foco", "Icon.Widget.FocusSounds", 340,
+            (ctx, vm) => new FocusSoundsWidget(ctx)),
+        new WidgetDescriptor("tasks", "Tarefas", "Icon.Widget.Tasks", 300,
+            (ctx, vm) => new TasksWidget(vm)),
     };
 
     public static WidgetDescriptor? Find(string id) => All.FirstOrDefault(w => w.Id == id);

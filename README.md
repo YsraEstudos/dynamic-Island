@@ -52,6 +52,14 @@ O script sobe `<Version>`, roda `dotnet publish` (win-x64, dependente de framewo
   - Teste a abertura de qualquer build antes de publicar: `dotnet publish src/Island.App/Island.App.csproj -c Release -r win-x64 --self-contained false -o $env:TEMP\di-teste`, depois `& $env:TEMP\di-teste\DynamicIsland.exe --smoke-test; $LASTEXITCODE` (precisa imprimir 0).
   - Se o app instalado "não abre", leia primeiro o `island-AAAAMMDD.log` (e `island-AAAAMMDD_001.log`): uma exceção `Unhandled UI exception` perto da hora da abertura é o build, não o update. Para voltar, reinstale o zip da Release anterior em `%LocalAppData%\Programs\DynamicIsland`.
 
+## Progresso da Suite (SuperPrograma)
+Tarefas longas da Suite (corte de vídeo, extração de quadros, junção de imagens, conversão) mostram o progresso na ilha. A Suite faz o trabalho; a ilha só mostra.
+- **Barra na cápsula**: uma linha fina na borda, com o percentual à esquerda quando não há pomodoro nem clima. Some sozinha quando não há tarefa ativa.
+- **Widget Tarefas** (Customize Shelf): até três tarefas, com barra, percentual e tempo restante. Tarefa concluída fica 4 s na lista.
+- **Aviso**: a ilha só expande quando a tarefa termina (check) ou falha (ícone laranja).
+
+Protocolo, pipe e limites: `docs/progress-link.md`.
+
 ## Estrutura
 - `Island.Core` – regras (IslandCoordinator, reducer, prioridades). Sem WPF/Win32.
 - `Island.Windows` – adaptadores (Windows.Media.Control, Core Audio/NAudio, monitores, janela overlay, JSON de configurações).

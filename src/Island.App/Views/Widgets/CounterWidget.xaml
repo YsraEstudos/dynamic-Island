@@ -1,0 +1,79 @@
+<UserControl x:Class="Island.App.Views.Widgets.CounterWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wid="clr-namespace:Island.App.Widgets"
+             xmlns:local="clr-namespace:Island.App.Views.Widgets"
+             Width="240"
+             Height="152"
+             AutomationProperties.Name="Widget contador">
+    <Grid>
+        <Border Background="#161616" BorderBrush="#303033" BorderThickness="1" CornerRadius="16"/>
+
+        <Grid Margin="14,11,14,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="24"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="36"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Viewbox Width="18" Height="18" Margin="0,0,4,0">
+                        <Canvas Width="24" Height="24">
+                            <Path Data="{StaticResource Icon.Widget.Counter}"
+                                  Stroke="{StaticResource TextSecondaryBrush}" StrokeThickness="1.8"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                    <wid:ShelfButton x:Name="LabelButton" Height="22" Padding="4,0"
+                                     LabelBrush="{StaticResource TextPrimaryBrush}"
+                                     AutomationProperties.Name="Trocar rótulo do contador"/>
+                </StackPanel>
+
+                <wid:ShelfButton x:Name="StepButton" Width="34" Height="22" CornerRadius="11"
+                                 HorizontalAlignment="Right" VerticalAlignment="Center"
+                                 Background="{StaticResource ShelfButtonBrush}"
+                                 LabelBrush="{StaticResource TextSecondaryBrush}"
+                                 AutomationProperties.Name="Trocar passo do contador"/>
+            </Grid>
+
+            <local:CounterDisplay x:Name="NumberDisplay" Grid.Row="1" Margin="0,4,0,2"/>
+
+            <Grid Grid.Row="2" Margin="0,2,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <wid:ShelfButton x:Name="MinusButton" Grid.Column="0" Width="64" Height="34" CornerRadius="17"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Background="{StaticResource ShelfButtonBrush}"
+                                 IconBrush="{StaticResource TextPrimaryBrush}" IconSize="18"
+                                 AutomationProperties.Name="Diminuir"/>
+
+                <Grid Grid.Column="1" VerticalAlignment="Center">
+                    <wid:ShelfButton x:Name="ResetButton" Width="32" Height="32" CornerRadius="16"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                                     Background="{StaticResource ShelfButtonBrush}"
+                                     Icon="{StaticResource WidgetIcon.History}"
+                                     IconBrush="{StaticResource TextSecondaryBrush}" IconSize="15"
+                                     AutomationProperties.Name="Zerar contador"/>
+                    <wid:ShelfButton x:Name="UndoButton" Width="72" Height="32" CornerRadius="16"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                                     Background="{StaticResource ShelfButtonBrush}"
+                                     LabelText="Desfazer" LabelBrush="{StaticResource TextPrimaryBrush}"
+                                     Visibility="Collapsed"
+                                     AutomationProperties.Name="Desfazer zerar"/>
+                </Grid>
+
+                <wid:ShelfButton x:Name="PlusButton" Grid.Column="2" Width="64" Height="34" CornerRadius="17"
+                                 HorizontalAlignment="Right" VerticalAlignment="Center"
+                                 Background="{StaticResource AccentBlueBrush}"
+                                 Icon="{StaticResource WidgetIcon.Plus}"
+                                 IconBrush="{StaticResource TextPrimaryBrush}" IconSize="18"
+                                 AutomationProperties.Name="Somar"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

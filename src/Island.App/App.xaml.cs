@@ -13,6 +13,7 @@ using Island.Core.Abstractions;
 using Island.Core.Application;
 using Island.Core.Clipboard;
 using Island.Core.Pomodoro;
+using Island.Core.Progress;
 using Island.Windows.Focus;
 using Island.Windows.Input;
 using Island.Core.Configuration;
@@ -153,6 +154,9 @@ public partial class App : System.Windows.Application
 
         // Performance: temperature alerts are normal notices; sampling starts here (alerts on, or the widget on screen).
         PerformanceWiring.Attach(sp.GetRequiredService<PerformanceMonitor>(), coordinator);
+
+        // Progress of the Suite: running tasks show on the capsule and in the Tasks widget; a finished or failed one raises a notice.
+        ProgressWiring.Attach(sp.GetRequiredService<ProgressTracker>(), coordinator);
 
         // Angry pomodoro: while locked, browsers on distracting sites are minimized; a blocked site raises a notice.
         var angry = sp.GetRequiredService<AngryPomodoro>();
@@ -403,6 +407,7 @@ public partial class App : System.Windows.Application
     {
         var media = sp.GetRequiredService<FakeMediaService>();
         var vol = sp.GetRequiredService<FakeVolumeService>();
+        var progress = sp.GetRequiredService<FakeProgressFeed>();
         media.SetPlaylist(
             new MediaInfo("Blue Hour", "Nova Coast", null, true, TimeSpan.FromSeconds(83), TimeSpan.FromSeconds(214), "demo"),
             new MediaInfo("Glass Tides", "Nova Coast", null, true, TimeSpan.Zero, TimeSpan.FromSeconds(187), "demo"));
@@ -425,6 +430,12 @@ public partial class App : System.Windows.Application
             if (n % 30 == 0) coordinatorNotice("USB removido", "Dispositivo de armazenamento", "usb-off");
             if (n % 12 == 0) vol.SetLevel(vol.Current.Level >= 90 ? 30 : vol.Current.Level + 15);
             if (n % 40 == 0) _ = media.NextAsync();
+            // Demo task: climbs from 0 to 100 in about 12 s, then finishes. A new id every 30 s cycle.
+            int step = n % 30;
+            string taskId = $"demo-{n / 30}";
+            if (step == 1) progress.Push(new ProgressUpdate(taskId, "Cortar: aula.mp4", "Corte", ProgressState.Running, 0.0, null, "SuperPrograma"));
+            else if (step is >= 2 and <= 13) progress.Push(new ProgressUpdate(taskId, "Cortar: aula.mp4", "Corte", ProgressState.Running, (step - 1) * 100.0 / 12.0, null, "SuperPrograma"));
+            else if (step == 14) progress.Push(new ProgressUpdate(taskId, "Cortar: aula.mp4", "Corte", ProgressState.Done, 100.0, "Corte concluído", "SuperPrograma"));
         };
         _demoTimer.Start();
 

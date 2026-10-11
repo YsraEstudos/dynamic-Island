@@ -24,9 +24,15 @@
             </Grid.ColumnDefinitions>
 
             <!-- Every catalogued widget as a tile; tiles already on the shelf are dimmed and checked. -->
-            <StackPanel x:Name="TileRow"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Center" />
+            <!-- Scrolls sideways: drag a tile along the row, or turn the wheel. The scrollbar stays hidden. -->
+            <ScrollViewer x:Name="TileScroll"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Disabled"
+                          PreviewMouseWheel="OnTrayWheel">
+                <StackPanel x:Name="TileRow"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center" />
+            </ScrollViewer>
 
             <StackPanel Grid.Column="1"
                         Orientation="Horizontal"

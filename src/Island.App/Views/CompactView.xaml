@@ -43,5 +43,39 @@
                                      AutomationProperties.Name="Áudio em reprodução"
                                      Visibility="{Binding IsEqualizerActive, Converter={StaticResource BoolToVisibility}}" />
         </StackPanel>
+
+        <!-- Task progress percentage, left side. Shown only while a task has a percent and the pomodoro and the idle content
+             (which own the left side) are off. -->
+        <TextBlock Text="{Binding TaskProgress.PercentText}"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Margin="16,0,0,0">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource CompactTimerTextStyle}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding TaskProgress.HasPercentText}" Value="True" />
+                                <Condition Binding="{Binding PomodoroRunning}" Value="False" />
+                                <Condition Binding="{Binding Idle.HasContent}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <!-- Task progress bar on the bottom edge, inset to the flat part of the capsule. The layer fades with the task;
+             only the indeterminate state pulses. Nothing here animates while no task runs. -->
+        <Grid Style="{StaticResource TaskProgressLayerStyle}"
+              VerticalAlignment="Bottom"
+              Margin="20,0,20,4"
+              AutomationProperties.Name="{Binding TaskProgress.Description}">
+            <controls:FractionBar Style="{StaticResource TaskProgressFractionStyle}"
+                                  Value="{Binding TaskProgress.Fraction}"
+                                  VerticalAlignment="Center" />
+        </Grid>
     </Grid>
 </UserControl>

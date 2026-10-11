@@ -64,6 +64,9 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
     private int _slideToken;
     private Press? _press;
     private Drag? _drag;
+    private bool _panning;                                         // a tile press became a sideways pan of the tray
+    private double _panStartX;
+    private double _panStartOffset;
 
     public ShelfView()
     {
@@ -605,9 +608,20 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
         if (_press is null && _drag is null) return;
 
         Point p = e.GetPosition(this);
+        if (_panning)
+        {
+            TileScroll.ScrollToHorizontalOffset(_panStartOffset - (p.X - _panStartX));
+            return;
+        }
         if (_drag is null)
         {
             if (_press is null || (p - _press.Start).Length <= DragThreshold) return;
+            // A tile moved mostly sideways pans the tray; moved up, it is dragged onto the shelf.
+            if (_press.TileDescriptor is not null && Math.Abs(p.X - _press.Start.X) > Math.Abs(p.Y - _press.Start.Y))
+            {
+                BeginPan(p.X);
+                return;
+            }
             if (!BeginDrag()) return;
         }
         UpdateDrag(p);
@@ -624,17 +638,48 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
 
         if (_press is null) return;
         Press press = _press;
+        bool panned = _panning;
         _press = null;
         ReleaseCapture(press.Source);
+        EndPan();
 
-        if (press.TileDescriptor is { } descriptor) ToggleTile(descriptor.Id);
+        // A pan is not a click: letting go after it must not toggle the tile.
+        if (!panned && press.TileDescriptor is { } descriptor) ToggleTile(descriptor.Id);
     }
 
     /// <summary>Capture was lost (window deactivated, etc.): end the gesture where it stands.</summary>
     private void OnCaptureLost(object sender, RoutedEventArgs e)
     {
         if (_drag is not null) FinishDrag();
-        else _press = null;
+        else
+        {
+            _press = null;
+            EndPan();
+        }
+    }
+
+    /// <summary>A tile press moved sideways: from here on the pointer scrolls the tray instead of clicking.</summary>
+    private void BeginPan(double x)
+    {
+        _panning = true;
+        _panStartX = x;
+        _panStartOffset = TileScroll.HorizontalOffset;
+        Mouse.OverrideCursor = Cursors.SizeWE;
+    }
+
+    private void EndPan()
+    {
+        if (!_panning) return;
+
+        _panning = false;
+        Mouse.OverrideCursor = null;
+    }
+
+    /// <summary>The wheel moves the tray sideways, so a mouse without a sideways wheel can still reach every tile.</summary>
+    private void OnTrayWheel(object sender, MouseWheelEventArgs e)
+    {
+        TileScroll.ScrollToHorizontalOffset(TileScroll.HorizontalOffset - e.Delta / 2.0);
+        e.Handled = true;
     }
 
     /// <summary>Starts the drag once the pointer has moved past the threshold. Returns false when the press cannot drag.</summary>
@@ -1004,6 +1049,7 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
             EndDragging();
         }
         if (press is not null) ReleaseCapture(press.Source);
+        EndPan();
     }
 
     private static void ReleaseCapture(FrameworkElement element)

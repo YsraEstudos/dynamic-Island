@@ -61,13 +61,14 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _hasPendingTasks;
 
     public IslandViewModel(IslandCoordinator coordinator, IMediaService media, IVolumeService volume,
-        Func<IslandSettings> settings, ShelfContext shelf, IdlePresenter idle)
+        Func<IslandSettings> settings, ShelfContext shelf, IdlePresenter idle, ProgressPresenter taskProgress)
     {
         _coordinator = coordinator;
         _media = media;
         _settings = settings;
         Shelf = shelf;
         Idle = idle;
+        TaskProgress = taskProgress;
         _dispatcher = System.Windows.Application.Current?.Dispatcher
                       ?? System.Windows.Threading.Dispatcher.CurrentDispatcher;
         _ticker = new DispatcherTimer(DispatcherPriority.Normal, _dispatcher) { Interval = TickInterval };
@@ -93,6 +94,9 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
 
     /// <summary>Idle content of the compact capsule: the weather, or the start of a scheduled pomodoro.</summary>
     public IdlePresenter Idle { get; }
+
+    /// <summary>Tasks of the progress link (SuperPrograma): the capsule bar, its percentage, and the Tasks widget rows.</summary>
+    public ProgressPresenter TaskProgress { get; }
 
     /// <summary>Current settings snapshot (read from the lead's settings source).</summary>
     public IslandSettings Settings => _settings();
@@ -252,7 +256,11 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>Refreshes compact motion preferences immediately after settings are applied.</summary>
-    public void RefreshMotionPreferences() => _pomodoroSignal.Signal();
+    public void RefreshMotionPreferences()
+    {
+        _pomodoroSignal.Signal();
+        TaskProgress.RefreshMotionPreferences();
+    }
 
     private void OnSystemParametersChanged(object? sender, PropertyChangedEventArgs e) => _pomodoroSignal.Signal();
 

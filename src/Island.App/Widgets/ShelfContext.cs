@@ -9,6 +9,8 @@ using Island.Core.Notes;
 using Island.Core.Performance;
 using Island.Core.Pomodoro;
 using Island.Core.Shelf;
+using Island.Core.Tools;
+using Island.Core.Tools.FocusSounds;
 
 namespace Island.App.Widgets;
 
@@ -33,7 +35,8 @@ public sealed class ShelfContext(
     PerformanceMonitor? performance = null,
     CaptureController? capture = null,
     ICaptureShortcutStatus? captureShortcuts = null,
-    IAudioMixerService? mixer = null)
+    IAudioMixerService? mixer = null,
+    Func<IFocusAudioOutput>? focusAudioOutput = null) : IDisposable
 {
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
@@ -62,4 +65,11 @@ public sealed class ShelfContext(
     public Action<IslandSettings> ApplySettings { get; } = applySettings;
     /// <summary>Per-app audio sessions for the Mixer widget.</summary>
     public IAudioMixerService? Mixer { get; } = mixer;
+    /// <summary>Opens the speaker output for the focus sounds. Silent when none is given (tests, --demo).</summary>
+    public Func<IFocusAudioOutput> FocusAudioOutput { get; } = focusAudioOutput ?? (() => new NullFocusAudioOutput());
+    /// <summary>Long-lived models of the small tool widgets (calculator, counter, timers, focus sounds, text analyzer).</summary>
+    public ToolRegistry Tools { get; } = new();
+
+    /// <summary>Disposed with the service provider on exit: flushes the counter and stops focus sounds.</summary>
+    public void Dispose() => Tools.Dispose();
 }
