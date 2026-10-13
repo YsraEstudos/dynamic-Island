@@ -251,7 +251,12 @@ public partial class App : System.Windows.Application
 
         if (smoke)
         {
-            var done = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+            // Runs the post-resume surface refresh (Nudge, then a re-show 1.5 s later) so the published build exercises it.
+            var nudge = new DispatcherTimer { Interval = TimeSpan.FromSeconds(0.5) };
+            nudge.Tick += (_, _) => { nudge.Stop(); _window?.Nudge(); };
+            nudge.Start();
+
+            var done = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3.5) };
             done.Tick += (_, _) => { done.Stop(); Log.Information("Smoke test passed"); Shutdown(0); };
             done.Start();
         }

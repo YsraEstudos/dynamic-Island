@@ -55,6 +55,11 @@ public partial class IslandWindow : System.Windows.Window
     private int _dragX;
     private int _dragY;
 
+    // Surface refresh after sleep/unlock/display change (see ScheduleSurfaceRefresh).
+    private static readonly TimeSpan[] SurfaceRefreshDelays = { TimeSpan.FromSeconds(1.5), TimeSpan.FromSeconds(6) };
+    private readonly System.Windows.Threading.DispatcherTimer _surfaceTimer;
+    private int _surfaceRefreshStep;
+
     // Throw to Mini: recent pointer samples of a drag (physical px, Environment.TickCount64 ms). A fast rise on release minimises.
     private const long ThrowBufferMs = 150;
     private const long ThrowWindowMs = 120;
@@ -143,6 +148,9 @@ public partial class IslandWindow : System.Windows.Window
         _holdTimer = new System.Windows.Threading.DispatcherTimer { Interval = HoldDuration };
         _holdTimer.Tick += OnHoldElapsed;
 
+        _surfaceTimer = new System.Windows.Threading.DispatcherTimer { Interval = SurfaceRefreshDelays[0] };
+        _surfaceTimer.Tick += OnSurfaceRefreshTick;
+
         IslandShape.MouseWheel += OnIslandWheel;
         IslandShape.MouseLeftButtonDown += OnIslandPressed;
         IslandShape.MouseMove += OnIslandMouseMove;
@@ -191,6 +199,44 @@ public partial class IslandWindow : System.Windows.Window
         if (hwnd != IntPtr.Zero) OverlayWindowService.KeepOnTop(hwnd);
         SyncDock(_settings());
         Reposition();
+        ScheduleSurfaceRefresh();
+    }
+
+    /// <summary>
+    /// A layered (AllowsTransparency) WPF window can come back from sleep, unlock or a monitor wake with a blank surface:
+    /// the process keeps running and the window stays visible, topmost and in place, but nothing is drawn, and a second
+    /// launch exits on the single-instance guard. The graphics stack is often not ready when the notification arrives,
+    /// so Nudge alone is too early. Re-show the window twice after the event; the second pass catches a slow wake.
+    /// </summary>
+    private void ScheduleSurfaceRefresh()
+    {
+        _surfaceRefreshStep = 0;
+        _surfaceTimer.Interval = SurfaceRefreshDelays[0];
+        _surfaceTimer.Stop();
+        _surfaceTimer.Start();
+    }
+
+    private void OnSurfaceRefreshTick(object? sender, EventArgs e)
+    {
+        _surfaceTimer.Stop();
+        RefreshSurface();
+
+        if (++_surfaceRefreshStep >= SurfaceRefreshDelays.Length) return;
+        _surfaceTimer.Interval = SurfaceRefreshDelays[_surfaceRefreshStep];
+        _surfaceTimer.Start();
+    }
+
+    /// <summary>Hides and shows the window in one turn so WPF presents a fresh layered surface. Skips a hidden or dragged island.</summary>
+    private void RefreshSurface()
+    {
+        if (_vm.Suspended || _dragging || Visibility != System.Windows.Visibility.Visible) return;
+
+        Visibility = System.Windows.Visibility.Hidden;
+        Visibility = System.Windows.Visibility.Visible;
+        RootGrid.InvalidateVisual();
+
+        IntPtr hwnd = new WindowInteropHelper(this).Handle;
+        if (hwnd != IntPtr.Zero) OverlayWindowService.KeepOnTop(hwnd);
     }
 
     /// <summary>The dock the saved settings ask for. A dock only exists with a custom position.</summary>
