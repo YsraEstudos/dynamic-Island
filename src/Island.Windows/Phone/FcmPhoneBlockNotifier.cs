@@ -13,10 +13,13 @@ namespace Island.Windows.Phone;
 /// calls: no timer, no open connection (the pooled one is dropped after 30 s idle), and the OAuth access token is
 /// kept in memory for under an hour. The service-account key is read from disk per call and never logged.
 /// A failed delivery is retried with the same message id (the phone ignores duplicates) while time remains.
+/// An optional adult-only span goes out as <c>adultEndMs</c>, an absolute time that may outlast the full block.
 /// </summary>
 public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
 {
     public static readonly TimeSpan MaxDuration = TimeSpan.FromMinutes(120);
+    /// <summary>Longest adult-only span. Separate from <see cref="MaxDuration"/>: a plan keeps adult content blocked across its focuses.</summary>
+    public static readonly TimeSpan MaxAdultDuration = TimeSpan.FromHours(4);
 
     private const string Scope = "https://www.googleapis.com/auth/firebase.messaging";
     private const string DefaultTokenUri = "https://oauth2.googleapis.com/token";
@@ -59,11 +62,12 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
     })
     { Timeout = TimeSpan.FromSeconds(15) };
 
-    public async Task<PhoneBlockOutcome> NotifyAsync(TimeSpan duration, string fcmToken, CancellationToken ct = default)
+    public async Task<PhoneBlockOutcome> NotifyAsync(TimeSpan duration, string fcmToken, TimeSpan adultDuration = default,
+        CancellationToken ct = default)
     {
         try
         {
-            return await SendAsync(duration, fcmToken, ct).ConfigureAwait(false);
+            return await SendAsync(duration, fcmToken, adultDuration, ct).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -76,24 +80,30 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
         }
     }
 
-    private async Task<PhoneBlockOutcome> SendAsync(TimeSpan duration, string fcmToken, CancellationToken ct)
+    private async Task<PhoneBlockOutcome> SendAsync(TimeSpan duration, string fcmToken, TimeSpan adultDuration, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(fcmToken)) return new PhoneBlockOutcome(false, "Cole o token do celular nas Settings");
         if (duration <= TimeSpan.Zero) return new PhoneBlockOutcome(false, "Sem tempo restante para bloquear");
         if (duration > MaxDuration) duration = MaxDuration;
+        if (adultDuration > MaxAdultDuration) adultDuration = MaxAdultDuration;
 
         var account = ServiceAccount.Load(_keyPath, out string? loadError);
         if (account is null) return new PhoneBlockOutcome(false, loadError!);
 
         string id = Guid.NewGuid().ToString("N");
-        DateTimeOffset end = _clock() + duration;
+        // Both ends are absolute and fixed here, so a retry sends the same ones. The adult end goes out only when it
+        // outlasts the full block; otherwise the full block already covers it.
+        DateTimeOffset start = _clock();
+        DateTimeOffset end = start + duration;
+        DateTimeOffset? adultEnd = adultDuration > duration ? start + adultDuration : null;
 
         for (int attempt = 0; ; attempt++)
         {
-            TimeSpan remaining = end - _clock();
-            if (remaining <= TimeSpan.Zero) return new PhoneBlockOutcome(false, "O tempo acabou antes de entregar ao celular");
+            // The message must stay valid until the later of the two ends.
+            TimeSpan ttl = Longest(_clock(), end, adultEnd);
+            if (ttl <= TimeSpan.Zero) return new PhoneBlockOutcome(false, "O tempo acabou antes de entregar ao celular");
 
-            Attempt result = await TrySendAsync(account, fcmToken.Trim(), id, end, remaining, ct).ConfigureAwait(false);
+            Attempt result = await TrySendAsync(account, fcmToken.Trim(), id, end, adultEnd, ttl, ct).ConfigureAwait(false);
             if (result.Kind == AttemptKind.Delivered)
                 return new PhoneBlockOutcome(true, $"Celular bloqueado até {end.ToLocalTime():HH:mm}");
             if (result.Kind == AttemptKind.Permanent || attempt >= RetryDelays.Length)
@@ -103,26 +113,40 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
         }
     }
 
-    private async Task<Attempt> TrySendAsync(
-        ServiceAccount account, string fcmToken, string id, DateTimeOffset end, TimeSpan remaining, CancellationToken ct)
+    /// <summary>The span until the later of the full block's end and the adult block's end.</summary>
+    private static TimeSpan Longest(DateTimeOffset now, DateTimeOffset end, DateTimeOffset? adultEnd)
+    {
+        TimeSpan left = end - now;
+        if (adultEnd is { } adult && adult - now > left) left = adult - now;
+        return left;
+    }
+
+    private async Task<Attempt> TrySendAsync(ServiceAccount account, string fcmToken, string id, DateTimeOffset end,
+        DateTimeOffset? adultEnd, TimeSpan ttl, CancellationToken ct)
     {
         try
         {
             string accessToken = await GetAccessTokenAsync(account, ct).ConfigureAwait(false);
 
+            // Once the full block is over only the adult block may still run: send it as zero, not as a negative span.
+            TimeSpan fullRemaining = end - _clock();
+            if (fullRemaining < TimeSpan.Zero) fullRemaining = TimeSpan.Zero;
             var data = new Dictionary<string, string>
             {
                 ["id"] = id,
-                ["durationMs"] = ((long)remaining.TotalMilliseconds).ToString(System.Globalization.CultureInfo.InvariantCulture),
+                ["durationMs"] = ((long)fullRemaining.TotalMilliseconds).ToString(System.Globalization.CultureInfo.InvariantCulture),
                 ["endMs"] = end.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture),
             };
+            // Optional: the phone keeps adult content blocked until this absolute time, even after endMs.
+            if (adultEnd is { } adult)
+                data["adultEndMs"] = adult.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture);
             // Data-only + HIGH priority: delivered in Doze, no notification shown. The TTL drops a message that can no longer matter.
             string body = JsonSerializer.Serialize(new
             {
                 message = new
                 {
                     token = fcmToken,
-                    android = new { priority = "HIGH", ttl = $"{(long)Math.Ceiling(remaining.TotalSeconds)}s" },
+                    android = new { priority = "HIGH", ttl = $"{(long)Math.Ceiling(ttl.TotalSeconds)}s" },
                     data,
                 },
             });

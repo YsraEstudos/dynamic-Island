@@ -101,4 +101,31 @@ public class BlockedSitesTests
     {
         Assert.Equal(expected, BlockedSites.IsBrowserProcess(processName));
     }
+
+    [Fact]
+    public void Only_the_adult_site_is_flagged_as_adult()
+    {
+        Assert.Equal(new[] { "Conteúdo adulto" }, BlockedSites.Default.Where(s => s.IsAdult).Select(s => s.Name));
+    }
+
+    [Theory]
+    [InlineData("Free Porn Videos - XVIDEOS.COM - Google Chrome")]
+    [InlineData("Pornhub - Microsoft Edge")]
+    [InlineData("Chaturbate - Free Adult Webcams")]
+    [InlineData("Vídeos de sexo grátis - xHamster")]
+    public void Adult_only_matching_still_blocks_adult_titles(string title)
+    {
+        Assert.Equal("Conteúdo adulto", BlockedSites.Match(title, adultOnly: true));
+    }
+
+    [Theory]
+    [InlineData("Instagram")]
+    [InlineData("Reels - Instagram - Opera")]
+    [InlineData("Lo-fi beats - YouTube - Google Chrome")]
+    [InlineData("Home / X - Microsoft Edge")]
+    [InlineData("r/programming - Reddit")]
+    public void Adult_only_matching_ignores_the_other_sites(string title)
+    {
+        Assert.Null(BlockedSites.Match(title, adultOnly: true));
+    }
 }

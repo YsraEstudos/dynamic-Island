@@ -162,16 +162,22 @@ public partial class App : System.Windows.Application
         var angry = sp.GetRequiredService<AngryPomodoro>();
         var siteGuard = sp.GetRequiredService<ForegroundSiteGuard>();
         _angry = angry;
-        angry.LockChanged += () => Dispatcher.BeginInvoke(() => siteGuard.SetActive(angry.IsLocked));
+        // A locked focus blocks every site in the list. The free break, and any session time without a lock, blocks only adult sites.
+        angry.LockChanged += () => Dispatcher.BeginInvoke(() => siteGuard.SetMode(
+            angry.IsLocked ? SiteGuardMode.All : angry.IsSessionActive ? SiteGuardMode.AdultOnly : SiteGuardMode.Off));
         // The scheduled start is resolved here so it exists (and is disposed with the container) from launch.
         sp.GetRequiredService<PomodoroSchedule>();
         siteGuard.SiteBlocked += site => coordinator.Post(new IslandEvent.NoticeRaised(
             new Notice($"{site} bloqueado", "Pomodoro raivoso ativo", "timer")));
 
         // Each locked focus of an angry plan -> ask the phone to block for the time left of that focus. Breaks are free,
-        // so the phone is released when the block expires. Leaving Angry early sends nothing: the phone keeps its block
-        // until the original end (or until the phrase is typed on the phone). LockChanged also fires for session changes
-        // that are not a new lock, so only a false -> true edge of IsLocked sends; the lock guards the edge state.
+        // so the full block is released when it expires. The same message carries an adult-only span (adultEndMs) that
+        // runs through this focus and its break when the plan has another focus after it. That next focus sends its own
+        // block when it locks, so the adult block is extended focus by focus. The last focus of a plan sends no adult
+        // span: the full block already covers it. Adult content is never free during an angry session, breaks included.
+        // Leaving Angry early sends nothing: the phone keeps its block until the original end (or until the phrase is
+        // typed on the phone). LockChanged also fires for session changes that are not a new lock, so only a false -> true
+        // edge of IsLocked sends; the lock guards the edge state.
         var phone = sp.GetRequiredService<IPhoneBlockNotifier>();
         var focusTimer = sp.GetRequiredService<PomodoroTimer>();
         bool wasLocked = false;
@@ -186,7 +192,8 @@ public partial class App : System.Windows.Application
                 wasLocked = locked;
             }
             if (!sendBlock) return;
-            _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, holder.Current.PhoneFcmToken);
+            _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, AdultSpanFromFocus(focusTimer, holder.Current),
+                holder.Current.PhoneFcmToken);
         };
 
         // Pomodoro -> toast (and sound when enabled), clipboard capture -> history, global hotkey -> clipboard panel
@@ -255,12 +262,25 @@ public partial class App : System.Windows.Application
         _noticeCoordinator?.Post(new IslandEvent.NoticeRaised(notice));
 
     /// <summary>Fire-and-forget: the notifier never throws, and a failure only raises a toast. Angry keeps running either way.</summary>
-    private static async Task BlockPhoneAsync(IPhoneBlockNotifier phone, IslandCoordinator coordinator, TimeSpan remaining, string token)
+    private static async Task BlockPhoneAsync(IPhoneBlockNotifier phone, IslandCoordinator coordinator, TimeSpan remaining,
+        TimeSpan adultRemaining, string token)
     {
-        PhoneBlockOutcome outcome = await phone.NotifyAsync(remaining, token).ConfigureAwait(false);
+        PhoneBlockOutcome outcome = await phone.NotifyAsync(remaining, token, adultRemaining).ConfigureAwait(false);
         coordinator.Post(new IslandEvent.NoticeRaised(outcome.Delivered
             ? new Notice("Celular bloqueado", outcome.Detail, "timer")
             : new Notice("Celular não bloqueado", outcome.Detail, "timer")));
+    }
+
+    /// <summary>
+    /// How long the phone keeps adult content blocked from now: the focus that is starting, then its break. A plan ends
+    /// after its last break, so the last focus counts its break too. A single focus (no plan) gives zero, because the
+    /// session ends with it and the full block already covers it.
+    /// </summary>
+    private static TimeSpan AdultSpanFromFocus(PomodoroTimer timer, IslandSettings settings)
+    {
+        if (!timer.PlanActive) return TimeSpan.Zero;
+        var breakLength = TimeSpan.FromMinutes(Math.Clamp(settings.PomodoroBreakMinutes, PomodoroTimer.MinMinutes, PomodoroTimer.MaxMinutes));
+        return timer.Remaining + breakLength;
     }
 
     /// <summary>Runs on the timer thread. Audio failures are logged and ignored: the toast still shows.</summary>

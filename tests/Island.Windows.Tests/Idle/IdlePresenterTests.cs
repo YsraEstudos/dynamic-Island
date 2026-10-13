@@ -75,7 +75,7 @@ public class IdlePresenterTests
         {
             using var rig = new Rig(Reading(DateTimeOffset.Now.AddMinutes(-5)));
             DateTimeOffset at = DateTimeOffset.Now.AddHours(2);
-            rig.Schedule.Set(at, ScheduledStartMode.Focus, 1);
+            rig.Schedule.Add(at, ScheduledStartMode.Focus, 1);
 
             rig.Presenter.Refresh();
 
@@ -93,7 +93,7 @@ public class IdlePresenterTests
         WpfStaTestHost.Run(_ =>
         {
             using var rig = new Rig();
-            rig.Schedule.Set(DateTimeOffset.Now.AddHours(2), ScheduledStartMode.Angry, 1);
+            rig.Schedule.Add(DateTimeOffset.Now.AddHours(2), ScheduledStartMode.Angry, 1);
 
             rig.Presenter.Refresh();
 

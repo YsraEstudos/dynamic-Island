@@ -9,7 +9,12 @@ public readonly record struct PhoneBlockOutcome(bool Delivered, string Detail);
 /// </summary>
 public interface IPhoneBlockNotifier
 {
-    /// <param name="duration">How long the phone stays blocked, counted from now.</param>
+    /// <param name="duration">How long the phone stays fully blocked, counted from now.</param>
     /// <param name="fcmToken">FCM registration token of the phone.</param>
-    Task<PhoneBlockOutcome> NotifyAsync(TimeSpan duration, string fcmToken, CancellationToken ct = default);
+    /// <param name="adultDuration">
+    /// How long the phone keeps adult content blocked, counted from now, when it is longer than <paramref name="duration"/>.
+    /// Zero (the default) or a shorter span sends no separate adult block.
+    /// </param>
+    /// <param name="ct">Stops pending retries.</param>
+    Task<PhoneBlockOutcome> NotifyAsync(TimeSpan duration, string fcmToken, TimeSpan adultDuration = default, CancellationToken ct = default);
 }

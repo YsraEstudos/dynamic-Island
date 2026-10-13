@@ -57,6 +57,53 @@ public sealed class ForegroundSiteGuardTests
         Assert.Equal(expected, ForegroundSiteGuard.IsBrowserTitleChange(objectId, childId));
     }
 
+    [Theory]
+    [InlineData("chrome", "Free Porn Videos - Google Chrome", "Conteúdo adulto")]
+    [InlineData("msedge", "Pornhub - Microsoft Edge", "Conteúdo adulto")]
+    public void ShouldBlock_AdultOnly_BlocksAdultSites(string processName, string title, string expectedSite)
+    {
+        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, true, out string? siteName);
+
+        Assert.True(blocked);
+        Assert.Equal(expectedSite, siteName);
+    }
+
+    [Theory]
+    [InlineData("chrome", "Instagram - Google Chrome")]
+    [InlineData("msedge", "Home / X - Microsoft Edge")]
+    [InlineData("firefox", "Lo-fi - YouTube - Firefox")]
+    public void ShouldBlock_AdultOnly_LeavesOtherSitesAlone(string processName, string title)
+    {
+        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, true, out string? siteName);
+
+        Assert.False(blocked);
+        Assert.Null(siteName);
+    }
+
+    [Fact]
+    public void SetMode_StartsOff_AndSetActiveFalseKeepsItOff()
+    {
+        using var guard = new ForegroundSiteGuard();
+
+        Assert.Equal(SiteGuardMode.Off, guard.Mode);
+        Assert.False(guard.Active);
+
+        guard.SetActive(false);
+
+        Assert.Equal(SiteGuardMode.Off, guard.Mode);
+    }
+
+    [Fact]
+    public void SetMode_AfterDispose_IsIgnored()
+    {
+        var guard = new ForegroundSiteGuard();
+        guard.Dispose();
+
+        guard.SetMode(SiteGuardMode.AdultOnly);
+
+        Assert.Equal(SiteGuardMode.Off, guard.Mode);
+    }
+
     [Fact]
     public void SetActiveFalseThenDispose_CanBeRepeatedWithoutThrowing()
     {

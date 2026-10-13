@@ -6,7 +6,7 @@ namespace Island.Core.Tests.Idle;
 public class IdleContentResolverTests
 {
     private static readonly DateTimeOffset Now = new(2026, 10, 10, 14, 0, 0, TimeSpan.FromHours(-3));
-    private static readonly ScheduledStart Scheduled = new(Now.AddMinutes(90), ScheduledStartMode.Focus, 1);
+    private static readonly ScheduledStart Scheduled = new(Guid.NewGuid(), Now.AddMinutes(90), ScheduledStartMode.Focus, 1);
 
     private static WeatherSnapshot Reading(DateTimeOffset? at = null) =>
         new(23.4, 3, 40, at ?? Now.AddMinutes(-5));

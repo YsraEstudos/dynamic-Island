@@ -11,14 +11,18 @@ using Color = System.Windows.Media.Color;
 namespace Island.App.Shell;
 
 /// <summary>
-/// "Agendar pomodoro" dialog: a clock time (HH:mm), a mode (Focus or Angry) and a count of pomodoros in a row. The
-/// confirm button schedules the next occurrence of that time through <see cref="PomodoroSchedule.Set"/>; the remove
-/// button appears only while a start is pending. Esc closes without changes. Open it with <see cref="ShowFor"/>.
+/// "Agendar pomodoro" manager: a day (today to 30 days ahead), a clock time (HH:mm), a mode (Focus or Angry) and a count
+/// of pomodoros in a row. "Agendar" adds a start through <see cref="PomodoroSchedule.Add"/> and keeps the form open for
+/// another one. The list below shows every scheduled start with a delete button and follows
+/// <see cref="PomodoroSchedule.Changed"/> while the dialog is open. Esc or "Fechar" closes. Open it with <see cref="ShowFor"/>.
 /// </summary>
 public partial class ScheduleWindow : Window
 {
+    private const int MaxDaysAhead = 30;
+
     private static ScheduleWindow? _open;
 
+    private static readonly CultureInfo Pt = CultureInfo.GetCultureInfo("pt-BR");
     private static readonly Brush Orange = Frozen(0xFF, 0x9F, 0x0A, 0xFF);
     private static readonly Brush OrangeSoft = Frozen(0xFF, 0x9F, 0x0A, 0x33);
     private static readonly Brush Red = Frozen(0xFF, 0x45, 0x3A, 0xFF);
@@ -26,8 +30,9 @@ public partial class ScheduleWindow : Window
     private static readonly string[] TimeFormats = ["HH:mm", "H:mm"];
 
     private readonly PomodoroSchedule _schedule;
-    private ScheduledStartMode _mode;
+    private ScheduledStartMode _mode = ScheduledStartMode.Focus;
     private int _cycles;
+    private int _dayOffset;
 
     public ScheduleWindow(PomodoroSchedule schedule, int defaultCycles)
     {
@@ -36,32 +41,22 @@ public partial class ScheduleWindow : Window
         InitializeComponent();
         _schedule = schedule;
 
-        // A pending start pre-fills the dialog; otherwise the next five-minute mark after now.
-        ScheduledStart? pending = schedule.Pending;
-        _mode = pending?.Mode ?? ScheduledStartMode.Focus;
-        _cycles = Math.Clamp(pending?.Cycles ?? defaultCycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles);
-        TimeBox.Text = pending is not null
-            ? pending.At.ToLocalTime().ToString("HH:mm", CultureInfo.InvariantCulture)
-            : NextFiveMinutes(DateTime.Now).ToString("HH:mm", CultureInfo.InvariantCulture);
-        RemoveButton.Visibility = pending is null ? Visibility.Collapsed : Visibility.Visible;
+        // Form defaults: today, the next five-minute mark after now, Focus, and the configured cycles.
+        _cycles = Math.Clamp(defaultCycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles);
+        TimeBox.Text = NextFiveMinutes(DateTime.Now).ToString("HH:mm", CultureInfo.InvariantCulture);
 
+        ApplyDay();
         ApplyMode();
         ApplyCycles();
-        UpdateTime();
+        RefreshStarts();
+        UpdateForm();
 
-        KeyDown += (_, e) =>
-        {
-            if (e.Key == System.Windows.Input.Key.Escape)
-            {
-                e.Handled = true;
-                DialogResult = false;
-            }
-        };
+        _schedule.Changed += OnScheduleChanged;
     }
 
     /// <summary>
     /// Shows the dialog modally. Only one is open at a time: when it is already open it is activated instead. Nothing
-    /// is changed unless the user confirms or removes the start.
+    /// is changed unless the user adds or deletes a start.
     /// </summary>
     public static void ShowFor(PomodoroSchedule schedule, int defaultCycles)
     {
@@ -94,6 +89,12 @@ public partial class ScheduleWindow : Window
         DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 20, ref useDark, sizeof(int));
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        _schedule.Changed -= OnScheduleChanged;
+        base.OnClosed(e);
+    }
+
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         Activate();
@@ -109,13 +110,62 @@ public partial class ScheduleWindow : Window
         return new TimeOnly(minutes / 60, minutes % 60);
     }
 
-    private void OnTimeChanged(object sender, TextChangedEventArgs e) => UpdateTime();
-
-    /// <summary>Validates the time field, then shows the preview, or the error and a disabled confirm button.</summary>
-    private void UpdateTime()
+    /// <summary>"Hoje", "Amanhã", or the short weekday and day, like "qua, 15/10", for any other date.</summary>
+    private static string DayLabel(DateOnly date)
     {
-        bool valid = TryReadTime(out TimeOnly time);
-        TimeError.Visibility = valid ? Visibility.Collapsed : Visibility.Visible;
+        int offset = date.DayNumber - DateOnly.FromDateTime(DateTime.Now).DayNumber;
+        if (offset == 0)
+        {
+            return "Hoje";
+        }
+
+        if (offset == 1)
+        {
+            return "Amanhã";
+        }
+
+        string weekday = Pt.DateTimeFormat.GetAbbreviatedDayName(date.DayOfWeek).TrimEnd('.');
+        return $"{weekday}, {date.ToString("dd/MM", CultureInfo.InvariantCulture)}";
+    }
+
+    private DateOnly SelectedDate => DateOnly.FromDateTime(DateTime.Now).AddDays(_dayOffset);
+
+    private void OnDayBackClicked(object sender, RoutedEventArgs e)
+    {
+        _dayOffset = Math.Max(0, _dayOffset - 1);
+        ApplyDay();
+        UpdateForm();
+    }
+
+    private void OnDayForwardClicked(object sender, RoutedEventArgs e)
+    {
+        _dayOffset = Math.Min(MaxDaysAhead, _dayOffset + 1);
+        ApplyDay();
+        UpdateForm();
+    }
+
+    private void ApplyDay()
+    {
+        DayText.Text = DayLabel(SelectedDate);
+        DayBackButton.IsEnabled = _dayOffset > 0;
+        DayForwardButton.IsEnabled = _dayOffset < MaxDaysAhead;
+    }
+
+    private void OnTimeChanged(object sender, TextChangedEventArgs e) => UpdateForm();
+
+    /// <summary>
+    /// Validates the time against the chosen day, then shows the preview, or the error and a disabled confirm button.
+    /// </summary>
+    private void UpdateForm()
+    {
+        bool validFormat = TryReadTime(out TimeOnly time);
+        DateTimeOffset now = DateTimeOffset.Now;
+        bool past = validFormat && PomodoroSchedule.At(SelectedDate, time, now) <= now;
+        bool valid = validFormat && !past;
+
+        string? error = !validFormat ? "Use o formato HH:mm, por exemplo 14:30." : past ? "Esse horário já passou" : null;
+        TimeError.Text = error ?? string.Empty;
+        TimeError.Visibility = error is null ? Visibility.Collapsed : Visibility.Visible;
         ConfirmButton.IsEnabled = valid;
 
         if (!valid)
@@ -124,9 +174,13 @@ public partial class ScheduleWindow : Window
             return;
         }
 
-        DateTimeOffset at = PomodoroSchedule.NextOccurrence(time, DateTimeOffset.Now);
-        string day = at.ToLocalTime().Date == DateTime.Now.Date ? "hoje" : "amanhã";
-        PreviewText.Text = $"Começa {day} às {time.ToString("HH:mm", CultureInfo.InvariantCulture)}";
+        string when = _dayOffset switch
+        {
+            0 => "hoje",
+            1 => "amanhã",
+            _ => $"em {DayLabel(SelectedDate)}",
+        };
+        PreviewText.Text = $"Começa {when} às {time.ToString("HH:mm", CultureInfo.InvariantCulture)}";
     }
 
     private bool TryReadTime(out TimeOnly time) =>
@@ -175,23 +229,54 @@ public partial class ScheduleWindow : Window
         PlusButton.IsEnabled = _cycles < PomodoroTimer.MaxCycles;
     }
 
-    private void OnRemoveClicked(object sender, RoutedEventArgs e)
+    private void OnScheduleChanged() => Dispatcher.BeginInvoke(new Action(RefreshStarts));
+
+    /// <summary>Rebuilds the list from <see cref="PomodoroSchedule.Starts"/> (already sorted by time).</summary>
+    private void RefreshStarts()
     {
-        _schedule.Cancel();
-        DialogResult = false;
+        var rows = new List<StartRow>();
+        foreach (ScheduledStart start in _schedule.Starts)
+        {
+            DateTime local = start.At.ToLocalTime().DateTime;
+            bool angry = start.Mode == ScheduledStartMode.Angry;
+            rows.Add(new StartRow(
+                start.Id,
+                DayLabel(DateOnly.FromDateTime(local)),
+                local.ToString("HH:mm", CultureInfo.InvariantCulture),
+                angry ? "Angry" : "Focus",
+                angry ? Red : Orange,
+                start.Cycles == 1 ? "1 pomodoro" : $"{start.Cycles} pomodoros"));
+        }
+
+        StartsList.ItemsSource = rows;
+        bool any = rows.Count > 0;
+        EmptyText.Visibility = any ? Visibility.Collapsed : Visibility.Visible;
+        StartsScroll.Visibility = any ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void OnDeleteClicked(object sender, RoutedEventArgs e)
+    {
+        if (((System.Windows.Controls.Button)sender).Tag is Guid id)
+        {
+            _schedule.Remove(id);
+            RefreshStarts();
+        }
     }
 
     private void OnConfirmClicked(object sender, RoutedEventArgs e)
     {
         if (!TryReadTime(out TimeOnly time))
         {
-            UpdateTime();
+            UpdateForm();
             return;
         }
 
-        _schedule.Set(PomodoroSchedule.NextOccurrence(time, DateTimeOffset.Now), _mode, _cycles);
-        DialogResult = true;
+        _schedule.Add(PomodoroSchedule.At(SelectedDate, time, DateTimeOffset.Now), _mode, _cycles);
+        RefreshStarts();
+        UpdateForm();
     }
+
+    private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();
 
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
@@ -202,4 +287,7 @@ public partial class ScheduleWindow : Window
         brush.Freeze();
         return brush;
     }
+
+    /// <summary>One row of the scheduled list, as bound by the item template.</summary>
+    internal sealed record StartRow(Guid Id, string Day, string Time, string Mode, Brush ModeBrush, string Count);
 }

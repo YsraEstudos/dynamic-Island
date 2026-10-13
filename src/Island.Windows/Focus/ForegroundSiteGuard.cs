@@ -6,12 +6,24 @@ using Microsoft.Extensions.Logging;
 
 namespace Island.Windows.Focus;
 
+/// <summary>What the <see cref="ForegroundSiteGuard"/> blocks while it is on.</summary>
+public enum SiteGuardMode
+{
+    /// <summary>Nothing is blocked and no hooks are installed.</summary>
+    Off,
+    /// <summary>Only adult sites are blocked (<see cref="BlockedSite.IsAdult"/>).</summary>
+    AdultOnly,
+    /// <summary>Every site in <see cref="BlockedSites"/> is blocked.</summary>
+    All,
+}
+
 /// <summary>
-/// Minimizes a browser window whose window or accessible client title names a blocked site during angry mode.
-/// Event-driven through WinEvent hooks; there is no polling timer. The client title survives named Edge windows.
+/// Minimizes a browser window whose window or accessible client title names a blocked site, in the mode set by
+/// <see cref="SetMode"/>. Event-driven through WinEvent hooks; there is no polling timer. The client title survives named Edge windows.
 /// <para>
-/// <see cref="SetActive"/> must run on a thread that pumps window messages (the WPF UI thread).
+/// <see cref="SetMode"/> and <see cref="SetActive"/> must run on a thread that pumps window messages (the WPF UI thread).
 /// Out-of-context WinEvent callbacks are delivered through that thread's message queue.
+/// The mode is volatile because the callbacks read it without taking the lock.
 /// </para>
 /// </summary>
 public sealed class ForegroundSiteGuard : IDisposable
@@ -26,7 +38,7 @@ public sealed class ForegroundSiteGuard : IDisposable
     private readonly NativeMethods.WinEventDelegate _winEventProc;
     private IntPtr _foregroundHook;
     private IntPtr _nameChangeHook;
-    private volatile bool _active;
+    private volatile SiteGuardMode _mode;
     private bool _disposed;
 
     public ForegroundSiteGuard(ILogger<ForegroundSiteGuard>? logger = null)
@@ -39,24 +51,35 @@ public sealed class ForegroundSiteGuard : IDisposable
     /// <summary>Raised after a blocked window was minimized, on the thread that owns the hooks (the UI thread).</summary>
     public event Action<string>? SiteBlocked;
 
-    public bool Active => _active;
+    /// <summary>True in any mode other than <see cref="SiteGuardMode.Off"/>.</summary>
+    public bool Active => _mode != SiteGuardMode.Off;
+
+    /// <summary>The current mode.</summary>
+    public SiteGuardMode Mode => _mode;
+
+    /// <summary>Same as <see cref="SetMode"/>: true blocks every site, false turns the guard off.</summary>
+    public void SetActive(bool active) => SetMode(active ? SiteGuardMode.All : SiteGuardMode.Off);
 
     /// <summary>
-    /// Installs or removes the hooks. Turning it on also checks the window already in front, because the user
-    /// may be on a blocked site when the mode starts. Idempotent.
+    /// Sets what is blocked. <see cref="SiteGuardMode.Off"/> removes the hooks. Any other mode installs them and checks
+    /// the window already in front, because the user may be on a blocked site when the mode starts. Switching between
+    /// AdultOnly and All keeps the hooks and checks the foreground window again. Idempotent.
     /// </summary>
-    public void SetActive(bool active)
+    public void SetMode(SiteGuardMode mode)
     {
+        bool check;
         lock (_gate)
         {
-            if (_disposed || _active == active) return;
-            _active = active;
-            if (active) InstallHooksLocked();
-            else RemoveHooksLocked();
+            if (_disposed || _mode == mode) return;
+            bool wasOff = _mode == SiteGuardMode.Off;
+            _mode = mode;
+            if (mode == SiteGuardMode.Off) RemoveHooksLocked();
+            else if (wasOff) InstallHooksLocked();
+            check = mode != SiteGuardMode.Off;
         }
 
-        // Outside the lock: a SiteBlocked subscriber may call back into SetActive.
-        if (active) EvaluateWindow(NativeMethods.GetForegroundWindow());
+        // Outside the lock: a SiteBlocked subscriber may call back into SetMode.
+        if (check) EvaluateWindow(NativeMethods.GetForegroundWindow());
     }
 
     /// <summary>
@@ -64,18 +87,28 @@ public sealed class ForegroundSiteGuard : IDisposable
     /// considered, so a Notepad file titled "YouTube notes" is not blocked.
     /// </summary>
     public static bool ShouldBlock(string? processName, string? windowTitle,
+        [NotNullWhen(true)] out string? siteName) =>
+        ShouldBlock(processName, windowTitle, false, out siteName);
+
+    /// <summary><see cref="ShouldBlock(string?, string?, out string?)"/>, limited to adult sites when <paramref name="adultOnly"/> is true.</summary>
+    public static bool ShouldBlock(string? processName, string? windowTitle, bool adultOnly,
         [NotNullWhen(true)] out string? siteName)
     {
-        siteName = BlockedSites.IsBrowserProcess(processName) ? BlockedSites.Match(windowTitle) : null;
+        siteName = BlockedSites.IsBrowserProcess(processName) ? BlockedSites.Match(windowTitle, adultOnly) : null;
         return siteName is not null;
     }
 
     /// <summary>The accessible browser client names the active page even when the window was renamed.</summary>
     public static bool ShouldBlock(string? processName, string? windowTitle, string? browserTitle,
+        [NotNullWhen(true)] out string? siteName) =>
+        ShouldBlock(processName, windowTitle, browserTitle, false, out siteName);
+
+    /// <summary><see cref="ShouldBlock(string?, string?, string?, out string?)"/>, limited to adult sites when <paramref name="adultOnly"/> is true.</summary>
+    public static bool ShouldBlock(string? processName, string? windowTitle, string? browserTitle, bool adultOnly,
         [NotNullWhen(true)] out string? siteName)
     {
         siteName = BlockedSites.IsBrowserProcess(processName)
-            ? BlockedSites.Match(windowTitle) ?? BlockedSites.Match(browserTitle)
+            ? BlockedSites.Match(windowTitle, adultOnly) ?? BlockedSites.Match(browserTitle, adultOnly)
             : null;
         return siteName is not null;
     }
@@ -115,7 +148,7 @@ public sealed class ForegroundSiteGuard : IDisposable
         try
         {
             // Events queued before the hooks were removed can still arrive; ignore them.
-            if (!_active) return;
+            if (_mode == SiteGuardMode.Off) return;
 
             if (eventType == NativeMethods.EVENT_OBJECT_NAMECHANGE)
             {
@@ -144,14 +177,15 @@ public sealed class ForegroundSiteGuard : IDisposable
         if (foregroundChanged) StartForegroundGracePeriod(hwnd);
         if (IsInForegroundGracePeriod(hwnd)) return;
 
-        if (ShouldBlock(processName, title, out string? siteName)) MinimizeWindow(hwnd, siteName);
+        if (ShouldBlock(processName, title, _mode == SiteGuardMode.AdultOnly, out string? siteName)) MinimizeWindow(hwnd, siteName);
         else _browserTitles.Queue(hwnd, SynchronizationContext.Current);
     }
 
     private void OnBrowserTitleRead(IntPtr hwnd, string? browserTitle)
     {
-        if (!_active || hwnd != NativeMethods.GetForegroundWindow() || IsInForegroundGracePeriod(hwnd)) return;
-        if (ShouldBlock(TryGetProcessName(hwnd), NativeMethods.GetWindowTitle(hwnd), browserTitle, out string? siteName))
+        if (_mode == SiteGuardMode.Off || hwnd != NativeMethods.GetForegroundWindow() || IsInForegroundGracePeriod(hwnd)) return;
+        if (ShouldBlock(TryGetProcessName(hwnd), NativeMethods.GetWindowTitle(hwnd), browserTitle,
+                _mode == SiteGuardMode.AdultOnly, out string? siteName))
             MinimizeWindow(hwnd, siteName);
     }
 
@@ -161,7 +195,7 @@ public sealed class ForegroundSiteGuard : IDisposable
         var context = SynchronizationContext.Current;
         lock (_gate)
         {
-            if (_disposed || !_active)
+            if (_disposed || _mode == SiteGuardMode.Off)
             {
                 cancellation.Dispose();
                 return;
@@ -193,7 +227,7 @@ public sealed class ForegroundSiteGuard : IDisposable
                 {
                     lock (_gate)
                     {
-                        if (_disposed || !_active
+                        if (_disposed || _mode == SiteGuardMode.Off
                             || !_foregroundGracePeriods.TryGetValue(hwnd, out var current)
                             || !ReferenceEquals(current, cancellation)) return;
                         _foregroundGracePeriods.Remove(hwnd);
@@ -235,7 +269,7 @@ public sealed class ForegroundSiteGuard : IDisposable
     private void MinimizeWindow(IntPtr hwnd, string siteName)
     {
         // The browser can switch windows while accessibility is being read. Do not minimize a background window.
-        if (!_active || hwnd != NativeMethods.GetForegroundWindow()) return;
+        if (_mode == SiteGuardMode.Off || hwnd != NativeMethods.GetForegroundWindow()) return;
 
         NativeMethods.ShowWindowAsync(hwnd, NativeMethods.SW_MINIMIZE);
         _logger?.LogInformation("Minimized a {Site} browser window during angry mode.", siteName);
@@ -280,7 +314,7 @@ public sealed class ForegroundSiteGuard : IDisposable
         {
             if (_disposed) return;
             _disposed = true;
-            _active = false;
+            _mode = SiteGuardMode.Off;
             RemoveHooksLocked();
         }
     }

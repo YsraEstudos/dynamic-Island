@@ -6,12 +6,14 @@ namespace Island.Core.Fakes;
 public sealed class FakePhoneBlockNotifier : IPhoneBlockNotifier
 {
     public TimeSpan? LastDuration { get; private set; }
+    public TimeSpan LastAdultDuration { get; private set; }
     public int Calls { get; private set; }
 
-    public Task<PhoneBlockOutcome> NotifyAsync(TimeSpan duration, string fcmToken, CancellationToken ct = default)
+    public Task<PhoneBlockOutcome> NotifyAsync(TimeSpan duration, string fcmToken, TimeSpan adultDuration = default, CancellationToken ct = default)
     {
         Calls++;
         LastDuration = duration;
+        LastAdultDuration = adultDuration;
         return Task.FromResult(new PhoneBlockOutcome(true, "demo"));
     }
 }

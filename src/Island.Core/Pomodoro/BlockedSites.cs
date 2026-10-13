@@ -2,8 +2,11 @@ using System.Text.RegularExpressions;
 
 namespace Island.Core.Pomodoro;
 
-/// <summary>A site the angry focus guard blocks, recognised by the window titles a browser shows for it.</summary>
-public sealed record BlockedSite(string Name, IReadOnlyList<Regex> TitlePatterns);
+/// <summary>
+/// A site the angry focus guard blocks, recognised by the window titles a browser shows for it. Adult sites
+/// (<see cref="IsAdult"/>) stay blocked during the free breaks of an angry session too.
+/// </summary>
+public sealed record BlockedSite(string Name, IReadOnlyList<Regex> TitlePatterns, bool IsAdult = false);
 
 /// <summary>Sites and adult content blocked during angry focus, matched by window title, and the browser processes that can show them.</summary>
 public static class BlockedSites
@@ -49,7 +52,7 @@ public static class BlockedSites
             Pattern(@"\bsexo (?:explícito|amador|grátis|gratis)\b"),
             Pattern(@"\badult ?friend ?finder\b"),
             Pattern(@"\b(?:xvideos|xnxx|xhamster|redtube|youporn|tube8|spankbang|eporner|chaturbate|stripchat|bongacams|camsoda|livejasmine|brazzers|bangbros|realitykings|naughtyamerica|motherless|tnaflix|thumbzilla|beeg|rule34|e-hentai|nhentai|hanime|fapello|erome|redgifs|tubegalore|sunporno|hqporner|fansly|manyvids)\b"),
-        }),
+        }, IsAdult: true),
     };
 
     private static readonly HashSet<string> BrowserProcesses = new(StringComparer.OrdinalIgnoreCase)
@@ -61,12 +64,19 @@ public static class BlockedSites
     public static IReadOnlyList<BlockedSite> Default { get; } = Sites;
 
     /// <summary>Name of the first site with a title pattern matching <paramref name="windowTitle"/>, or null.</summary>
-    public static string? Match(string? windowTitle)
+    public static string? Match(string? windowTitle) => Match(windowTitle, adultOnly: false);
+
+    /// <summary>
+    /// Name of the first site with a title pattern matching <paramref name="windowTitle"/>, or null. With
+    /// <paramref name="adultOnly"/> only adult sites are considered.
+    /// </summary>
+    public static string? Match(string? windowTitle, bool adultOnly)
     {
         if (string.IsNullOrWhiteSpace(windowTitle)) return null;
 
         foreach (var site in Sites)
         {
+            if (adultOnly && !site.IsAdult) continue;
             foreach (var pattern in site.TitlePatterns)
             {
                 if (IsMatch(pattern, windowTitle)) return site.Name;

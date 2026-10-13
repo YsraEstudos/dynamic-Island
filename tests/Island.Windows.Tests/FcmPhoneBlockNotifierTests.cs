@@ -221,6 +221,72 @@ public sealed class FcmPhoneBlockNotifierTests : IDisposable
         Assert.Empty(_seen);
     }
 
+    [Fact]
+    public async Task Adult_end_is_sent_when_it_outlasts_the_full_block()
+    {
+        await Notifier().NotifyAsync(TimeSpan.FromMinutes(25), "t", TimeSpan.FromMinutes(55));
+
+        var send = Assert.Single(Sends);
+        var data = DataOf(send);
+        Assert.Equal((25 * 60_000).ToString(), data["durationMs"]);
+        Assert.Equal(_now.AddMinutes(55).ToUnixTimeMilliseconds().ToString(), data["adultEndMs"]);
+        Assert.Equal("3300s", TtlOf(send)); // the TTL follows the later end
+    }
+
+    [Theory]
+    [InlineData(25, 25)]
+    [InlineData(25, 5)]
+    [InlineData(25, 0)]
+    public async Task Adult_end_is_absent_when_it_does_not_outlast_the_full_block(int fullMinutes, int adultMinutes)
+    {
+        await Notifier().NotifyAsync(TimeSpan.FromMinutes(fullMinutes), "t", TimeSpan.FromMinutes(adultMinutes));
+
+        var send = Assert.Single(Sends);
+        Assert.False(DataOf(send).ContainsKey("adultEndMs"));
+        Assert.Equal($"{fullMinutes * 60}s", TtlOf(send));
+    }
+
+    [Fact]
+    public async Task Without_an_adult_duration_no_adult_end_is_sent()
+    {
+        await Notifier().NotifyAsync(TimeSpan.FromMinutes(25), "t");
+
+        Assert.False(DataOf(Assert.Single(Sends)).ContainsKey("adultEndMs"));
+    }
+
+    [Fact]
+    public async Task Adult_span_is_capped_at_four_hours()
+    {
+        await Notifier().NotifyAsync(TimeSpan.FromMinutes(25), "t", TimeSpan.FromHours(10));
+
+        Assert.Equal(_now.Add(FcmPhoneBlockNotifier.MaxAdultDuration).ToUnixTimeMilliseconds().ToString(),
+            DataOf(Assert.Single(Sends))["adultEndMs"]);
+    }
+
+    [Fact]
+    public async Task A_retry_keeps_the_same_adult_end()
+    {
+        _fcmReplies.Enqueue(HttpStatusCode.ServiceUnavailable);
+        await Notifier().NotifyAsync(TimeSpan.FromMinutes(25), "t", TimeSpan.FromMinutes(55));
+
+        var ends = Sends.Select(s => DataOf(s)["adultEndMs"]).ToList();
+        Assert.Equal(2, ends.Count);
+        Assert.Equal(ends[0], ends[1]);
+    }
+
+    private static Dictionary<string, string> DataOf(Seen send)
+    {
+        using var doc = JsonDocument.Parse(send.Body);
+        return doc.RootElement.GetProperty("message").GetProperty("data").EnumerateObject()
+            .ToDictionary(p => p.Name, p => p.Value.GetString()!);
+    }
+
+    private static string TtlOf(Seen send)
+    {
+        using var doc = JsonDocument.Parse(send.Body);
+        return doc.RootElement.GetProperty("message").GetProperty("android").GetProperty("ttl").GetString()!;
+    }
+
     private static string PadBase64(string url)
     {
         string s = url.Replace('-', '+').Replace('_', '/');

@@ -86,6 +86,9 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Title and the one-line rule. -->
@@ -96,37 +99,71 @@
                    Foreground="{StaticResource TextPrimaryBrush}" />
         <TextBlock Grid.Row="1"
                    Margin="0,4,0,0"
-                   Text="O plano começa sozinho no horário escolhido."
+                   Text="Cada início agendado começa sozinho no horário escolhido."
                    Foreground="{StaticResource TextSecondaryBrush}"
                    TextWrapping="Wrap" />
 
-        <!-- Clock time, HH:mm. An invalid value shows the error line and disables the confirm button. -->
+        <!-- Day (today to 30 days ahead) and clock time, HH:mm. An invalid or past value shows the error and disables the confirm button. -->
         <TextBlock Grid.Row="2"
                    Margin="0,16,0,0"
-                   Text="Começar às"
+                   Text="Quando"
                    FontSize="12"
                    Foreground="{StaticResource TextSecondaryBrush}" />
-        <Border Grid.Row="3"
-                Margin="0,6,0,0"
-                Padding="12,8"
-                Width="140"
-                HorizontalAlignment="Left"
-                Background="{StaticResource ShelfTileBrush}"
-                BorderBrush="{StaticResource MenuSeparatorBrush}"
-                BorderThickness="1"
-                CornerRadius="10">
-            <TextBox x:Name="TimeBox"
-                     Padding="0"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     Foreground="{StaticResource TextPrimaryBrush}"
-                     CaretBrush="{StaticResource TextPrimaryBrush}"
-                     FontSize="22"
-                     FontWeight="SemiBold"
-                     MaxLength="5"
-                     SpellCheck.IsEnabled="False"
-                     TextChanged="OnTimeChanged" />
-        </Border>
+        <Grid Grid.Row="3" Margin="0,6,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Day stepper: ‹ label › -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Button x:Name="DayBackButton"
+                        Width="44"
+                        Content="‹"
+                        FontSize="18"
+                        Padding="0,4"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="OnDayBackClicked" />
+                <TextBlock x:Name="DayText"
+                           Width="110"
+                           Margin="6,0"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           TextAlignment="Center" />
+                <Button x:Name="DayForwardButton"
+                        Width="44"
+                        Content="›"
+                        FontSize="18"
+                        Padding="0,4"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="OnDayForwardClicked" />
+            </StackPanel>
+
+            <Border Grid.Column="2"
+                    Padding="12,8"
+                    Width="140"
+                    HorizontalAlignment="Right"
+                    Background="{StaticResource ShelfTileBrush}"
+                    BorderBrush="{StaticResource MenuSeparatorBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10">
+                <TextBox x:Name="TimeBox"
+                         Padding="0"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Foreground="{StaticResource TextPrimaryBrush}"
+                         CaretBrush="{StaticResource TextPrimaryBrush}"
+                         FontSize="22"
+                         FontWeight="SemiBold"
+                         MaxLength="5"
+                         SpellCheck.IsEnabled="False"
+                         TextChanged="OnTimeChanged" />
+            </Border>
+        </Grid>
         <TextBlock x:Name="TimeError"
                    Grid.Row="4"
                    Margin="0,6,0,0"
@@ -192,28 +229,105 @@
                     Click="OnPlusClicked" />
         </StackPanel>
 
-        <!-- Preview of the next occurrence of the time: today or tomorrow. -->
+        <!-- Preview of the chosen start: day and time. -->
         <TextBlock x:Name="PreviewText"
                    Grid.Row="9"
-                   Margin="0,16,0,0"
+                   Margin="0,12,0,0"
                    FontSize="13"
                    Foreground="{StaticResource TextSecondaryBrush}" />
 
-        <!-- Remove (only when a start is pending) on the left, confirm on the right. -->
-        <Grid Grid.Row="10" Margin="0,14,0,0">
+        <!-- Every scheduled start, oldest first. Scrolls past about five rows. -->
+        <TextBlock Grid.Row="10"
+                   Margin="0,14,0,0"
+                   Text="Agendados"
+                   FontSize="12"
+                   Foreground="{StaticResource TextSecondaryBrush}" />
+        <TextBlock x:Name="EmptyText"
+                   Grid.Row="11"
+                   Margin="0,6,0,0"
+                   Text="Nenhum pomodoro agendado"
+                   Foreground="{StaticResource TextSecondaryBrush}" />
+        <ScrollViewer x:Name="StartsScroll"
+                      Grid.Row="11"
+                      Margin="0,6,0,0"
+                      MaxHeight="220"
+                      VerticalScrollBarVisibility="Auto"
+                      Visibility="Collapsed">
+            <ItemsControl x:Name="StartsList" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,0,0,6"
+                                Padding="12,8"
+                                Background="{StaticResource ShelfTileBrush}"
+                                BorderBrush="{StaticResource MenuSeparatorBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0"
+                                           Width="110"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding Day}"
+                                           TextTrimming="CharacterEllipsis"
+                                           Foreground="{StaticResource TextPrimaryBrush}" />
+                                <TextBlock Grid.Column="1"
+                                           Margin="8,0,0,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Text="{Binding Time}"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Typography.NumeralAlignment="Tabular" />
+                                <TextBlock Grid.Column="2"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"
+                                           FontWeight="SemiBold"
+                                           Text="{Binding Mode}"
+                                           Foreground="{Binding ModeBrush}" />
+                                <TextBlock Grid.Column="3"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding Count}"
+                                           Foreground="{StaticResource TextSecondaryBrush}" />
+                                <Button Grid.Column="4"
+                                        Width="28"
+                                        Height="28"
+                                        Margin="8,0,0,0"
+                                        Padding="0"
+                                        Content="✕"
+                                        FontSize="12"
+                                        ToolTip="Excluir"
+                                        Tag="{Binding Id}"
+                                        Foreground="{StaticResource MutedRedBrush}"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="OnDeleteClicked" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Close on the left, add on the right. The form stays open after each add. -->
+        <Grid Grid.Row="12" Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="RemoveButton"
+            <Button x:Name="CloseButton"
                     Grid.Column="0"
                     HorizontalAlignment="Left"
-                    Content="Remover agendamento"
-                    Foreground="{StaticResource MutedRedBrush}"
+                    Content="Fechar"
+                    IsCancel="True"
                     Style="{StaticResource ActionButtonStyle}"
-                    Visibility="Collapsed"
-                    Click="OnRemoveClicked" />
+                    Click="OnCloseClicked" />
 
             <Button x:Name="ConfirmButton"
                     Grid.Column="1"
