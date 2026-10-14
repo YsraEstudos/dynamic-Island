@@ -13,8 +13,9 @@ public sealed record ScheduledStart(Guid Id, DateTimeOffset At, ScheduledStartMo
 /// Holds scheduled starts of a pomodoro plan, each at its own date and time. When a time comes it starts the plan
 /// by itself: a fresh Focus plan, or an Angry session. It never overrides a plan that is already locked by an
 /// Angry session. Only the earliest start is armed on the scheduler at a time. With a store path the starts are
-/// saved after every change and loaded again on construction, so a start for tomorrow survives a restart.
-/// Thread-safe.
+/// saved after every change and loaded again on construction, so a start for tomorrow survives a restart. A start
+/// that came due while the app was closed still fires when the app loads, as long as it is at most 4 hours past
+/// due; older saved starts are dropped. Thread-safe.
 /// </summary>
 public sealed class PomodoroSchedule : IDisposable
 {
@@ -22,8 +23,9 @@ public sealed class PomodoroSchedule : IDisposable
     // instead of waiting out a long one-shot delay that does not count the sleep.
     private static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(30);
 
-    // A saved start this far in the past when the app loads (the PC was off) is dropped instead of firing late.
-    private static readonly TimeSpan LoadGrace = TimeSpan.FromMinutes(15);
+    // A saved start missed while the app was closed (or the PC was off) still fires when the app loads, as long as it
+    // was due at most this long ago. Older saved starts are dropped instead of firing hours late.
+    private static readonly TimeSpan LoadGrace = TimeSpan.FromHours(4);
 
     private static readonly Comparison<ScheduledStart> ByTime = (a, b) => a.At.CompareTo(b.At);
 
@@ -284,7 +286,8 @@ public sealed class PomodoroSchedule : IDisposable
         }
     }
 
-    // Reads the saved starts, skipping entries that cannot be understood or that are too far in the past.
+    // Reads the saved starts, skipping entries that cannot be understood or that are more than LoadGrace past due.
+    // Starts due within LoadGrace (missed while the app was closed) are kept and fire right away.
     private static List<ScheduledStart> ReadStore(string path, DateTimeOffset now)
     {
         var result = new List<ScheduledStart>();

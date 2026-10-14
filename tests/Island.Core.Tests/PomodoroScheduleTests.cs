@@ -373,10 +373,10 @@ public class PomodoroScheduleTests
     }
 
     [Fact]
-    public void Load_drops_a_start_more_than_fifteen_minutes_old()
+    public void Load_drops_a_start_more_than_four_hours_old()
     {
         using var store = new TempStore();
-        WriteStore(store.Path, SavedEntry(Start0.AddMinutes(-16), "Focus", 2));
+        WriteStore(store.Path, SavedEntry(Start0.AddHours(-4).AddMinutes(-1), "Focus", 2));
 
         using var rig = new Rig(storePath: store.Path);
         rig.Advance(0);
@@ -400,6 +400,30 @@ public class PomodoroScheduleTests
         Assert.True(rig.Timer.IsRunning);
         Assert.Equal(2, rig.Timer.TotalCycles);
         Assert.Empty(rig.Schedule.Starts);
+    }
+
+    [Fact]
+    public void Load_fires_a_start_missed_while_the_app_was_closed_for_half_an_hour()
+    {
+        // Scheduled for 8:00 and the app is opened at 8:30: the start is 30 minutes past due when the store loads.
+        // The rig clock is Start0, so the saved start sits 30 minutes before it.
+        using var store = new TempStore();
+        WriteStore(store.Path, SavedEntry(Start0.AddMinutes(-30), "Focus", 2));
+
+        using var rig = new Rig(storePath: store.Path);
+        Assert.Single(rig.Schedule.Starts);
+
+        rig.Advance(0);
+
+        Assert.True(rig.Timer.IsRunning);
+        Assert.True(rig.Timer.PlanActive);
+        Assert.Equal(2, rig.Timer.TotalCycles);
+        Assert.Equal(PomodoroPhase.Focus, rig.Timer.Phase);
+        Assert.Empty(rig.Schedule.Starts);
+
+        // The fired start is removed from the store, so a later launch does not run it again.
+        using var later = new Rig(storePath: store.Path);
+        Assert.Empty(later.Schedule.Starts);
     }
 
     [Fact]
