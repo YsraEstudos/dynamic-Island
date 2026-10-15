@@ -18,6 +18,7 @@ public sealed class SettingsViewModel : ObservableObject
     private const double MediaSecondsMin = 1, MediaSecondsMax = 10;
 
     private readonly Action<IslandSettings> _apply;
+    private readonly Func<IslandSettings> _getCurrent;
     private IslandSettings _current;
 
     private int _selectedMonitorIndex;
@@ -49,7 +50,8 @@ public sealed class SettingsViewModel : ObservableObject
         IReadOnlyList<string> monitorNames,
         Action<IslandSettings> apply,
         Func<TimeSpan, string, Task<PhoneBlockOutcome>>? sendPhoneBlock = null,
-        Func<Task<string>>? checkForUpdates = null)
+        Func<Task<string>>? checkForUpdates = null,
+        Func<IslandSettings>? getCurrent = null)
     {
         ArgumentNullException.ThrowIfNull(initial);
         ArgumentNullException.ThrowIfNull(monitorNames);
@@ -63,6 +65,7 @@ public sealed class SettingsViewModel : ObservableObject
 
         // Construction does not push to apply: the store already holds `initial`.
         _current = Normalize(initial);
+        _getCurrent = getCurrent ?? (() => _current);
         LoadFrom(_current);
     }
 
@@ -340,17 +343,31 @@ public sealed class SettingsViewModel : ObservableObject
 
     private void Commit(Func<IslandSettings, IslandSettings> change)
     {
-        _current = change(_current);
+        _current = change(_getCurrent());
         _apply(_current);
     }
 
     private void ResetToDefaults()
     {
         // One apply call for the whole reset, not one per property. The phone link is a credential, not a preference: keep it.
-        _current = Normalize(new IslandSettings
+        var defaults = new IslandSettings();
+        _current = Normalize(_getCurrent() with
         {
-            PhoneBlockEnabled = _current.PhoneBlockEnabled,
-            PhoneFcmToken = _current.PhoneFcmToken,
+            MonitorIndex = defaults.MonitorIndex,
+            CompactWidth = defaults.CompactWidth,
+            CompactHeight = defaults.CompactHeight,
+            TopMargin = defaults.TopMargin,
+            VolumeDisplaySeconds = defaults.VolumeDisplaySeconds,
+            MediaPreviewSeconds = defaults.MediaPreviewSeconds,
+            HideInFullscreen = defaults.HideInFullscreen,
+            ReduceAnimations = defaults.ReduceAnimations,
+            StartWithWindows = defaults.StartWithWindows,
+            ShowVolume = defaults.ShowVolume,
+            ShowMedia = defaults.ShowMedia,
+            PhoneBlockEnabled = defaults.PhoneBlockEnabled,
+            QuickNotesHotkeyEnabled = defaults.QuickNotesHotkeyEnabled,
+            IdleModeEnabled = defaults.IdleModeEnabled,
+            WeatherCity = defaults.WeatherCity,
         });
         LoadFrom(_current);
         _apply(_current);

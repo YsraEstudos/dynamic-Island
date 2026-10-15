@@ -228,6 +228,15 @@ public partial class QuickCaptureWindow : Window
         _ = RequestCloseAsync(force: true);
     }
 
+    public async Task<bool> SaveBeforeShutdownAsync()
+    {
+        // A save already running must finish before deciding whether the draft remains.
+        while (_busy) await Task.Delay(20);
+        if (string.IsNullOrWhiteSpace(NoteBox.Text)) return true;
+        await SaveAsync();
+        return string.IsNullOrWhiteSpace(NoteBox.Text);
+    }
+
     private async Task SaveAsync()
     {
         string text = NoteBox.Text;

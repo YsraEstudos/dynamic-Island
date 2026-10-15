@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Island.Windows.Storage;
 using System.Globalization;
 using Island.Core.Abstractions;
 using Island.Core.Calendar;
@@ -27,7 +28,6 @@ public sealed class JsonCalendarStore : ICalendarStore
 
     private readonly string _directory;
     private readonly string _path;
-    private readonly string _tempPath;
     private readonly string _badPath;
     private readonly object _gate = new();
 
@@ -37,7 +37,6 @@ public sealed class JsonCalendarStore : ICalendarStore
         _directory = directory
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland");
         _path = Path.Combine(_directory, FileName);
-        _tempPath = _path + ".tmp";
         _badPath = _path + ".bad";
     }
 
@@ -68,40 +67,10 @@ public sealed class JsonCalendarStore : ICalendarStore
     public void Save(CalendarData data)
     {
         ArgumentNullException.ThrowIfNull(data);
-        lock (_gate)
-        {
-            Directory.CreateDirectory(_directory);
-            try
-            {
-                using (var stream = new FileStream(_tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
-                {
-                    JsonSerializer.Serialize(stream, data, WriteOptions);
-                    stream.Flush(flushToDisk: true);
-                }
-
-                if (File.Exists(_path))
-                    File.Replace(_tempPath, _path, destinationBackupFileName: null);
-                else
-                    File.Move(_tempPath, _path, overwrite: true);
-            }
-            finally
-            {
-                TryDelete(_tempPath);
-            }
-        }
+        lock (_gate) AtomicJsonFile.Write(_path, data, WriteOptions);
     }
 
-    private static void TryDelete(string path)
-    {
-        try
-        {
-            if (File.Exists(path)) File.Delete(path);
-        }
-        catch (Exception)
-        {
-            // Cleanup is best-effort; the next save recreates the temp file.
-        }
-    }
+
 
     private string GetRecoveryPath()
     {

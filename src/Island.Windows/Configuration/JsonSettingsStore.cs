@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Island.Windows.Storage;
 using Island.Core.Abstractions;
 using Island.Core.Configuration;
 
@@ -27,9 +28,9 @@ public sealed class JsonSettingsStore : ISettingsStore
 
     private readonly string _directory;
     private readonly string _path;
-    private readonly string _tempPath;
-    private readonly string _badPath;
     private readonly object _gate = new();
+    private Exception? _loadError;
+    private bool _credentialUnavailable;
 
     /// <param name="directory">Defaults to %LocalAppData%\DynamicIsland.</param>
     public JsonSettingsStore(string? directory = null)
@@ -37,8 +38,6 @@ public sealed class JsonSettingsStore : ISettingsStore
         _directory = directory
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland");
         _path = Path.Combine(_directory, FileName);
-        _tempPath = _path + ".tmp";
-        _badPath = _path + ".bad";
     }
 
     /// <summary>Returns defaults when the file is missing or unreadable. A corrupt file is moved to settings.json.bad. Never throws.</summary>
@@ -46,15 +45,19 @@ public sealed class JsonSettingsStore : ISettingsStore
     {
         lock (_gate)
         {
-            if (!File.Exists(_path)) return new IslandSettings();
+            _loadError = null;
+            _credentialUnavailable = false;
 
             string json;
             try
             {
                 json = File.ReadAllText(_path, Encoding.UTF8);
             }
+            catch (FileNotFoundException) { return new IslandSettings(); }
+            catch (DirectoryNotFoundException) { return new IslandSettings(); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
+                _loadError = ex;
                 // Transient (e.g. file locked): keep the file, use defaults for this run.
                 return new IslandSettings();
             }
@@ -75,61 +78,36 @@ public sealed class JsonSettingsStore : ISettingsStore
                 return new IslandSettings();
             }
 
-            return Sanitize(parsed);
+            try { return Sanitize(parsed with { PhoneFcmToken = UserSecret.Unprotect(parsed.PhoneFcmToken ?? string.Empty) }); }
+            catch (Exception ex) when (ex is System.Security.Cryptography.CryptographicException or FormatException)
+            {
+                _loadError = ex;
+                _credentialUnavailable = true;
+                return Sanitize(parsed with { PhoneFcmToken = string.Empty });
+            }
         }
     }
 
     /// <summary>Atomic write: serialize to settings.json.tmp, then replace the target. Throws on I/O failure.</summary>
     public void Save(IslandSettings settings)
     {
-        var clean = Sanitize(settings);
-
+        var clean = Sanitize(settings) with { PhoneFcmToken = UserSecret.Protect(settings.PhoneFcmToken ?? string.Empty) };
         lock (_gate)
         {
-            Directory.CreateDirectory(_directory);
-            try
-            {
-                using (var stream = new FileStream(_tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
-                {
-                    JsonSerializer.Serialize(stream, clean, WriteOptions);
-                    stream.Flush(flushToDisk: true);
-                }
-
-                if (File.Exists(_path))
-                    File.Replace(_tempPath, _path, destinationBackupFileName: null);
-                else
-                    File.Move(_tempPath, _path, overwrite: true);
-            }
-            finally
-            {
-                TryDelete(_tempPath);
-            }
+            if (_loadError is not null && !(_credentialUnavailable && !string.IsNullOrWhiteSpace(settings.PhoneFcmToken))) throw new IOException("Settings could not be read; writes are disabled until a successful reload.", _loadError);
+            AtomicJsonFile.Write(_path, clean, WriteOptions);
+            _loadError = null;
+            _credentialUnavailable = false;
         }
     }
 
     private void Quarantine()
     {
-        try
-        {
-            File.Move(_path, _badPath, overwrite: true);
-        }
-        catch (Exception)
-        {
-            // If the move fails the corrupt file stays in place. The next Save overwrites it.
-        }
+        try { AtomicJsonFile.Quarantine(_path); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _loadError = ex; }
     }
 
-    private static void TryDelete(string path)
-    {
-        try
-        {
-            if (File.Exists(path)) File.Delete(path);
-        }
-        catch (Exception)
-        {
-            // Best-effort cleanup of a leftover temp file.
-        }
-    }
+
 
     /// <summary>Clamps numeric settings to ranges the UI can render. Non-finite seconds fall back to defaults.</summary>
     internal static IslandSettings Sanitize(IslandSettings s)
@@ -148,6 +126,11 @@ public sealed class JsonSettingsStore : ISettingsStore
                 .Where(g => !string.IsNullOrWhiteSpace(g)).Select(g => g.Trim()).ToList(),
             VolumeDisplaySeconds = ClampSeconds(s.VolumeDisplaySeconds, d.VolumeDisplaySeconds),
             MediaPreviewSeconds = ClampSeconds(s.MediaPreviewSeconds, d.MediaPreviewSeconds),
+            NoticeSeconds = ClampSeconds(s.NoticeSeconds, d.NoticeSeconds),
+            PomodoroFocusMinutes = Math.Clamp(s.PomodoroFocusMinutes, 1, 120),
+            PomodoroBreakMinutes = Math.Clamp(s.PomodoroBreakMinutes, 1, 120),
+            PomodoroCycles = Math.Clamp(s.PomodoroCycles, 1, 24),
+            ClipboardMaxItems = Math.Clamp(s.ClipboardMaxItems, 1, 500),
             UpdateRepository = string.IsNullOrWhiteSpace(s.UpdateRepository) ? d.UpdateRepository : s.UpdateRepository.Trim(),
             WeatherCity = CleanCity(s.WeatherCity),
         };

@@ -17,10 +17,6 @@ namespace Island.Windows.Display;
 /// </summary>
 public sealed class FullscreenDetector : IDisplayService
 {
-    private static readonly HashSet<string> ShellClassNames = new(StringComparer.Ordinal)
-    {
-        "Progman", "WorkerW", "Shell_TrayWnd", "Shell_SecondaryTrayWnd",
-    };
 
     private static readonly Func<IReadOnlyList<string>> NoGameProcesses = () => Array.Empty<string>();
 
@@ -124,24 +120,10 @@ public sealed class FullscreenDetector : IDisplayService
         long style = NativeMethods.GetWindowLongPtr(hwnd, NativeMethods.GWL_STYLE).ToInt64();
         if ((style & NativeMethods.WS_MAXIMIZE) != 0) return false;
 
-        if (!NativeMethods.GetWindowRect(hwnd, out var windowRect)) return false;
-
-        IntPtr monitor = NativeMethods.MonitorFromWindow(hwnd, NativeMethods.MONITOR_DEFAULTTONEAREST);
-        var info = new NativeMethods.MONITORINFO { cbSize = Marshal.SizeOf<NativeMethods.MONITORINFO>() };
-        if (monitor == IntPtr.Zero || !NativeMethods.GetMonitorInfoW(monitor, ref info)) return false;
-
-        // Compare against the full monitor rect, not the work area, so the taskbar does not hide a fullscreen app.
-        var m = info.rcMonitor;
-        return windowRect.Left <= m.Left && windowRect.Top <= m.Top
-            && windowRect.Right >= m.Right && windowRect.Bottom >= m.Bottom;
+        return WindowInspection.CoversMonitor(hwnd);
     }
 
-    private static bool IsShellWindow(IntPtr hwnd)
-    {
-        var sb = new StringBuilder(256);
-        int len = NativeMethods.GetClassName(hwnd, sb, sb.Capacity);
-        return len > 0 && ShellClassNames.Contains(sb.ToString());
-    }
+    private static bool IsShellWindow(IntPtr hwnd) => WindowInspection.IsShellWindow(hwnd);
 
     /// <summary>
     /// True when the foreground process is one of the configured games. Only the process name is compared;
@@ -197,20 +179,7 @@ public sealed class FullscreenDetector : IDisplayService
     /// are not counted: they are system-wide, so they would hide the island for a fullscreen app on another monitor.
     /// Any failure yields false.
     /// </summary>
-    private bool IsFullscreenNotificationState()
-    {
-        try
-        {
-            int hr = NativeMethods.SHQueryUserNotificationState(out int state);
-            if (hr < 0) return false;   // FAILED(hr)
-            return state == NativeMethods.QUNS_RUNNING_D3D_FULL_SCREEN;
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogDebug(ex, "SHQueryUserNotificationState failed; ignoring it.");
-            return false;
-        }
-    }
+    private bool IsFullscreenNotificationState() => WindowInspection.IsExclusiveFullscreen();
 
     /// <summary>
     /// Case-insensitive exact match of a process name against the configured list. The ".exe" suffix and

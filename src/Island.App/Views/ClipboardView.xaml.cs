@@ -18,7 +18,7 @@ public partial class ClipboardView : UserControl
 
     private readonly ObservableCollection<ClipboardEntry> _entries = new();
     private readonly Dictionary<Guid, ClipboardEntry> _byId = new();
-    private readonly UiSignal _signal;
+    private UiSignal _signal;
     private ShelfContext? _shelf;
     private bool _subscribed;
 
@@ -95,6 +95,8 @@ public partial class ClipboardView : UserControl
     private void Subscribe()
     {
         if (_shelf is null || _subscribed) return;
+        _signal.Dispose();
+        _signal = new UiSignal(Dispatcher, Refresh, CoalesceWindow);
 
         _shelf.Clipboard.Changed += OnHistoryChanged;
         _subscribed = true;
@@ -107,6 +109,7 @@ public partial class ClipboardView : UserControl
 
         _shelf.Clipboard.Changed -= OnHistoryChanged;
         _subscribed = false;
+        _signal.Dispose();
     }
 
     /// <summary>Arbitrary thread.</summary>

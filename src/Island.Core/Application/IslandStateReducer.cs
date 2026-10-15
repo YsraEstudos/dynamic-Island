@@ -133,14 +133,14 @@ public static class IslandStateReducer
     /// True when two states are indistinguishable to a renderer. Thumbnails are compared by content,
     /// because <see cref="MediaInfo"/> record equality compares byte[] by reference.
     /// </summary>
-    public static bool AreEquivalent(IslandState a, IslandState b) =>
+    public static bool AreEquivalent(IslandState a, IslandState b, bool includeMediaTimeline = true) =>
         a.Mode == b.Mode
         && a.Suspended == b.Suspended
         && a.Volume == b.Volume
         && a.Notice == b.Notice
-        && MediaEquivalent(a.Media, b.Media);
+        && MediaEquivalent(a.Media, b.Media, includeMediaTimeline);
 
-    private static bool MediaEquivalent(MediaInfo? a, MediaInfo? b)
+    private static bool MediaEquivalent(MediaInfo? a, MediaInfo? b, bool includeTimeline)
     {
         if (ReferenceEquals(a, b)) return true;
         if (a is null || b is null) return false;
@@ -148,8 +148,7 @@ public static class IslandStateReducer
             && a.Artist == b.Artist
             && a.SourceApp == b.SourceApp
             && a.IsPlaying == b.IsPlaying
-            && a.Position == b.Position
-            && a.Duration == b.Duration
+            && (!includeTimeline || (a.Position == b.Position && a.Duration == b.Duration))
             && (a.Thumbnail is null
                 ? b.Thumbnail is null
                 : b.Thumbnail is not null && a.Thumbnail.AsSpan().SequenceEqual(b.Thumbnail));

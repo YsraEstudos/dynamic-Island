@@ -17,6 +17,7 @@ public interface IUpdateService
     /// <summary>Asks the update source for its latest release. Returns it when it is newer than the running app, otherwise null.</summary>
     Task<UpdateInfo?> CheckAsync(CancellationToken ct = default);
 
-    /// <summary>Downloads the package and hands it to the installer. <paramref name="progress"/> reports 0..1 when the size is known.</summary>
-    Task InstallAsync(UpdateInfo update, IProgress<double>? progress = null, CancellationToken ct = default);
+    /// <summary>Downloads and extracts the package, then asks beforeLaunch to freeze editing and save pending data. False aborts before any installer starts. Returns true only when launched. <paramref name="progress"/> reports 0..1 when the size is known.</summary>
+    Task<bool> InstallAsync(UpdateInfo update, IProgress<double>? progress = null, CancellationToken ct = default,
+        Func<Task<bool>>? beforeLaunch = null);
 }

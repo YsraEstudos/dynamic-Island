@@ -12,6 +12,8 @@ public sealed class QuickNotesWindowManager : IQuickNotesWindowHost
     private readonly Func<bool> _reduceAnimations;
     private QuickNotesWindow? _window;
     private QuickCaptureWindow? _captureWindow;
+    private bool _editingEnabled = true;
+    private Task _pendingWindowOperation = Task.CompletedTask;
 
     public QuickNotesWindowManager(QuickNotesService service, Func<bool> reduceAnimations)
     {
@@ -33,10 +35,10 @@ public sealed class QuickNotesWindowManager : IQuickNotesWindowHost
         Run("open quick notes", () => GetOrCreateWindow().ShowOrActivate(source));
 
     public void OpenNote(Guid id, Func<Rect?> source) =>
-        Run("open a quick note", () => _ = GetOrCreateWindow().ShowNoteAsync(id, source));
+        Run("open a quick note", () => TrackWindowOperation(GetOrCreateWindow().ShowNoteAsync(id, source)));
 
     public void OpenNewNote(Func<Rect?> source) =>
-        Run("start a new quick note", () => _ = GetOrCreateWindow().ShowNewNoteAsync(source));
+        Run("start a new quick note", () => TrackWindowOperation(GetOrCreateWindow().ShowNewNoteAsync(source)));
 
     public void SetHotkeyConflict(bool conflict)
     {
@@ -47,7 +49,20 @@ public sealed class QuickNotesWindowManager : IQuickNotesWindowHost
         HotkeyConflictChanged?.Invoke(conflict);
     }
 
-    public Task FlushPendingSaveAsync() => _window?.FlushPendingSaveAsync() ?? Task.CompletedTask;
+    public async Task FlushPendingSaveAsync()
+    {
+        await _pendingWindowOperation;
+        if (_captureWindow is { } capture && !await capture.SaveBeforeShutdownAsync())
+            throw new System.IO.IOException("The quick-capture draft could not be saved.");
+        if (_window is { } window) await window.FlushPendingSaveAsync();
+    }
+
+    public void SetEditingEnabled(bool enabled)
+    {
+        _editingEnabled = enabled;
+        if (_window is { } window) window.IsEnabled = enabled;
+        if (_captureWindow is { } capture) capture.IsEnabled = enabled;
+    }
 
     public bool HasSaveError => _window?.HasSaveError == true;
 
@@ -64,6 +79,7 @@ public sealed class QuickNotesWindowManager : IQuickNotesWindowHost
 
     private void OpenCapture(Func<Rect?>? source)
     {
+        if (!_editingEnabled) return;
         Run("open quick capture", () =>
         {
             if (_captureWindow is not { } capture)
@@ -81,11 +97,12 @@ public sealed class QuickNotesWindowManager : IQuickNotesWindowHost
     private void OpenFromCapture(string draftText, Func<Rect?> openFrom, Func<Rect?>? closeTo)
     {
         Run("hand capture over to the notes app",
-            () => _ = GetOrCreateWindow().ShowNewNoteAsync(openFrom, draftText, closeTo));
+            () => TrackWindowOperation(GetOrCreateWindow().ShowNewNoteAsync(openFrom, draftText, closeTo)));
     }
 
     private QuickNotesWindow GetOrCreateWindow()
     {
+        if (!_editingEnabled) throw new InvalidOperationException("Notes are being saved for shutdown.");
         if (_window is { } existing) return existing;
 
         var window = new QuickNotesWindow(new QuickNotesViewModel(_service), _reduceAnimations);
@@ -97,6 +114,9 @@ public sealed class QuickNotesWindowManager : IQuickNotesWindowHost
         _window = window;
         return window;
     }
+
+    private void TrackWindowOperation(Task operation) =>
+        _pendingWindowOperation = _pendingWindowOperation.IsCompleted ? operation : Task.WhenAll(_pendingWindowOperation, operation);
 
     private static void Run(string what, Action action)
     {

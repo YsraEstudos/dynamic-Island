@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using Island.App.Budgets;
 using Island.Core.Budgets;
@@ -11,7 +13,7 @@ public sealed class DayRowViewModel : ObservableObject
         nameof(ValueText), nameof(IsToday), nameof(IsPast), nameof(IsExcluded), nameof(CanToggle),
     };
 
-    private readonly RelayCommand _toggle;
+    private readonly RelayCommand<object?> _toggle;
     private DayRow _row;
     private int _resetHour;
 
@@ -21,7 +23,7 @@ public sealed class DayRowViewModel : ObservableObject
         _resetHour = resetHour;
         Date = row.Date;
         Label = BudgetTextFormatter.DayLabel(row.Date);
-        _toggle = new RelayCommand(_ => onToggle(Date), _ => CanToggle);
+        _toggle = new RelayCommand<object?>(_ => onToggle(Date), _ => CanToggle);
     }
 
     public DateOnly Date { get; }
@@ -52,9 +54,9 @@ public sealed class DayRowViewModel : ObservableObject
         _resetHour = resetHour;
         foreach (string name in ChangeableNames)
         {
-            Raise(name);
+            OnPropertyChanged(name);
         }
 
-        _toggle.RaiseCanExecuteChanged();
+        _toggle.NotifyCanExecuteChanged();
     }
 }

@@ -132,6 +132,7 @@ public partial class App : System.Windows.Application
         try { await media.InitializeAsync(); }
         catch (Exception ex) { Log.Error(ex, "Media service failed to initialize"); }
         // The Mini pill is remembered: keep the saved flag in step with the island state (written only when it changes).
+        coordinator.SubscriberFailed += ex => Log.Error(ex, "Island state subscriber failed");
         coordinator.StateChanged += state =>
         {
             bool mini = state.Mode == IslandMode.Mini;
@@ -319,43 +320,46 @@ public partial class App : System.Windows.Application
     /// </summary>
     private async Task InstallUpdateAsync(IUpdateService updates, IslandCoordinator coordinator)
     {
+        if (_quitRequestInProgress) return;
         UpdateInfo? update = updates.Available;
         if (update is null || !ConfirmNotLocked()) return;
-
+        _quitRequestInProgress = true;
+        bool launched = false;
         try
         {
-            if (!await FlushQuickNotesBeforeShutdownAsync()) return;
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Could not flush quick notes before installing update {Tag}", update.Tag);
-            return;
-        }
-
-        coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Downloading {update.Tag}", "Update", "timer")));
-        try
-        {
-            await updates.InstallAsync(update);
-            coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Installing {update.Tag}", "The app restarts by itself", "timer")));
-            await Task.Delay(1500); // Let the notice show before the app exits so the helper can replace its files.
-            if (!await FlushQuickNotesBeforeShutdownAsync()) return;
-            Shutdown();
+            coordinator.Post(new IslandEvent.NoticeRaised(new Notice($"Downloading {update.Tag}", "Update", "timer")));
+            launched = await updates.InstallAsync(update, beforeLaunch: () => Dispatcher.InvokeAsync(async () =>
+            {
+                // No edits or new note windows may slip between this flush and process exit.
+                _quickNotesWindowManager?.SetEditingEnabled(false);
+                return await FlushQuickNotesBeforeShutdownAsync(reopenOnFailure: false) && ConfirmNotLocked();
+            }).Task.Unwrap());
+            if (launched) Shutdown(); // No awaits or fallible notifications after the helper has started.
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Installing update {Tag} failed", update.Tag);
-            coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Update failed", "See the logs", "timer")));
+            if (!launched) coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Update failed", "See the logs", "timer")));
+        }
+        finally
+        {
+            if (!launched)
+            {
+                _quickNotesWindowManager?.SetEditingEnabled(true);
+                if (_quickNotesWindowManager?.HasSaveError == true) _quickNotesWindowManager.OpenNotes();
+            }
+            _quitRequestInProgress = false;
         }
     }
 
-    private async Task<bool> FlushQuickNotesBeforeShutdownAsync()
+    private async Task<bool> FlushQuickNotesBeforeShutdownAsync(bool reopenOnFailure = true)
     {
         if (_quickNotesWindowManager is not { } notes) return true;
 
         await notes.FlushPendingSaveAsync();
         if (!notes.HasSaveError) return true;
 
-        notes.OpenNotes();
+        if (reopenOnFailure) notes.OpenNotes();
         return false;
     }
 
@@ -407,7 +411,7 @@ public partial class App : System.Windows.Application
             var phone = _services!.GetRequiredService<IPhoneBlockNotifier>();
             var updates = _services!.GetRequiredService<IUpdateService>();
             var svm = new SettingsViewModel(holder.Current, names, applier.Apply, (span, token) => phone.NotifyAsync(span, token),
-                () => CheckForUpdatesAsync(updates));
+                () => CheckForUpdatesAsync(updates), () => holder.Current);
             _settingsWindow = new SettingsWindow(svm);
             // Closing really closes it, so its visual tree is freed instead of sitting hidden for the app's lifetime.
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;

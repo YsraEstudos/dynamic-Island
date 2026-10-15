@@ -3,6 +3,8 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using Island.Windows.Storage;
 using Island.Core.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -30,10 +32,15 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
     private readonly Func<DateTimeOffset> _clock;
     private readonly Func<TimeSpan, CancellationToken, Task> _delay;
     private readonly ILogger? _log;
+    private readonly object _accountGate = new();
+    private ServiceAccount? _account;
+    private DateTime _keyLastWrite;
+    private long _keyLength;
 
     private readonly SemaphoreSlim _tokenGate = new(1, 1);
     private string? _accessToken;
     private DateTimeOffset _accessTokenExpiry;
+    private ServiceAccount? _tokenAccount;
 
     public FcmPhoneBlockNotifier(
         HttpClient http,
@@ -80,6 +87,34 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
         }
     }
 
+    private ServiceAccount? LoadAccount(out string? error)
+    {
+        lock (_accountGate)
+        {
+            try
+            {
+                var source = new FileInfo(_keyPath);
+                if (_account is not null && source.Exists && source.LastWriteTimeUtc == _keyLastWrite && source.Length == _keyLength)
+                {
+                    error = null;
+                    return _account;
+                }
+                var account = ServiceAccount.Load(_keyPath, out error);
+                if (account is null) return null;
+                source.Refresh();
+                _account = account;
+                _keyLastWrite = source.LastWriteTimeUtc;
+                _keyLength = source.Length;
+                return account;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                error = "Não foi possível ler a chave do FCM";
+                return null;
+            }
+        }
+    }
+
     private async Task<PhoneBlockOutcome> SendAsync(TimeSpan duration, string fcmToken, TimeSpan adultDuration, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(fcmToken)) return new PhoneBlockOutcome(false, "Cole o token do celular nas Settings");
@@ -87,7 +122,7 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
         if (duration > MaxDuration) duration = MaxDuration;
         if (adultDuration > MaxAdultDuration) adultDuration = MaxAdultDuration;
 
-        var account = ServiceAccount.Load(_keyPath, out string? loadError);
+        var account = LoadAccount(out string? loadError);
         if (account is null) return new PhoneBlockOutcome(false, loadError!);
 
         string id = Guid.NewGuid().ToString("N");
@@ -205,7 +240,7 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
         await _tokenGate.WaitAsync(ct).ConfigureAwait(false);
         try
         {
-            if (_accessToken is not null && _clock() < _accessTokenExpiry) return _accessToken;
+            if (_tokenAccount == account && _accessToken is not null && _clock() < _accessTokenExpiry) return _accessToken;
 
             using var request = new HttpRequestMessage(HttpMethod.Post, account.TokenUri)
             {
@@ -231,6 +266,7 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
             int expiresIn = doc.RootElement.TryGetProperty("expires_in", out var e) && e.TryGetInt32(out int s) ? s : 3600;
             // Stay under an hour and leave a margin so a token never expires mid-request.
             TimeSpan lifetime = TimeSpan.FromSeconds(Math.Clamp(expiresIn - 300, 60, 55 * 60));
+            _tokenAccount = account;
             _accessToken = token;
             _accessTokenExpiry = _clock() + lifetime;
             return token;
@@ -318,9 +354,24 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
                     return null;
                 }
 
-                return new ServiceAccount(email, key, project, tokenUri);
+                string plainKey = UserSecret.Unprotect(key);
+                if (!UserSecret.IsProtected(key))
+                {
+                    // One-time import; replace only after DPAPI and durable writing both succeed.
+                    try
+                    {
+                        var protectedFile = JsonNode.Parse(json)!;
+                        protectedFile["private_key"] = UserSecret.Protect(key);
+                        AtomicJsonFile.Write(path, protectedFile, new JsonSerializerOptions { WriteIndented = true });
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or CryptographicException)
+                    {
+                        System.Diagnostics.Trace.TraceWarning("FCM key could not be protected: {0}", ex.GetType().Name);
+                    }
+                }
+                return new ServiceAccount(email, plainKey, project, tokenUri);
             }
-            catch (JsonException)
+            catch (Exception ex) when (ex is JsonException or CryptographicException or FormatException)
             {
                 error = "Arquivo da chave do FCM não é um JSON válido";
                 return null;

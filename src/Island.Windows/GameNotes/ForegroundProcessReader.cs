@@ -12,13 +12,8 @@ namespace Island.Windows.GameNotes;
 /// </summary>
 internal sealed class ForegroundProcessReader
 {
-    private const int ImagePathCapacity = 1024;
     private const int MaxCachedDescriptions = 512;
 
-    private static readonly HashSet<string> ShellClassNames = new(StringComparer.Ordinal)
-    {
-        "Progman", "WorkerW", "Shell_TrayWnd", "Shell_SecondaryTrayWnd",
-    };
 
     private readonly Dictionary<string, string?> _descriptions = new(StringComparer.OrdinalIgnoreCase);
 
@@ -42,26 +37,7 @@ internal sealed class ForegroundProcessReader
     }
 
     /// <summary>Full image path of the process, or null when the process cannot be opened (access denied, exited).</summary>
-    private static unsafe string? TryGetImagePath(uint pid)
-    {
-        IntPtr process = NativeMethods.OpenProcess(NativeMethods.PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
-        if (process == IntPtr.Zero) return null;
-
-        try
-        {
-            char[] buffer = new char[ImagePathCapacity];
-            uint size = (uint)buffer.Length;
-            fixed (char* text = buffer)
-            {
-                if (!NativeMethods.QueryFullProcessImageNameW(process, 0, text, &size)) return null;
-            }
-            return new string(buffer, 0, (int)size);
-        }
-        finally
-        {
-            NativeMethods.CloseHandle(process);
-        }
-    }
+    private static string? TryGetImagePath(uint pid) => WindowInspection.ProcessImagePath(pid);
 
     private static string TryGetProcessName(uint pid)
     {
@@ -97,12 +73,7 @@ internal sealed class ForegroundProcessReader
         return description;
     }
 
-    private static bool IsShellWindow(IntPtr hwnd)
-    {
-        var name = new StringBuilder(256);
-        int length = NativeMethods.GetClassName(hwnd, name, name.Capacity);
-        return length > 0 && ShellClassNames.Contains(name.ToString());
-    }
+    private static bool IsShellWindow(IntPtr hwnd) => WindowInspection.IsShellWindow(hwnd);
 
     /// <summary>
     /// True when the window covers its whole monitor, or the shell reports exclusive fullscreen (a D3D game). A
@@ -120,33 +91,11 @@ internal sealed class ForegroundProcessReader
         return CoversMonitor(hwnd);
     }
 
-    private static bool CoversMonitor(IntPtr hwnd)
-    {
-        if (!NativeMethods.GetWindowRect(hwnd, out NativeMethods.RECT rect)) return false;
-
-        IntPtr monitor = NativeMethods.MonitorFromWindow(hwnd, NativeMethods.MONITOR_DEFAULTTONEAREST);
-        var info = new NativeMethods.MONITORINFO { cbSize = Marshal.SizeOf<NativeMethods.MONITORINFO>() };
-        if (monitor == IntPtr.Zero || !NativeMethods.GetMonitorInfoW(monitor, ref info)) return false;
-
-        // The full monitor rect, not the work area, so the taskbar does not hide a fullscreen window.
-        NativeMethods.RECT m = info.rcMonitor;
-        return rect.Left <= m.Left && rect.Top <= m.Top && rect.Right >= m.Right && rect.Bottom >= m.Bottom;
-    }
+    private static bool CoversMonitor(IntPtr hwnd) => WindowInspection.CoversMonitor(hwnd);
 
     /// <summary>
     /// QUNS_RUNNING_D3D_FULL_SCREEN only. QUNS_BUSY and presentation mode are system-wide, so they would mark an
     /// unrelated window as a game. Any failure yields false.
     /// </summary>
-    private static bool IsExclusiveFullscreen()
-    {
-        try
-        {
-            int hr = NativeMethods.SHQueryUserNotificationState(out int state);
-            return hr >= 0 && state == NativeMethods.QUNS_RUNNING_D3D_FULL_SCREEN;
-        }
-        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
-        {
-            return false;
-        }
-    }
+    private static bool IsExclusiveFullscreen() => WindowInspection.IsExclusiveFullscreen();
 }

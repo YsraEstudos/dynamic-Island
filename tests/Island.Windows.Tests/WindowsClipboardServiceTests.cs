@@ -10,6 +10,7 @@ namespace Island.Windows.Tests;
 /// These tests use the real system clipboard. Everything lives in one class so xunit runs them one at a time.
 /// On a headless machine where the clipboard cannot be opened, the tests that need it return early.
 /// </summary>
+[Collection("System Clipboard")]
 public sealed class WindowsClipboardServiceTests
 {
     [Fact]
@@ -90,7 +91,7 @@ public sealed class WindowsClipboardServiceTests
 
         // Control: a normal copy afterwards is captured, so the silence above is not just a dead listener.
         string normal = "island-normal-" + Guid.NewGuid();
-        TrySetClipboard((NativeMethods.CF_UNICODETEXT, Encoding.Unicode.GetBytes(normal + '\0')));
+        Assert.True(TrySetClipboard((NativeMethods.CF_UNICODETEXT, Encoding.Unicode.GetBytes(normal + '\0'))), "Could not write the control clipboard copy.");
         DateTime deadline = DateTime.UtcNow.AddMilliseconds(1500);
         while (DateTime.UtcNow < deadline)
         {
@@ -106,7 +107,7 @@ public sealed class WindowsClipboardServiceTests
     /// <summary>Writes the given formats to the clipboard from the test thread, with no owner window.</summary>
     private static bool TrySetClipboard(params (uint Format, byte[] Data)[] formats)
     {
-        for (int attempt = 0; attempt < 5; attempt++)
+        for (int attempt = 0; attempt < 15; attempt++)
         {
             if (!NativeMethods.OpenClipboard(IntPtr.Zero))
             {

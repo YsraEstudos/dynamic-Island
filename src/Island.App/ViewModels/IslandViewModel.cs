@@ -38,6 +38,10 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
     private TimeSpan _snapshotPosition;
     private long _snapshotTimestamp;
     private bool _disposed;
+    // Coordinator callbacks are serialized. Keep receipt time even when a hidden timeline needs no UI work.
+    private IslandState _lastQueuedState = IslandState.Initial;
+    private MediaInfo? _receivedMedia;
+    private long _receivedMediaTimestamp;
     // The panel shown last (shelf or Clipboard), so a reopen from Compact returns to it.
     private IslandMode _lastPanel = IslandMode.Expanded;
 
@@ -79,6 +83,9 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         VolumeLevel = volume.Current.Level;
         IsMuted = volume.Current.IsMuted;
 
+        _lastQueuedState = _coordinator.State;
+        _receivedMedia = _lastQueuedState.Media;
+        _receivedMediaTimestamp = Stopwatch.GetTimestamp();
         _coordinator.StateChanged += OnStateChanged;
         Shelf.Pomodoro.Changed += _pomodoroSignal.Signal;
         Shelf.Angry.LockChanged += _pomodoroSignal.Signal;
@@ -86,7 +93,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         Shelf.Schedule.Changed += _pomodoroSignal.Signal;
         SystemParameters.StaticPropertyChanged += OnSystemParametersChanged;
         RefreshPomodoro();
-        Apply(_coordinator.State);
+        Apply(_coordinator.State, _receivedMediaTimestamp);
     }
 
     /// <summary>Services and shelf widget context (pomodoro, file tray, clipboard, media).</summary>
@@ -218,13 +225,22 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
     private void OnStateChanged(IslandState state)
     {
         if (_disposed) return;
+        if (!ReferenceEquals(_receivedMedia, state.Media))
+        {
+            _receivedMedia = state.Media;
+            _receivedMediaTimestamp = Stopwatch.GetTimestamp();
+        }
+        if (state.Mode is IslandMode.Compact or IslandMode.Mini &&
+            IslandStateReducer.AreEquivalent(_lastQueuedState, state, includeMediaTimeline: false)) return;
+        _lastQueuedState = state;
+        long receivedAt = _receivedMediaTimestamp;
         _dispatcher.InvokeAsync(() =>
         {
-            if (!_disposed) Apply(state);
+            if (!_disposed) Apply(state, receivedAt);
         });
     }
 
-    private void Apply(IslandState state)
+    private void Apply(IslandState state, long mediaTimestamp)
     {
         Suspended = state.Suspended;
         Mode = state.Mode;
@@ -236,7 +252,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
             VolumeLevel = volume.Level;
             IsMuted = volume.IsMuted;
         }
-        ApplyMedia(state.Media);
+        ApplyMedia(state.Media, mediaTimestamp);
         UpdateTicker();
         Idle.Refresh();
     }
@@ -273,7 +289,7 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
         });
     }
 
-    private void ApplyMedia(MediaInfo? media)
+    private void ApplyMedia(MediaInfo? media, long receivedAt)
     {
         HasMedia = media is not null;
 
@@ -310,7 +326,9 @@ public sealed partial class IslandViewModel : ObservableObject, IDisposable
 
         IsPlaying = media.IsPlaying;
         Duration = media.Duration;
-        SetSnapshot(media.Position);
+        var position = media.Position;
+        if (media.IsPlaying) position += Stopwatch.GetElapsedTime(receivedAt);
+        SetSnapshot(position);
         Position = ComputePosition();
     }
 

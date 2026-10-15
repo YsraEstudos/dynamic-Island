@@ -77,8 +77,7 @@ public partial class CalendarDayWindow : Window
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-        int useDark = 1;
-        _ = DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 20, ref useDark, sizeof(int));
+        Island.Windows.Display.WindowAppearance.EnableDarkTitleBar(new WindowInteropHelper(this).Handle);
     }
 
     private void SetDate(DateOnly date)
@@ -327,6 +326,4 @@ public partial class CalendarDayWindow : Window
             new DoubleAnimation(8, 0, TimeSpan.FromMilliseconds(190)) { EasingFunction = easing });
     }
 
-    [DllImport("dwmapi.dll")]
-    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 }

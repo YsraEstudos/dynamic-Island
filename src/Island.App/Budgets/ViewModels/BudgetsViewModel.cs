@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Island.Core.Budgets;
@@ -8,15 +10,15 @@ namespace Island.App.Budgets;
 public sealed class BudgetsViewModel : ObservableObject
 {
     private readonly BudgetBook _book;
-    private readonly RelayCommand _remove;
+    private readonly RelayCommand<object?> _remove;
     private BudgetViewModel? _selected;
     private bool _pushing;
 
     public BudgetsViewModel(BudgetBook book)
     {
         _book = book;
-        _remove = new RelayCommand(_ => Remove(), _ => Selected is not null);
-        AddCommand = new RelayCommand(_ => _book.Add());
+        _remove = new RelayCommand<object?>(_ => Remove(), _ => Selected is not null);
+        AddCommand = new RelayCommand<object?>(_ => _book.Add());
         _book.Changed += OnBookChanged;
         Sync();
     }
@@ -28,9 +30,9 @@ public sealed class BudgetsViewModel : ObservableObject
         get => _selected;
         set
         {
-            if (!SetField(ref _selected, value)) return;
+            if (!SetProperty(ref _selected, value)) return;
 
-            _remove.RaiseCanExecuteChanged();
+            _remove.NotifyCanExecuteChanged();
             if (value is not null) _book.Select(value.Id);
         }
     }
@@ -81,7 +83,7 @@ public sealed class BudgetsViewModel : ObservableObject
         }
 
         Selected = Budgets.FirstOrDefault(vm => vm.Id == _book.Selected?.Id);
-        Raise(nameof(HasBudgets));
+        OnPropertyChanged(nameof(HasBudgets));
     }
 
     private void Track(Budget budget)

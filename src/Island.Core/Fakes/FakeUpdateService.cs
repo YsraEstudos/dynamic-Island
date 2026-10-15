@@ -14,5 +14,6 @@ public sealed class FakeUpdateService : IUpdateService
 
     public Task<UpdateInfo?> CheckAsync(CancellationToken ct = default) => Task.FromResult<UpdateInfo?>(null);
 
-    public Task InstallAsync(UpdateInfo update, IProgress<double>? progress = null, CancellationToken ct = default) => Task.CompletedTask;
+    public Task<bool> InstallAsync(UpdateInfo update, IProgress<double>? progress = null, CancellationToken ct = default,
+        Func<Task<bool>>? beforeLaunch = null) => Task.FromResult(false);
 }

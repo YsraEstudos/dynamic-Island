@@ -52,6 +52,14 @@ O script sobe `<Version>`, roda `dotnet publish` (win-x64, dependente de framewo
   - Teste a abertura de qualquer build antes de publicar: `dotnet publish src/Island.App/Island.App.csproj -c Release -r win-x64 --self-contained false -o $env:TEMP\di-teste`, depois `& $env:TEMP\di-teste\DynamicIsland.exe --smoke-test; $LASTEXITCODE` (precisa imprimir 0).
   - Se o app instalado "não abre", leia primeiro o `island-AAAAMMDD.log` (e `island-AAAAMMDD_001.log`): uma exceção `Unhandled UI exception` perto da hora da abertura é o build, não o update. Para voltar, reinstale o zip da Release anterior em `%LocalAppData%\Programs\DynamicIsland`.
 
+## Proteção de dados locais
+
+O token do celular nas configurações e a chave privada do FCM usam DPAPI, vinculada ao usuário atual do Windows. O aplicativo aceita credenciais em texto como antes: protege o token no próximo salvamento e importa a chave privada no primeiro envio. Ao transferir para outro usuário ou computador, cole novamente o token e copie uma nova chave JSON original. Não compartilhe os arquivos de credenciais.
+
+Uma falha de leitura de configurações, contador, agendamentos ou orçamentos não autoriza sobrescrever o arquivo com valores padrão. Os adaptadores preservam JSON corrompido em `.bad` antes de recriar os dados. O widget de orçamentos informa quando a leitura falhou e bloqueia a edição até reiniciar e carregar os dados com sucesso.
+
+O atualizador verifica que o pacote pertence ao repositório configurado e confere SHA-256 quando a release fornece `digest`. Releases antigas sem esse campo continuam compatíveis. Download e extração precedem o salvamento final das notas; o instalador externo só começa após esse salvamento.
+
 ## Progresso da Suite (SuperPrograma)
 Tarefas longas da Suite (corte de vídeo, extração de quadros, junção de imagens, conversão) mostram o progresso na ilha. A Suite faz o trabalho; a ilha só mostra.
 - **Barra na cápsula**: uma linha fina na borda, com o percentual à esquerda quando não há pomodoro nem clima. Some sozinha quando não há tarefa ativa.

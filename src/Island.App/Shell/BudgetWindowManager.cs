@@ -11,6 +11,12 @@ public sealed class BudgetWindowManager(BudgetBook book) : IBudgetWindowHost
 
     public void Open()
     {
+        if (!book.IsAvailable)
+        {
+            System.Windows.MessageBox.Show("Não foi possível ler os orçamentos. Seus dados foram preservados. Feche e abra o aplicativo para tentar novamente.\n\n" + book.LoadError,
+                "Orçamentos indisponíveis", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            return;
+        }
         if (_window is null)
         {
             var window = new BudgetWindow(new BudgetsViewModel(book));

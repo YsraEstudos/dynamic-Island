@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Island.Windows.Storage;
 using Island.Core.Abstractions;
 using Island.Core.Idle;
 
@@ -18,7 +19,6 @@ public sealed class JsonWeatherCache : IWeatherCache
     };
 
     private readonly string _path;
-    private readonly string _tempPath;
     private readonly string _directory;
     private readonly object _gate = new();
 
@@ -28,7 +28,6 @@ public sealed class JsonWeatherCache : IWeatherCache
         _directory = directory
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland");
         _path = Path.Combine(_directory, "weather.json");
-        _tempPath = _path + ".tmp";
     }
 
     public WeatherCacheData Load()
@@ -51,11 +50,6 @@ public sealed class JsonWeatherCache : IWeatherCache
     /// <summary>Throws on I/O failure; the refresher treats that as "not saved", which only costs the restart shortcut.</summary>
     public void Save(WeatherCacheData data)
     {
-        lock (_gate)
-        {
-            Directory.CreateDirectory(_directory);
-            File.WriteAllText(_tempPath, JsonSerializer.Serialize(data, Options));
-            File.Move(_tempPath, _path, overwrite: true);
-        }
+        lock (_gate) AtomicJsonFile.Write(_path, data, Options);
     }
 }

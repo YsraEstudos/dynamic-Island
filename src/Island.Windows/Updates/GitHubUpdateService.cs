@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
 using System.Reflection;
+using System.Security.Cryptography;
 using Island.Core.Abstractions;
 using Island.Core.Models;
 using Microsoft.Extensions.Logging;
@@ -33,6 +34,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
     private readonly string _installDirectory;
     private readonly string _exePath;
     private readonly ILogger? _log;
+    private readonly Action<string> _launchInstaller;
     private readonly CancellationTokenSource _stop = new();
 
     private volatile UpdateInfo? _available;
@@ -44,7 +46,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
     /// <param name="currentVersion">The running version; see <see cref="RunningVersion"/>.</param>
     /// <param name="downloadDirectory">Defaults to %LocalAppData%\DynamicIsland\updates.</param>
     public GitHubUpdateService(HttpClient http, Func<string> repository, Version currentVersion,
-        string? downloadDirectory = null, ILogger? log = null)
+        string? downloadDirectory = null, ILogger? log = null, Action<string>? launchInstaller = null)
     {
         _http = http ?? throw new ArgumentNullException(nameof(http));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -53,6 +55,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         _exePath = Environment.ProcessPath ?? throw new InvalidOperationException("The app path is unknown.");
         _installDirectory = Path.GetDirectoryName(_exePath)!;
         _log = log;
+        _launchInstaller = launchInstaller ?? LaunchInstaller;
     }
 
     /// <summary>%LocalAppData%\DynamicIsland\updates</summary>
@@ -132,25 +135,30 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         response.EnsureSuccessStatusCode();
 
         string json = await response.Content.ReadAsStringAsync(timeout.Token).ConfigureAwait(false);
-        UpdateInfo? update = UpdateRules.Evaluate(json, _current);
+        UpdateInfo? update = UpdateRules.Evaluate(json, _current, repository);
         _available = update;
         if (update is not null) _log?.LogInformation("Update {Tag} is available", update.Tag);
         return update;
     }
 
     /// <inheritdoc />
-    public async Task InstallAsync(UpdateInfo update, IProgress<double>? progress = null, CancellationToken ct = default)
+    public async Task<bool> InstallAsync(UpdateInfo update, IProgress<double>? progress = null, CancellationToken ct = default,
+        Func<Task<bool>>? beforeLaunch = null)
     {
         ArgumentNullException.ThrowIfNull(update);
-        if (Interlocked.Exchange(ref _installing, 1) == 1) return; // Already downloading or installing.
+        if (Interlocked.CompareExchange(ref _installing, 1, 0) != 0) return false;
 
         bool launched = false;
         try
         {
             string package = await DownloadAsync(update, progress, ct).ConfigureAwait(false);
             string source = Extract(package, update);
-            LaunchInstaller(source);
-            launched = true; // Stays set: the caller exits the app so the helper can replace its files.
+            ct.ThrowIfCancellationRequested();
+            if (beforeLaunch is not null && !await beforeLaunch().ConfigureAwait(false)) return false;
+            ct.ThrowIfCancellationRequested();
+            _launchInstaller(source);
+            launched = true; // Stays set until the caller exits.
+            return true;
         }
         finally
         {
@@ -162,7 +170,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
     public async Task<string> DownloadAsync(UpdateInfo update, IProgress<double>? progress = null, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(update);
-        if (!UpdateRules.IsTrustedDownload(update.DownloadUrl))
+        if (!UpdateRules.IsTrustedDownload(update.DownloadUrl, _repository().Trim()))
             throw new InvalidOperationException("The update address is not a GitHub download.");
 
         Directory.CreateDirectory(_downloadDirectory);
@@ -192,6 +200,13 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
 
             if (!UpdateRules.LooksLikeZip(partial)) throw new InvalidDataException("The downloaded file is not a zip package.");
 
+            if (update.Sha256 is { } expected)
+            {
+                using var downloaded = File.OpenRead(partial);
+                string actual = Convert.ToHexString(SHA256.HashData(downloaded));
+                if (!string.Equals(actual, expected, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidDataException("The update package SHA-256 does not match the release asset.");
+            }
             File.Move(partial, target, overwrite: true);
             _log?.LogInformation("Downloaded update {Tag} to {Path}", update.Tag, target);
             return target;

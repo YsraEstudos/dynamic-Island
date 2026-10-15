@@ -494,8 +494,7 @@ public partial class IslandWindow : System.Windows.Window
     private (int Left, int Top, int Right, int Bottom)? MenuScreenBounds()
     {
         if (PresentationSource.FromVisual(_menu) is not HwndSource source) return null;
-        if (!GetWindowRect(source.Handle, out RectStruct r)) return null;
-        return (r.Left, r.Top, r.Right, r.Bottom);
+        return Island.Windows.Display.WindowAppearance.ScreenBounds(source.Handle);
     }
 
     /// <summary>Screen rectangle (physical pixels) of the island shape. A press inside it never closes the island.</summary>
@@ -509,19 +508,6 @@ public partial class IslandWindow : System.Windows.Window
 
     private static bool Contains((int Left, int Top, int Right, int Bottom)? bounds, int x, int y) =>
         bounds is { } b && x >= b.Left && x < b.Right && y >= b.Top && y < b.Bottom;
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct RectStruct
-    {
-        public int Left;
-        public int Top;
-        public int Right;
-        public int Bottom;
-    }
-
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GetWindowRect(IntPtr hwnd, out RectStruct rect);
 
     private void SetMenuOpen(bool open)
     {

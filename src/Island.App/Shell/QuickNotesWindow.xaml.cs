@@ -101,7 +101,24 @@ public partial class QuickNotesWindow : Window
         ContentBox.CaretIndex = ContentBox.Text.Length;
     }
 
-    public Task FlushPendingSaveAsync() => _viewModel.FlushPendingSaveAsync();
+    public async Task FlushPendingSaveAsync()
+    {
+        // Disabled input does not cancel commands that already crossed an await.
+        var commands = new CommunityToolkit.Mvvm.Input.IAsyncRelayCommand[]
+        {
+            _viewModel.BeginNewCommand, _viewModel.SelectNoteCommand, _viewModel.SelectCollectionCommand,
+            _viewModel.TogglePinCommand, _viewModel.ArchiveSelectedCommand, _viewModel.TrashSelectedCommand,
+            _viewModel.RestoreSelectedCommand, _viewModel.DeleteSelectedPermanentlyCommand, _viewModel.EmptyTrashCommand,
+        };
+        while (true)
+        {
+            var active = commands.Select(c => c.ExecutionTask).Where(t => t is { IsCompleted: false }).Cast<Task>().ToArray();
+            if (active.Length == 0) break;
+            await Task.WhenAll(active);
+        }
+        while (_beginNewInProgress) await Task.Delay(20);
+        await _viewModel.FlushPendingSaveAsync();
+    }
 
     public async Task BeginNewNoteAndFocusAsync()
     {

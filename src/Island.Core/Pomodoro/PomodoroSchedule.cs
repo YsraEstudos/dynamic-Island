@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Island.Core.Abstractions;
 
 namespace Island.Core.Pomodoro;
@@ -12,7 +11,7 @@ public sealed record ScheduledStart(Guid Id, DateTimeOffset At, ScheduledStartMo
 /// <summary>
 /// Holds scheduled starts of a pomodoro plan, each at its own date and time. When a time comes it starts the plan
 /// by itself: a fresh Focus plan, or an Angry session. It never overrides a plan that is already locked by an
-/// Angry session. Only the earliest start is armed on the scheduler at a time. With a store path the starts are
+/// Angry session. Only the earliest start is armed on the scheduler at a time. With a persistence adapter the starts are
 /// saved after every change and loaded again on construction, so a start for tomorrow survives a restart. A start
 /// that came due while the app was closed still fires when the app loads, as long as it is at most 4 hours past
 /// due; older saved starts are dropped. Thread-safe.
@@ -29,18 +28,11 @@ public sealed class PomodoroSchedule : IDisposable
 
     private static readonly Comparison<ScheduledStart> ByTime = (a, b) => a.At.CompareTo(b.At);
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true,
-        WriteIndented = true,
-    };
-
     private readonly PomodoroTimer _timer;
     private readonly AngryPomodoro _angry;
     private readonly IIslandScheduler _scheduler;
     private readonly Func<DateTimeOffset> _clock;
-    private readonly string? _storePath;
+    private readonly IPomodoroScheduleStore? _store;
 
     // Guards the fields below. Timer calls and events happen outside it.
     private readonly object _gate = new();
@@ -52,23 +44,28 @@ public sealed class PomodoroSchedule : IDisposable
     private bool _disposed;
 
     /// <summary>
-    /// <paramref name="storePath"/> is the JSON file the starts are saved to; null keeps them in memory only.
+    /// <paramref name="store"/> persists scheduled starts; null keeps them in memory only.
     /// A missing or broken file means no saved starts.
     /// </summary>
     public PomodoroSchedule(PomodoroTimer timer, AngryPomodoro angry, IIslandScheduler scheduler,
-        Func<DateTimeOffset>? clock = null, string? storePath = null)
+        Func<DateTimeOffset>? clock = null, IPomodoroScheduleStore? store = null)
     {
         _timer = timer ?? throw new ArgumentNullException(nameof(timer));
         _angry = angry ?? throw new ArgumentNullException(nameof(angry));
         _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
         _clock = clock ?? (() => DateTimeOffset.Now);
-        _storePath = storePath;
+        _store = store;
 
         // Starts already due are armed with zero delay, so they fire on the scheduler, after the caller can subscribe.
         var now = _clock();
         lock (_gate)
         {
-            if (_storePath is not null) _starts.AddRange(ReadStore(_storePath, now));
+            if (_store is not null)
+            {
+                _starts.AddRange(_store.Load().Where(s => Enum.IsDefined(s.Mode) && s.At >= now - LoadGrace)
+                    .Select(s => s with { Cycles = Math.Clamp(s.Cycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles) }));
+                _starts.Sort(ByTime);
+            }
             RearmLocked(now);
         }
     }
@@ -262,72 +259,8 @@ public sealed class PomodoroSchedule : IDisposable
         handle?.Dispose();
     }
 
-    // Caller holds the lock. Writes to a temporary file and moves it over the store, so a crash never leaves half a file.
-    private void Save()
-    {
-        if (_storePath is null) return;
-
-        var file = new StoreFile
-        {
-            Starts = _starts.Select(s => new StoreEntry { Id = s.Id, At = s.At, Mode = s.Mode.ToString(), Cycles = s.Cycles }).ToList(),
-        };
-        string temporary = _storePath + ".tmp";
-        try
-        {
-            string? directory = Path.GetDirectoryName(_storePath);
-            if (directory is not null) Directory.CreateDirectory(directory);
-
-            File.WriteAllText(temporary, JsonSerializer.Serialize(file, JsonOptions));
-            File.Move(temporary, _storePath, overwrite: true);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            // Dropped on purpose: the next change saves the whole list again.
-        }
-    }
-
-    // Reads the saved starts, skipping entries that cannot be understood or that are more than LoadGrace past due.
-    // Starts due within LoadGrace (missed while the app was closed) are kept and fire right away.
-    private static List<ScheduledStart> ReadStore(string path, DateTimeOffset now)
-    {
-        var result = new List<ScheduledStart>();
-        try
-        {
-            if (!File.Exists(path)) return result;
-
-            StoreFile? file = JsonSerializer.Deserialize<StoreFile>(File.ReadAllText(path), JsonOptions);
-            if (file?.Starts is null) return result;
-
-            foreach (var entry in file.Starts)
-            {
-                if (entry is null || !Enum.TryParse(entry.Mode, out ScheduledStartMode mode) || !Enum.IsDefined(mode)) continue;
-                if (entry.At < now - LoadGrace) continue;
-
-                result.Add(new ScheduledStart(entry.Id, entry.At, mode,
-                    Math.Clamp(entry.Cycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles)));
-            }
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
-        {
-            result.Clear();
-        }
-
-        result.Sort(ByTime);
-        return result;
-    }
+    // Caller holds the lock. The adapter owns serialization and recovery.
+    private void Save() => _store?.Save(_starts.ToArray());
 
     private void RaiseChanged() => Changed?.Invoke();
-
-    private sealed class StoreFile
-    {
-        public List<StoreEntry>? Starts { get; set; }
-    }
-
-    private sealed class StoreEntry
-    {
-        public Guid Id { get; set; }
-        public DateTimeOffset At { get; set; }
-        public string? Mode { get; set; }
-        public int Cycles { get; set; }
-    }
 }

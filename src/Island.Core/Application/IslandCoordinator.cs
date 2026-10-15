@@ -55,6 +55,9 @@ public sealed class IslandCoordinator : IDisposable
     /// </summary>
     public event Action<IslandState>? StateChanged;
 
+    /// <summary>A subscriber failed; other subscribers and queued states still receive notifications.</summary>
+    public event Action<Exception>? SubscriberFailed;
+
     /// <summary>Subscribes to the services and seeds state from their current values. Idempotent.</summary>
     public void Start()
     {
@@ -248,14 +251,20 @@ public sealed class IslandCoordinator : IDisposable
                 next = _pending.Dequeue();
             }
 
-            try
+            if (StateChanged is not { } changed) continue;
+            foreach (Action<IslandState> handler in changed.GetInvocationList())
             {
-                StateChanged?.Invoke(next);
-            }
-            catch
-            {
-                lock (_gate) _draining = false;
-                throw;
+                try { handler(next); }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError("Island state subscriber failed: {0}", ex);
+                    if (SubscriberFailed is not { } failed) continue;
+                    foreach (Action<Exception> report in failed.GetInvocationList())
+                    {
+                        try { report(ex); }
+                        catch (Exception reportError) { System.Diagnostics.Trace.TraceError("Island error subscriber failed: {0}", reportError); }
+                    }
+                }
             }
         }
     }

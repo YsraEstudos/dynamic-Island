@@ -21,6 +21,7 @@ public sealed class CalculatorEngine
     private CalculatorKey? _lastOperator;  // repeated by = when no operator is pending
     private decimal _lastOperand;
     private bool _error;
+    private bool _entryIsResult;
 
     public bool IsError => _error;
 
@@ -32,7 +33,7 @@ public sealed class CalculatorEngine
         ? CalculatorDisplayFormatter.ErrorText
         : _entry is null
             ? CalculatorDisplayFormatter.FormatValue(_accumulator)
-            : CalculatorDisplayFormatter.FormatEntry(_entry);
+            : EntryDisplay;
 
     /// <summary>The calculation in progress, such as "12 × 3". Empty when no operator is pending.</summary>
     public string Expression
@@ -45,7 +46,7 @@ public sealed class CalculatorEngine
             string symbol = CalculatorDisplayFormatter.OperatorSymbol(op);
             return _entry is null
                 ? $"{left} {symbol}"
-                : $"{left} {symbol} {CalculatorDisplayFormatter.FormatEntry(_entry)}";
+                : $"{left} {symbol} {EntryDisplay}";
         }
     }
 
@@ -72,6 +73,10 @@ public sealed class CalculatorEngine
         };
     }
 
+    private string EntryDisplay => _entryIsResult
+        ? CalculatorDisplayFormatter.FormatValue(ParseEntry(_entry!))
+        : CalculatorDisplayFormatter.FormatEntry(_entry!);
+
     private CalculatorOutcome Reset()
     {
         _accumulator = 0m;
@@ -87,7 +92,7 @@ public sealed class CalculatorEngine
     private CalculatorOutcome AppendDigit(int digit)
     {
         string digitText = digit.ToString(CultureInfo.InvariantCulture);
-        if (_entry is null)
+        if (_entry is null || _entryIsResult)
         {
             _entry = digitText;
         }
@@ -106,11 +111,13 @@ public sealed class CalculatorEngine
         }
 
         ActiveOperator = null;
+        _entryIsResult = false;
         return CalculatorOutcome.Entry;
     }
 
     private CalculatorOutcome AppendDecimalPoint()
     {
+        _entryIsResult = false;
         if (_entry is null)
         {
             _entry = "0.";
@@ -130,7 +137,8 @@ public sealed class CalculatorEngine
 
     private CalculatorOutcome ToggleSign()
     {
-        // With nothing typed, the shown value becomes the number being typed, negated.
+        // Keep the operand editable, but format a generated result as a result.
+        _entryIsResult = _entry is null || _entryIsResult;
         _entry = _entry is null
             ? ToEntry(-_accumulator)
             : _entry.StartsWith('-') ? _entry[1..] : "-" + _entry;
@@ -141,6 +149,7 @@ public sealed class CalculatorEngine
 
     private CalculatorOutcome Backspace()
     {
+        _entryIsResult = false;
         if (_entry is null || _entry == "0") return CalculatorOutcome.None;
 
         string rest = _entry[..^1];
@@ -159,6 +168,7 @@ public sealed class CalculatorEngine
         if (normalized is null) return Fail();
 
         _entry = ToEntry(normalized.Value);
+        _entryIsResult = true;
         ActiveOperator = null;
         return CalculatorOutcome.Entry;
     }

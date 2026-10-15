@@ -76,34 +76,7 @@ public partial class SettingsWindow : Window
         TryEnableDarkTitleBar();
     }
 
-    private void TryEnableDarkTitleBar()
-    {
-        try
-        {
-            IntPtr hwnd = new WindowInteropHelper(this).Handle;
-            if (hwnd == IntPtr.Zero)
-            {
-                return;
-            }
+    private void TryEnableDarkTitleBar() =>
+        Island.Windows.Display.WindowAppearance.EnableDarkTitleBar(new WindowInteropHelper(this).Handle);
 
-            int useDark = 1;
-
-            // DWMWA_USE_IMMERSIVE_DARK_MODE is 20 on Windows 10 2004+ and 19 on earlier builds.
-            if (DwmSetWindowAttribute(hwnd, 20, ref useDark, sizeof(int)) != 0)
-            {
-                DwmSetWindowAttribute(hwnd, 19, ref useDark, sizeof(int));
-            }
-        }
-        catch (DllNotFoundException)
-        {
-            // Not available: keep the default title bar.
-        }
-        catch (EntryPointNotFoundException)
-        {
-            // Not available: keep the default title bar.
-        }
-    }
-
-    [DllImport("dwmapi.dll")]
-    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 }

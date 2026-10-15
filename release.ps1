@@ -47,7 +47,7 @@ if ($LASTEXITCODE -ne 0) { throw 'dotnet publish falhou.' }
 # Smoke test: abre o build publicado (serviços falsos, sem travar na instância aberta) e exige código de saída 0.
 # Pega "o app compila mas não abre" (ex.: serviço não registrado na injeção de dependência) ANTES de publicar.
 Write-Host 'Teste de abertura do build publicado...'
-$smoke = Start-Process -FilePath (Join-Path $publish 'DynamicIsland.exe') -ArgumentList '--smoke-test' -PassThru
+$smoke = Start-Process -FilePath (Join-Path $publish 'DynamicIsland.exe') -ArgumentList '--smoke-test' -WindowStyle Hidden -PassThru
 if (-not $smoke.WaitForExit(30000)) {
     $smoke.Kill()
     Set-Content -LiteralPath $props -Value $originalProps -NoNewline
@@ -60,7 +60,7 @@ if ($smoke.ExitCode -ne 0) {
 
 [System.IO.Compression.ZipFile]::CreateFromDirectory($publish, $zip, [System.IO.Compression.CompressionLevel]::Optimal, $false)
 
-git add -A
+git add -A -- . ':(exclude).claude/**' ':(exclude).superpowers/**'
 git commit -m "Release $tag"
 if ($LASTEXITCODE -ne 0) { throw 'git commit falhou.' }
 git tag $tag

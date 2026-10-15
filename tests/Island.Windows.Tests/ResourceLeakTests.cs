@@ -17,11 +17,26 @@ namespace Island.Windows.Tests;
 /// count must not grow across repeated hotkey, message-window and guard cycles. Services that need an audio device
 /// or a media session return early when none is present, as the other tests in this project do.
 /// </summary>
+[Collection("System Clipboard")]
 public sealed class ResourceLeakTests
 {
     private const int LifecycleCycles = 200;
     private const int HandleCycles = 100;
     private const int MaxHandleGrowth = 50;
+
+    [Fact]
+    public void Outside_click_hook_can_restart_and_dispose_its_dedicated_message_thread()
+    {
+        using var watcher = new LowLevelMouseWatcher((_, _) => { });
+        if (!watcher.Start()) return; // No interactive desktop: registration is unavailable.
+        for (int i = 0; i < 10; i++)
+        {
+            watcher.Stop();
+            Assert.True(watcher.Start());
+        }
+        watcher.Stop();
+        watcher.Dispose();
+    }
 
     // Ctrl+Alt+Shift+F23: distinct from GlobalHotkeyTests (F24) and from the app's Ctrl+Alt+V.
     private const uint Modifiers = GlobalHotkey.ModControl | GlobalHotkey.ModAlt | GlobalHotkey.ModShift;

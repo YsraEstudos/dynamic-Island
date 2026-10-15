@@ -1,6 +1,9 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using Island.Core.Tools.Counter;
+using Island.Windows.Storage;
 
-namespace Island.Core.Tools.Counter;
+namespace Island.Windows.Tools.Counter;
 
 /// <summary>
 /// Saves the counter as <c>{ value, step, goal, label }</c> in <c>%LocalAppData%\DynamicIsland\counter.json</c>, or at
@@ -8,7 +11,7 @@ namespace Island.Core.Tools.Counter;
 /// the last change. <see cref="Flush"/> and disposing write a pending change at once. Reads and writes never throw:
 /// a missing or broken file gives the default state, and a failed write is dropped.
 /// </summary>
-public sealed class CounterStore : IDisposable
+public sealed class CounterStore : ICounterStore
 {
     private const int DebounceMilliseconds = 400;
     private const string FileName = "counter.json";
@@ -25,6 +28,7 @@ public sealed class CounterStore : IDisposable
     private readonly object _gate = new();
     private CounterState? _pending;
     private bool _disposed;
+    private bool _unavailable;
 
     public CounterStore(string? path = null)
     {
@@ -38,15 +42,23 @@ public sealed class CounterStore : IDisposable
     {
         try
         {
-            if (!File.Exists(_path)) return CounterState.Default;
+            _unavailable = false;
 
             CounterFile? file = JsonSerializer.Deserialize<CounterFile>(File.ReadAllText(_path), JsonOptions);
-            return file is null
-                ? CounterState.Default
-                : new CounterState(file.Value, file.Step, file.Goal, file.Label ?? CounterState.DefaultLabel);
+            if (file is null) throw new JsonException("Missing counter data.");
+            return new CounterState(file.Value, file.Step, file.Goal, file.Label ?? CounterState.DefaultLabel);
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        catch (FileNotFoundException) { return CounterState.Default; }
+        catch (DirectoryNotFoundException) { return CounterState.Default; }
+        catch (JsonException)
         {
+            try { AtomicJsonFile.Quarantine(_path); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _unavailable = true; }
+            return CounterState.Default;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            _unavailable = true;
             return CounterState.Default;
         }
     }
@@ -99,18 +111,13 @@ public sealed class CounterStore : IDisposable
 
     private void WritePending()
     {
-        if (_pending is not { } state) return;
+        if (_unavailable || _pending is not { } state) return;
 
-        _pending = null;
         var file = new CounterFile { Value = state.Value, Step = state.Step, Goal = state.Goal, Label = state.Label };
-        string temporary = _path + ".tmp";
         try
         {
-            string? directory = Path.GetDirectoryName(_path);
-            if (directory is not null) Directory.CreateDirectory(directory);
-
-            File.WriteAllText(temporary, JsonSerializer.Serialize(file, JsonOptions));
-            File.Move(temporary, _path, overwrite: true);
+            AtomicJsonFile.Write(_path, file, JsonOptions);
+            _pending = null;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
@@ -120,6 +127,7 @@ public sealed class CounterStore : IDisposable
 
     private sealed class CounterFile
     {
+        [JsonRequired]
         public int Value { get; set; }
         public int Step { get; set; }
         public int Goal { get; set; }

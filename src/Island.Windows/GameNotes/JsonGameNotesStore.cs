@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using Island.Windows.Storage;
 using Island.Core.GameNotes;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +24,6 @@ public sealed class JsonGameNotesStore : IGameNotesStore
 
     private readonly string _directory;
     private readonly string _path;
-    private readonly string _tempPath;
     private readonly ILogger<JsonGameNotesStore>? _log;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
@@ -32,7 +32,6 @@ public sealed class JsonGameNotesStore : IGameNotesStore
         _directory = directory
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland");
         _path = Path.Combine(_directory, FileName);
-        _tempPath = _path + ".tmp";
         _log = log;
     }
 
@@ -97,31 +96,7 @@ public sealed class JsonGameNotesStore : IGameNotesStore
                 Games = games.Select(ToDto).ToList(),
             };
 
-            try
-            {
-                await using (var stream = new FileStream(
-                    _tempPath,
-                    FileMode.Create,
-                    FileAccess.Write,
-                    FileShare.None,
-                    bufferSize: 4096,
-                    FileOptions.Asynchronous | FileOptions.WriteThrough))
-                {
-                    await JsonSerializer.SerializeAsync(stream, file, JsonOptions, cancellationToken)
-                        .ConfigureAwait(false);
-                    await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
-                    stream.Flush(flushToDisk: true);
-                }
-
-                if (File.Exists(_path))
-                    File.Replace(_tempPath, _path, destinationBackupFileName: null);
-                else
-                    File.Move(_tempPath, _path);
-            }
-            finally
-            {
-                TryDelete(_tempPath);
-            }
+            await AtomicJsonFile.WriteAsync(_path, file, JsonOptions, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -194,21 +169,7 @@ public sealed class JsonGameNotesStore : IGameNotesStore
         }).ToList(),
     };
 
-    private static void TryDelete(string path)
-    {
-        try
-        {
-            if (File.Exists(path)) File.Delete(path);
-        }
-        catch (IOException)
-        {
-            // Best effort; a later save will replace the temporary file.
-        }
-        catch (UnauthorizedAccessException)
-        {
-            // Best effort; a later save will replace the temporary file.
-        }
-    }
+
 
     private sealed class GamesFile
     {

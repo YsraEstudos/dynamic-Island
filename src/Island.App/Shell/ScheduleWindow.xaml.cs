@@ -85,8 +85,7 @@ public partial class ScheduleWindow : Window
         base.OnSourceInitialized(e);
 
         // Dark title bar, like the other app windows (DWMWA_USE_IMMERSIVE_DARK_MODE = 20, Windows 10 2004+).
-        int useDark = 1;
-        DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 20, ref useDark, sizeof(int));
+        Island.Windows.Display.WindowAppearance.EnableDarkTitleBar(new WindowInteropHelper(this).Handle);
     }
 
     protected override void OnClosed(EventArgs e)
@@ -278,8 +277,6 @@ public partial class ScheduleWindow : Window
 
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();
 
-    [DllImport("dwmapi.dll")]
-    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 
     private static Brush Frozen(byte r, byte g, byte b, byte a)
     {

@@ -41,11 +41,16 @@ internal static class UpdateRules
         uri.Scheme == Uri.UriSchemeHttps && uri.IsDefaultPort &&
         (uri.Host == "github.com" || uri.Host.EndsWith(".githubusercontent.com", StringComparison.OrdinalIgnoreCase));
 
+    public static bool IsTrustedDownload(Uri uri, string repository) =>
+        IsValidRepository(repository) && IsTrustedDownload(uri) && string.IsNullOrEmpty(uri.UserInfo) &&
+        uri.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase) &&
+        uri.AbsolutePath.StartsWith("/" + repository + "/releases/download/", StringComparison.OrdinalIgnoreCase);
+
     /// <summary>
     /// Reads a GitHub "latest release" payload. Returns the update when the release is newer than <paramref name="current"/>
     /// and its .zip asset has a trusted address; otherwise null. Throws <see cref="JsonException"/> on invalid JSON.
     /// </summary>
-    public static UpdateInfo? Evaluate(string json, Version current)
+    public static UpdateInfo? Evaluate(string json, Version current, string? repository = null)
     {
         using JsonDocument doc = JsonDocument.Parse(json);
         JsonElement root = doc.RootElement;
@@ -56,7 +61,19 @@ internal static class UpdateRules
         if (version.CompareTo(Normalize(current)) <= 0) return null;
 
         Uri? download = FindPackageAsset(root);
-        return download is null ? null : new UpdateInfo(version, tag!.Trim(), download);
+        if (download is null || (repository is not null && !IsTrustedDownload(download, repository))) return null;
+        string? digest = null;
+        foreach (JsonElement asset in root.GetProperty("assets").EnumerateArray())
+        {
+            if (asset.ValueKind != JsonValueKind.Object || ReadString(asset, "browser_download_url") != download.OriginalString) continue;
+            string? raw = ReadString(asset, "digest");
+            if (raw is null) break; // Older releases have no GitHub digest.
+            if (!raw.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase) || raw.Length != 71 ||
+                !raw[7..].All(Uri.IsHexDigit)) return null;
+            digest = raw[7..];
+            break;
+        }
+        return new UpdateInfo(version, tag!.Trim(), download, digest);
     }
 
     /// <summary>The first asset whose name ends in .zip. Null when there is none, or when its address is not trusted.</summary>
@@ -102,7 +119,7 @@ internal static class UpdateRules
             $"function Log($m) {{ Add-Content -LiteralPath {Quote(logPath)} -Value ((Get-Date -Format o) + ' ' + $m) }}",
             "try {",
             $"  Wait-Process -Id {processId} -Timeout 20 -ErrorAction SilentlyContinue",
-            $"  Get-Process -ErrorAction SilentlyContinue | Where-Object {{ $_.Path -eq {Quote(exePath)} }} | Stop-Process -Force -ErrorAction SilentlyContinue",
+            $"  Get-Process -Name {Quote(Path.GetFileNameWithoutExtension(exePath))} -ErrorAction SilentlyContinue | Where-Object {{ $_.Path -eq {Quote(exePath)} }} | Stop-Process -Force -ErrorAction SilentlyContinue",
             "  Start-Sleep -Milliseconds 500",
             $"  robocopy {Quote(sourceDir)} {Quote(installDir)} /E /R:10 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null",
             "  if ($LASTEXITCODE -ge 8) { throw ('robocopy failed with code ' + $LASTEXITCODE) }",

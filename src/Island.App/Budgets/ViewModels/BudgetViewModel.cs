@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using Island.App.Budgets;
 using Island.Core.Budgets;
@@ -89,7 +90,7 @@ public sealed partial class BudgetViewModel : ObservableObject
         Recalculate(_clock());
         foreach (string name in EditableNames)
         {
-            Raise(name);
+            OnPropertyChanged(name);
         }
     }
 
@@ -109,7 +110,7 @@ public sealed partial class BudgetViewModel : ObservableObject
         }
         else
         {
-            Raise(name);
+            OnPropertyChanged(name);
         }
     }
 
@@ -127,7 +128,7 @@ public sealed partial class BudgetViewModel : ObservableObject
         {
             if (name != edited)
             {
-                Raise(name);
+                OnPropertyChanged(name);
             }
         }
 

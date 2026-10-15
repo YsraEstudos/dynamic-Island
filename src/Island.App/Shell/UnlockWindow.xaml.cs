@@ -127,8 +127,7 @@ public partial class UnlockWindow : Window
         base.OnSourceInitialized(e);
 
         // Dark title bar, like the other app windows (DWMWA_USE_IMMERSIVE_DARK_MODE = 20, Windows 10 2004+).
-        int useDark = 1;
-        DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 20, ref useDark, sizeof(int));
+        Island.Windows.Display.WindowAppearance.EnableDarkTitleBar(new WindowInteropHelper(this).Handle);
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -218,6 +217,4 @@ public partial class UnlockWindow : Window
         InputBorder.BorderBrush = (Brush)FindResource(brushKey);
     }
 
-    [DllImport("dwmapi.dll")]
-    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 }

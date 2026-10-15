@@ -32,7 +32,7 @@ public sealed partial class BudgetViewModel
     {
         foreach (string name in DerivedNames)
         {
-            Raise(name);
+            OnPropertyChanged(name);
         }
     }
 }

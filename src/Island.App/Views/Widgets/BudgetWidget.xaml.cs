@@ -58,6 +58,16 @@ public partial class BudgetWidget : UserControl
 
     private void Refresh()
     {
+        Use1Button.IsEnabled = Use5Button.IsEnabled = _book.IsAvailable;
+        if (!_book.IsAvailable)
+        {
+            NameText.Text = "Orçamentos indisponíveis";
+            HeroText.Text = "—";
+            DetailText.Text = "Falha ao ler. Seus dados foram preservados.";
+            RemainingText.Text = "Abra para mais detalhes";
+            PrevButton.Visibility = NextButton.Visibility = Visibility.Collapsed;
+            return;
+        }
         Visibility switcher = _book.Budgets.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
         PrevButton.Visibility = switcher;
         NextButton.Visibility = switcher;

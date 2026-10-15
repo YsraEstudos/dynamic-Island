@@ -1,4 +1,5 @@
 using Island.Core.Tools.Counter;
+using Island.Windows.Tools.Counter;
 
 namespace Island.Core.Tests.Tools.Counter;
 
@@ -107,5 +108,27 @@ public sealed class CounterStoreTests : IDisposable
         store.Flush();
 
         Assert.False(File.Exists(FilePath));
+    }
+    [Fact]
+    public void Changes_are_saved_through_the_store_when_the_model_is_disposed()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "island-counter-model-" + Guid.NewGuid().ToString("N"));
+        string path = Path.Combine(directory, "counter.json");
+        try
+        {
+            var model = new CounterModel(CounterState.Default, new CounterStore(path));
+
+            model.Increment();
+            model.CycleLabel();
+            model.Dispose();
+
+            CounterState saved = new CounterStore(path).Load();
+            Assert.Equal(1, saved.Value);
+            Assert.Equal("Água", saved.Label);
+        }
+        finally
+        {
+            if (Directory.Exists(directory)) Directory.Delete(directory, recursive: true);
+        }
     }
 }

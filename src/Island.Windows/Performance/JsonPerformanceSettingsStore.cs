@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Island.Windows.Storage;
 using Island.Core.Performance;
 
 namespace Island.Windows.Performance;
@@ -35,11 +36,5 @@ public sealed class JsonPerformanceSettingsStore : IPerformanceSettingsStore
         }
     }
 
-    public void Save(PerformanceAlertSettings settings)
-    {
-        Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
-        string tmp = _path + ".tmp";
-        File.WriteAllText(tmp, JsonSerializer.Serialize(settings.Sanitized(), Options));
-        File.Move(tmp, _path, overwrite: true);
-    }
+    public void Save(PerformanceAlertSettings settings) => AtomicJsonFile.Write(_path, settings.Sanitized(), Options);
 }

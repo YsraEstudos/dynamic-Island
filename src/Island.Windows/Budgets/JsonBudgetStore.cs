@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Island.Windows.Storage;
 using System.Text.Json.Serialization;
 using Island.Core.Budgets;
 
@@ -10,6 +11,8 @@ public sealed class JsonBudgetStore : IBudgetStore
     private static readonly JsonSerializerOptions Options = CreateOptions();
 
     private readonly string _path;
+    private readonly object _gate = new();
+    private Exception? _loadError;
 
     public JsonBudgetStore(string? directory = null)
     {
@@ -20,26 +23,43 @@ public sealed class JsonBudgetStore : IBudgetStore
 
     public BudgetsData Load()
     {
-        try
+        lock (_gate)
         {
-            if (!File.Exists(_path)) return Empty();
-            var data = JsonSerializer.Deserialize<BudgetsData>(File.ReadAllText(_path), Options);
-            return data is null ? Empty() : Sanitize(data);
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException
-                                       or JsonException or NotSupportedException)
-        {
-            return Empty();
+            _loadError = null;
+            try
+            {
+                string json = File.ReadAllText(_path);
+                var data = JsonSerializer.Deserialize<BudgetsData>(json, Options)
+                    ?? throw new JsonException("Missing budget data.");
+                if (data.Budgets is null) throw new JsonException("Missing budget collection.");
+                return Sanitize(data);
+            }
+            catch (FileNotFoundException) { return Empty(); }
+            catch (DirectoryNotFoundException) { return Empty(); }
+            catch (Exception ex) when (ex is JsonException or NotSupportedException)
+            {
+                try { AtomicJsonFile.Quarantine(_path); }
+                catch (Exception recovery) when (recovery is IOException or UnauthorizedAccessException) { _loadError = recovery; }
+                return Empty();
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                _loadError = ex;
+                return Empty();
+            }
         }
     }
 
     public void Save(BudgetsData data)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
-        string tmp = _path + ".tmp";
-        File.WriteAllText(tmp, JsonSerializer.Serialize(data, Options));
-        File.Move(tmp, _path, overwrite: true);
+        lock (_gate)
+        {
+            if (_loadError is not null) throw new IOException("Budgets could not be read; writes are disabled until a successful reload.", _loadError);
+            AtomicJsonFile.Write(_path, data, Options);
+        }
     }
+
+    public string? LoadError => _loadError?.Message;
 
     private static BudgetsData Empty() => new(new List<Budget>(), null);
 

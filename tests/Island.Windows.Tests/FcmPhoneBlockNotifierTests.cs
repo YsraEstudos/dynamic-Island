@@ -64,6 +64,15 @@ public sealed class FcmPhoneBlockNotifierTests : IDisposable
     private IEnumerable<Seen> Sends => _seen.Where(s => s.Url.Contains("messages:send"));
 
     [Fact]
+    public async Task Imported_private_key_is_protected_and_usable_by_a_new_notifier()
+    {
+        string path = WriteKey();
+        Assert.True((await Notifier(path).NotifyAsync(TimeSpan.FromMinutes(1), "phone-token")).Delivered);
+        Assert.DoesNotContain("BEGIN PRIVATE KEY", File.ReadAllText(path));
+        Assert.True((await Notifier(path).NotifyAsync(TimeSpan.FromMinutes(1), "phone-token")).Delivered);
+    }
+
+    [Fact]
     public async Task Sends_one_high_priority_data_message_with_the_remaining_time()
     {
         var outcome = await Notifier().NotifyAsync(TimeSpan.FromMinutes(25), "phone-token");

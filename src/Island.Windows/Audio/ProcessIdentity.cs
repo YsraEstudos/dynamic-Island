@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using System.Text;
+using Island.Windows.Interop;
 
 namespace Island.Windows.Audio;
 
@@ -10,7 +10,6 @@ namespace Island.Windows.Audio;
 internal sealed record ProcessIdentity(string? ExecutablePath, string ProcessName, string? FileDescription)
 {
     // Long enough for any path Windows will report without the long-path prefix, and small enough to allocate per session.
-    private const int PathCapacity = 2048;
 
     public static ProcessIdentity Resolve(int processId)
     {
@@ -28,26 +27,7 @@ internal sealed record ProcessIdentity(string? ExecutablePath, string ProcessNam
     }
 
     /// <summary>Full path of the process image, or null when the process cannot be opened.</summary>
-    public static string? TryGetExecutablePath(int processId)
-    {
-        if (processId <= 0) return null;
-
-        IntPtr handle = MixerNativeMethods.OpenProcess(MixerNativeMethods.PROCESS_QUERY_LIMITED_INFORMATION, false, (uint)processId);
-        if (handle == IntPtr.Zero) return null;
-
-        try
-        {
-            var buffer = new StringBuilder(PathCapacity);
-            uint size = (uint)buffer.Capacity;
-            return MixerNativeMethods.QueryFullProcessImageNameW(handle, 0, buffer, ref size)
-                ? buffer.ToString(0, (int)size)
-                : null;
-        }
-        finally
-        {
-            MixerNativeMethods.CloseHandle(handle);
-        }
-    }
+    public static string? TryGetExecutablePath(int processId) => processId > 0 ? WindowInspection.ProcessImagePath((uint)processId) : null;
 
     private static string ProcessNameOf(int processId)
     {

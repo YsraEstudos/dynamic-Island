@@ -21,8 +21,11 @@ public sealed class BudgetBook
         BudgetsData data = store.Load();
         _budgets = data.Budgets.ToList();
         _selectedId = data.SelectedId;
-        if (_budgets.Count == 0) _budgets.Add(NewBudget("Claude")); // memory only until the first change
+        if (_budgets.Count == 0 && IsAvailable) _budgets.Add(NewBudget("Claude")); // memory only until the first change
     }
+
+    public bool IsAvailable => _store.LoadError is null;
+    public string? LoadError => _store.LoadError;
 
     public event Action? Changed;
 

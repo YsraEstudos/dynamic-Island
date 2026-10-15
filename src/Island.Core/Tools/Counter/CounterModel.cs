@@ -14,7 +14,7 @@ public sealed class CounterModel : IDisposable
     private static readonly int[] GoalValues = [0, 10, 20, 50, 100];
     private static readonly string[] LabelValues = ["Contador", "Água", "Repetições", "Partidas", "Café", "Pausas"];
 
-    private readonly CounterStore? _store;
+    private readonly ICounterStore? _store;
     private int _value;
     private int _step;
     private int _goal;
@@ -23,7 +23,7 @@ public sealed class CounterModel : IDisposable
 
     /// <param name="state">Starting state; out-of-range fields are corrected. Null starts from <see cref="CounterState.Default"/>.</param>
     /// <param name="store">Where changes are saved. The model owns it and disposes it.</param>
-    public CounterModel(CounterState? state = null, CounterStore? store = null)
+    public CounterModel(CounterState? state = null, ICounterStore? store = null)
     {
         CounterState start = state ?? CounterState.Default;
         _value = Clamp(start.Value);

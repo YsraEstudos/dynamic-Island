@@ -89,8 +89,7 @@ public partial class CalendarEntryWindow : Window
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
-        int useDark = 1;
-        _ = DwmSetWindowAttribute(new WindowInteropHelper(this).Handle, 20, ref useDark, sizeof(int));
+        Island.Windows.Display.WindowAppearance.EnableDarkTitleBar(new WindowInteropHelper(this).Handle);
     }
 
     private void OnCancelClicked(object sender, RoutedEventArgs e) => DialogResult = false;
@@ -171,6 +170,4 @@ public partial class CalendarEntryWindow : Window
             new DoubleAnimation(8, 0, TimeSpan.FromMilliseconds(180)) { EasingFunction = easing });
     }
 
-    [DllImport("dwmapi.dll")]
-    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 }

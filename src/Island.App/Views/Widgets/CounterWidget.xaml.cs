@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Island.App.Widgets;
 using Island.Core.Tools.Counter;
+using Island.Windows.Tools.Counter;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace Island.App.Views.Widgets;
