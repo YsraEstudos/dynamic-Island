@@ -2,7 +2,7 @@
 
 Solicitação: desenhar e implementar diretamente, sem confirmação intermediária.
 
-A ilha aceita arquivos e pastas em qualquer modo visível. Ao arrastar sobre ela, um menu circular surge no ponto de entrada, limitado à área útil do monitor. O menu é transparente: sem painel, moldura, véu, anel ou símbolo central. Somente as ações individuais têm superfície para leitura sobre o desktop. Elas se expandem a partir do centro com deslocamento, escala e entrada escalonada; hover e arrasto realçam o alvo. É possível soltar diretamente em uma ação ou soltar na ilha e escolher depois. Soltar fora ou cancelar o arrasto dispensa a prévia. Reduzir animações elimina deslocamento/escala. Escape e Fechar dispensam o menu.
+A ilha aceita arquivos e pastas em qualquer modo visível. Ao arrastar sobre ela, um menu circular surge no ponto de entrada, limitado à área útil do monitor. O desenho atual reproduz o arquivo **Radial Drop.html** fornecido: setores arredondados, ícone e rótulo dentro de cada fatia, centro informativo e cores por ação. O desktop permanece visível fora da roda e entre as fatias, sem fundo de página ou grade. É possível soltar diretamente em uma ação ou soltar na ilha e escolher depois. Soltar fora ou cancelar o arrasto dispensa a prévia. Reduzir animações elimina movimentos e partículas. Escape e Fechar dispensam o menu.
 
 Escolher uma ação abre opções explícitas, lista dos arquivos e Executar. Selecionar nunca executa. Trabalho em segundo plano, cancelamento e status mantêm a interface responsiva. Resultados vão para uma pasta nova escolhida pelo usuário; originais não são alterados. Renomeação em lote produz cópias com prévia de nomes. ZIP preserva pastas; extração rejeita caminhos externos e links. Duplicados são relatados, nunca apagados.
 
@@ -12,6 +12,24 @@ Escolher uma ação abre opções explícitas, lista dos arquivos e Executar. Se
 2. Conversores: Magick.NET-Q8-x64 incorporado para imagens, miniaturas e hashes visuais; FFmpeg detectado no PATH ou pasta tools para áudio e vídeo; LibreOffice para documentos; Ghostscript para compressão PDF. Dependências ausentes são informadas antes da execução. PDFsharp 6.2.2 para PDFs, com dependência criptográfica corrigida.
 3. `FileOrbitWindow`: seletor radial, opções por operação, destino, progresso e cancelamento. Arrasto da ilha integrado por partial separado, preservando widgets e trabalho local.
 4. Verificação: testes do núcleo, testes WPF renderizados, conversões reais FFmpeg e suíte da solução. Registrar limites de homologação.
+
+## Réplica atual: Radial Drop
+
+Geometria portada do SVG: canvas lógico 520 × 520, centro (260,260), raios 105/245, recuo angular equivalente a 9 unidades, stroke 10 e junções arredondadas. O centro tem raio 84 e o anel pontilhado gira em 50 segundos. A janela usa 420 × 460 DIP, incluindo controles discretos da bandeja. O número de setores acompanha o lote real (quatro a sete); ícones e ações demonstrativas de e-mail/link/exclusão não substituem as funções existentes.
+
+Entrada como no CSS: escala 0,5, rotação −26°, 700 ms com overshoot e diferença de 55 ms por setor. Hover: setor inteiro recebe sua cor, brilho de 16 unidades, translação radial de 10, escala 1,045 e ícone 1,18; o centro informa a ação. Confirmação inclui flash e partículas antes de abrir os ajustes; ela não executa a operação. O WPF faz hit-test pela geometria estática da fatia, evitando que os controles de canvas inteiro bloqueiem os vizinhos ou o centro. Ao voltar, cores e deslocamentos são restaurados.
+
+A fonte [Sora](https://github.com/google/fonts/tree/main/ofl/sora) e sua licença OFL são incorporadas ao aplicativo, sem download em tempo de uso. O HTML foi lido como referência de desenho, sem executar seu JavaScript. A abertura de arquivo local no navegador foi bloqueada pela política do navegador; validação visual feita por renderização WPF nativa. Os rótulos nas direções quase horizontais foram ajustados para não cruzar os ícones quando há quatro, cinco ou sete setores.
+
+## Desenho compacto anterior
+
+A revisão aprovada troca as pílulas por ícones vetoriais de 56 DIP, rótulos curtos e áreas fixas de 80 × 74 DIP. O raio passa de 220 para 110 DIP e a cena de 720 × 640 para 340 × 360 DIP. O centro permanece vazio e todo o espaço entre ações permanece transparente. O nome completo continua acessível na dica e na automação de cada botão. A folha de contato usa o rótulo curto “Mosaico”.
+
+Entrada: deslocamento e escala apenas do conteúdo visual, 260 ms, escalonamento de 12 ms, BackEase discreto e fade de 130 ms. Hover: 110 ms e escala 1,07. Saída: 150 ms. A área de cada botão não se move; fica disponível após a entrada para evitar seleção invisível. Reduzir animações remove os movimentos. Os rótulos têm uma pequena superfície própria para manter contraste sobre qualquer desktop; não existe fundo compartilhado.
+
+Selecionar uma ação expande a janela para os ajustes em 680 × 620 DIP, respeitando a área útil do monitor. Voltar restaura exatamente os limites do menu compacto. A prévia de arrasto e a execução explícita continuam independentes. Testes verificam colisões de alvos com 4, 5 e 7 ações, transparência, geometria, limites de monitor, animações e restauração.
+
+Referências de desenho: [temas Kando](https://kando.menu/menu-themes/), [anatomia dos temas e motion](https://kando.menu/create-menu-themes/), [Fluent motion](https://fluent2.microsoft.design/motion) e [transformações WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/graphics-multimedia/transforms-overview). Valores acima são a adaptação aprovada para a ilha, não especificações impostas por essas referências.
 
 ## Limites e revisão
 

@@ -66,14 +66,7 @@ public partial class IslandWindow
         var topLeft = fromDevice.Transform(new System.Windows.Point(area.Left, area.Top));
         var bottomRight = fromDevice.Transform(new System.Windows.Point(area.Right, area.Bottom));
         var point = fromDevice.Transform(anchor);
-        orbit.Width = Math.Min(720, bottomRight.X - topLeft.X);
-        orbit.Height = Math.Min(640, bottomRight.Y - topLeft.Y);
-        orbit.Left = Math.Clamp(point.X - orbit.Width / 2, topLeft.X, Math.Max(topLeft.X, bottomRight.X - orbit.Width));
-        orbit.Top = Math.Clamp(point.Y - orbit.Height / 2, topLeft.Y, Math.Max(topLeft.Y, bottomRight.Y - orbit.Height));
-        double scale = Math.Min(orbit.Width / 720, orbit.Height / 640);
-        orbit.RevealOrigin = new System.Windows.Point(
-            (point.X - orbit.Left - (orbit.Width - 720 * scale) / 2) / scale,
-            (point.Y - orbit.Top - (orbit.Height - 640 * scale) / 2) / scale);
+        orbit.PlaceAt(point, new Rect(topLeft, bottomRight));
         if (preview) orbit.BeginDragPreview();
         orbit.Show();
     }

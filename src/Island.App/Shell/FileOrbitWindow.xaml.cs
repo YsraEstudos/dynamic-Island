@@ -22,7 +22,7 @@ public partial class FileOrbitWindow : Window
     private string? _results;
     private bool _closeAfterCancel;
     public bool IsRunning => _cancellation is not null;
-    public Point RevealOrigin { get; set; } = new(360, 320);
+    public Point RevealOrigin { get; set; } = new(260, 260);
     public event Action<IReadOnlyList<string>>? StoreRequested;
 
     public FileOrbitWindow(IReadOnlyList<string> paths, bool reduceAnimations)
@@ -50,7 +50,7 @@ public partial class FileOrbitWindow : Window
         PreviewKeyDown += (_, e) => { if (e.Key == Key.Escape) { e.Handled = true; Close(); } };
         Closing += (_, e) =>
         {
-            if (!IsRunning) return;
+            if (!IsRunning) { AnimateClose(e); return; }
             e.Cancel = true; _closeAfterCancel = true; _cancellation?.Cancel(); StatusLabel.Text = "Cancelando antes de fechar…";
         };
         Loaded += (_, _) => AnimateOrbit();
@@ -63,62 +63,32 @@ public partial class FileOrbitWindow : Window
         for (int i = 0; i < actions.Count; i++)
         {
             FileAction action = actions[i];
-            double angle = -Math.PI / 2 + i * Math.PI * 2 / actions.Count;
-            var button = new Button { Content = FileActionCatalog.Label(action), Tag = action, Width = 174, Height = 44,
-                ToolTip = Help(action), RenderTransformOrigin = new Point(.5, .5),
-                Effect = new System.Windows.Media.Effects.DropShadowEffect { BlurRadius = 14, ShadowDepth = 3, Opacity = .3 } };
+            string[] palette = ["#5B8CFF", "#A66BFF", "#14B8A6", "#F5A300", "#FF7A45", "#FF4D6D", "#36BFF1"];
+            var button = new RadialSectorButton { Tag = action, Width = 520, Height = 520,
+                Sector = RadialSectorButton.CreateSector(i, actions.Count), Angle = i * 360d / actions.Count,
+                Accent = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(palette[i % palette.Length]),
+                ToolTip = FileActionCatalog.Label(action) + "\n" + Help(action), Style = (Style)FindResource("OrbitActionStyle") };
+            button.Content = FileOrbitActionVisuals.Create(button, action);
             System.Windows.Automation.AutomationProperties.SetName(button, FileActionCatalog.Label(action));
-            Canvas.SetLeft(button, 360 + Math.Cos(angle) * 220 - 87);
-            Canvas.SetTop(button, 320 + Math.Sin(angle) * 220 - 22);
-            button.Click += (_, _) => SelectAction(action);
+            Canvas.SetLeft(button, 0); Canvas.SetTop(button, 0);
+            button.Click += (_, _) => PickAction(button, action);
             AttachActionDrop(button, action);
-            var scale = new ScaleTransform(1, 1);
-            button.RenderTransform = new TransformGroup { Children = { scale, new TranslateTransform() } };
-            button.MouseEnter += (_, _) => Hover(scale, 1.045);
-            button.MouseLeave += (_, _) => Hover(scale, 1);
+            button.MouseEnter += (_, _) => Hover(button, true);
+            button.MouseLeave += (_, _) => Hover(button, false);
+            button.GotKeyboardFocus += (_, _) => Hover(button, true);
+            button.LostKeyboardFocus += (_, _) => { if (!button.IsMouseOver) Hover(button, false); };
             OrbitCanvas.Children.Add(button);
-        }
-    }
-
-    private void AnimateOrbit()
-    {
-        int i = 0;
-        foreach (var button in OrbitCanvas.Children.OfType<Button>().Where(b => b.Tag is FileAction))
-        {
-            var transforms = (TransformGroup)button.RenderTransform;
-            var scale = (ScaleTransform)transforms.Children[0];
-            var offset = (TranslateTransform)transforms.Children[1];
-            double x = Canvas.GetLeft(button) + button.Width / 2 - RevealOrigin.X;
-            double y = Canvas.GetTop(button) + button.Height / 2 - RevealOrigin.Y;
-            TimeSpan delay = TimeSpan.FromMilliseconds(i++ * 22);
-            button.IsHitTestVisible = _reduce;
-            if (_reduce) continue;
-            DoubleAnimation Motion(double from, double to) => new(from, to, TimeSpan.FromMilliseconds(360))
-            { BeginTime = delay, EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
-            offset.BeginAnimation(TranslateTransform.XProperty, Motion(-x * .82, 0));
-            var reveal = Motion(-y * .82, 0);
-            reveal.Completed += (_, _) => button.IsHitTestVisible = true;
-            offset.BeginAnimation(TranslateTransform.YProperty, reveal);
-            scale.BeginAnimation(ScaleTransform.ScaleXProperty, Motion(.6, 1));
-            scale.BeginAnimation(ScaleTransform.ScaleYProperty, Motion(.6, 1));
-            button.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)) { BeginTime = delay });
         }
     }
 
     private void SetDetailsPresentation(bool details)
     {
+        ResizePresentation(details);
         Shell.Background = details ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(16, 24, 19)) : null;
         Shell.BorderThickness = new Thickness(details ? 1 : 0);
         Shell.Margin = new Thickness(details ? 8 : 0);
         SheetGrid.Margin = details ? new Thickness(28, 22, 28, 22) : new Thickness(0);
         Header.Visibility = FooterPanel.Visibility = details ? Visibility.Visible : Visibility.Collapsed;
-    }
-
-    private void Hover(ScaleTransform scale, double value)
-    {
-        if (_reduce) return;
-        var animation = new DoubleAnimation(value, TimeSpan.FromMilliseconds(150)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
-        scale.BeginAnimation(ScaleTransform.ScaleXProperty, animation); scale.BeginAnimation(ScaleTransform.ScaleYProperty, animation);
     }
 
     private static string Help(FileAction action) => action switch

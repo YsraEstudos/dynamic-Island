@@ -63,14 +63,12 @@ public partial class FileOrbitWindow
             if (!e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop)) return;
             button.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(49, 75, 59));
             button.BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(166, 244, 197));
-            if (button.RenderTransform is System.Windows.Media.TransformGroup transforms)
-                Hover((System.Windows.Media.ScaleTransform)transforms.Children[0], 1.07);
+            Hover(button, true);
         };
         button.DragLeave += (_, _) =>
         {
             button.ClearValue(Control.BackgroundProperty); button.ClearValue(Control.BorderBrushProperty);
-            if (button.RenderTransform is System.Windows.Media.TransformGroup transforms)
-                Hover((System.Windows.Media.ScaleTransform)transforms.Children[0], 1);
+            Hover(button, false);
         };
         button.DragOver += (_, e) =>
         {
@@ -81,7 +79,7 @@ public partial class FileOrbitWindow
         {
             if (!e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop) || !IsDragPreview) return;
             e.Handled = true; CompleteDrop();
-            if (action is { } chosen) SelectAction(chosen);
+            if (action is { } chosen) PickAction(button, chosen);
             else { StoreRequested?.Invoke(_paths); Close(); }
         };
     }
