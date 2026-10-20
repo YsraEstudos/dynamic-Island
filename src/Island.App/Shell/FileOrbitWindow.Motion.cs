@@ -21,9 +21,9 @@ public partial class FileOrbitWindow
     public void PlaceAt(Point anchor, Rect workArea)
     {
         _workArea = workArea;
-        Width = Math.Min(420, workArea.Width); Height = Math.Min(460, workArea.Height);
+        Width = Math.Min(420, workArea.Width); Height = Math.Min(520, workArea.Height);
         Left = Math.Clamp(anchor.X - Width / 2, workArea.Left, workArea.Right - Width);
-        Top = Math.Clamp(anchor.Y - 260 * Height / 560, workArea.Top, workArea.Bottom - Height);
+        Top = Math.Clamp(anchor.Y - 60 - 260 * (Height - 60) / 560, workArea.Top, workArea.Bottom - Height);
         double scale = Math.Min(Width / 520, Height / 560);
         RevealOrigin = new Point((anchor.X - Left - (Width - 520 * scale) / 2) / scale,
             (anchor.Y - Top - (Height - 560 * scale) / 2) / scale);
@@ -35,9 +35,9 @@ public partial class FileOrbitWindow
         {
             if (_radialBounds is not null) return;
             _radialBounds = new Rect(Left, Top, Width, Height);
-            double centerX = Left + Width / 2, centerY = Top + Height / 2;
-            Width = Math.Min(680, _workArea?.Width ?? 680); Height = Math.Min(620, _workArea?.Height ?? 620);
-            Left = centerX - Width / 2; Top = centerY - Height / 2;
+            double centerX = Left + Width / 2, capsuleTop = Top;
+            Width = Math.Min(576, _workArea?.Width ?? 576); Height = Math.Min(680, _workArea?.Height ?? 680);
+            Left = centerX - Width / 2; Top = capsuleTop;
             if (_workArea is { } area)
             {
                 Left = Math.Clamp(Left, area.Left, area.Right - Width);
@@ -83,22 +83,23 @@ public partial class FileOrbitWindow
             if (_reduce) continue;
             TimeSpan delay = TimeSpan.FromMilliseconds(index++ * 55);
             motion.Visual.Opacity = 0;
-            motion.Scale.ScaleX = motion.Scale.ScaleY = .5;
-            motion.Rotation.Angle = -26;
-            DoubleAnimation Move(double from, double to) => new(from, to, TimeSpan.FromMilliseconds(700))
+            motion.Scale.ScaleX = motion.Scale.ScaleY = .12;
+            motion.Rotation.Angle = -40;
+            DoubleAnimation Move(double from, double to) => new(from, to, TimeSpan.FromMilliseconds(800))
             { BeginTime = delay, EasingFunction = new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = .65 } };
-            var reveal = Move(-26, 0);
+            var reveal = Move(-40, 0);
             reveal.Completed += (_, _) => { if (!_closingAnimation) button.IsHitTestVisible = true; };
             motion.Rotation.BeginAnimation(RotateTransform.AngleProperty, reveal);
-            motion.Scale.BeginAnimation(ScaleTransform.ScaleXProperty, Move(.5, 1));
-            motion.Scale.BeginAnimation(ScaleTransform.ScaleYProperty, Move(.5, 1));
+            motion.Offset.BeginAnimation(TranslateTransform.YProperty, Move(-300, 0));
+            motion.Scale.BeginAnimation(ScaleTransform.ScaleXProperty, Move(.12, 1));
+            motion.Scale.BeginAnimation(ScaleTransform.ScaleYProperty, Move(.12, 1));
             motion.Visual.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(350)) { BeginTime = delay });
         }
         ResetHub();
         if (!_reduce)
         {
             var hubScale = new ScaleTransform(); Hub.RenderTransform = hubScale;
-            var enter = new DoubleAnimation(.4, 1, TimeSpan.FromMilliseconds(700))
+            var enter = new DoubleAnimation(.4, 1, TimeSpan.FromMilliseconds(800))
             { BeginTime = TimeSpan.FromMilliseconds(100), EasingFunction = new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = .7 } };
             hubScale.BeginAnimation(ScaleTransform.ScaleXProperty, enter); hubScale.BeginAnimation(ScaleTransform.ScaleYProperty, enter);
             Hub.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400)) { BeginTime = TimeSpan.FromMilliseconds(100) });
@@ -129,7 +130,10 @@ public partial class FileOrbitWindow
         {
             HubTitle.Text = FileOrbitActionVisuals.Label(action); HubDetail.Text = HubDescription(action);
             HubRing.Stroke = new SolidColorBrush(sector.Accent);
-            button.Foreground = System.Windows.Media.Brushes.White;
+            button.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(11, 12, 16));
+            HintText.Text = "↓   " + FileActionCatalog.Label(action);
+            HintPill.BorderBrush = new SolidColorBrush(sector.Accent);
+            AnimateHint(true);
         }
         else { button.ClearValue(System.Windows.Controls.Control.ForegroundProperty); ResetHub(); }
         if (_reduce) return;
@@ -148,8 +152,20 @@ public partial class FileOrbitWindow
 
     private void ResetHub()
     {
+        AnimateHint(false);
+        HintText.Text = "↓   Escolha uma ação";
+        HintPill.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(124, 140, 255));
         HubTitle.Text = "Escolha"; HubDetail.Text = "arraste até uma ação";
         HubRing.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromRgb(91, 140, 255));
+    }
+
+    private void AnimateHint(bool active)
+    {
+        double width = active ? 256 : 210, height = active ? 52 : 46;
+        if (_reduce) { HintPill.Width = width; HintPill.Height = height; return; }
+        var ease = new BackEase { Amplitude = .35, EasingMode = EasingMode.EaseOut };
+        HintPill.BeginAnimation(WidthProperty, new DoubleAnimation(Math.Max(210, HintPill.ActualWidth), width, TimeSpan.FromMilliseconds(700)) { EasingFunction = ease });
+        HintPill.BeginAnimation(HeightProperty, new DoubleAnimation(HintPill.ActualHeight, height, TimeSpan.FromMilliseconds(700)) { EasingFunction = ease });
     }
 
     private static string HubDescription(FileAction action) => action switch

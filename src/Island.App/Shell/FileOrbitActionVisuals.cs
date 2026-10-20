@@ -59,7 +59,7 @@ internal static class FileOrbitActionVisuals
         FileAction.Audio => "Áudio", FileAction.Extract => "Extrair", FileAction.CsvToXlsx => "XLSX", _ => "CSV"
     };
 
-    private static string GeometryFor(FileAction action) => action switch
+    internal static string GeometryFor(FileAction action) => action switch
     {
         FileAction.Rename => "M4,7 H13 M4,12 H10 M4,17 H8 M12,17 L18,11 L21,14 L15,20 L11,21 Z M17,12 L20,15",
         FileAction.Duplicates => "M8,8 H20 V21 H8 Z M4,16 H3 V3 H16 V4",

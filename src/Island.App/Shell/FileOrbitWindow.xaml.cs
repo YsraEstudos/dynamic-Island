@@ -36,11 +36,13 @@ public partial class FileOrbitWindow : Window
         string suggested = paths.Count == 1 ? Path.GetFileNameWithoutExtension(paths[0]) : "arquivos-" + DateTime.Now.ToString("yyyy-MM-dd");
         NameInput.Text = FileActionService.SafeName(suggested);
         BuildOrbit();
+        InitializeSheet();
         CloseButton.Click += (_, _) => Close();
         OrbitCloseButton.Click += (_, _) => Close();
         OrbitTrayButton.Click += (_, _) => { StoreRequested?.Invoke(_paths); Close(); };
         AttachActionDrop(OrbitTrayButton, null);
-        BackButton.Click += (_, _) => ShowOrbit();
+        BackButton.Click += (_, _) => ShowActionList();
+        RadialBackButton.Click += (_, _) => ShowOrbit();
         DestinationButton.Click += (_, _) => ChooseDestination();
         RunButton.Click += async (_, _) => await RunAction();
         CancelButton.Click += (_, _) => { _cancellation?.Cancel(); CancelButton.IsEnabled = false; StatusLabel.Text = "Cancelando…"; };
@@ -54,7 +56,7 @@ public partial class FileOrbitWindow : Window
             e.Cancel = true; _closeAfterCancel = true; _cancellation?.Cancel(); StatusLabel.Text = "Cancelando antes de fechar…";
         };
         Loaded += (_, _) => AnimateOrbit();
-        Deactivated += (_, _) => { if (!IsDragPreview && _selected is null && !IsRunning) Close(); };
+        Deactivated += (_, _) => { if (!IsDragPreview && OrbitPanel.Visibility == Visibility.Visible && !IsRunning) Close(); };
     }
 
     private void BuildOrbit()
@@ -63,10 +65,9 @@ public partial class FileOrbitWindow : Window
         for (int i = 0; i < actions.Count; i++)
         {
             FileAction action = actions[i];
-            string[] palette = ["#5B8CFF", "#A66BFF", "#14B8A6", "#F5A300", "#FF7A45", "#FF4D6D", "#36BFF1"];
             var button = new RadialSectorButton { Tag = action, Width = 520, Height = 520,
                 Sector = RadialSectorButton.CreateSector(i, actions.Count), Angle = i * 360d / actions.Count,
-                Accent = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(palette[i % palette.Length]),
+                Accent = AccentFor(action),
                 ToolTip = FileActionCatalog.Label(action) + "\n" + Help(action), Style = (Style)FindResource("OrbitActionStyle") };
             button.Content = FileOrbitActionVisuals.Create(button, action);
             System.Windows.Automation.AutomationProperties.SetName(button, FileActionCatalog.Label(action));
@@ -83,12 +84,23 @@ public partial class FileOrbitWindow : Window
 
     private void SetDetailsPresentation(bool details)
     {
+        bool entering = details && _radialBounds is null;
         ResizePresentation(details);
-        Shell.Background = details ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(16, 24, 19)) : null;
+        SheetCloseButton.Visibility = details ? Visibility.Visible : Visibility.Collapsed;
+        Shell.Background = details ? new LinearGradientBrush(System.Windows.Media.Color.FromRgb(24, 26, 42), System.Windows.Media.Color.FromRgb(13, 14, 20), 65) : null;
         Shell.BorderThickness = new Thickness(details ? 1 : 0);
         Shell.Margin = new Thickness(details ? 8 : 0);
-        SheetGrid.Margin = details ? new Thickness(28, 22, 28, 22) : new Thickness(0);
+        SheetGrid.Margin = details ? new Thickness(22, 24, 22, 22) : new Thickness(0);
         Header.Visibility = FooterPanel.Visibility = details ? Visibility.Visible : Visibility.Collapsed;
+        if (entering && !_reduce)
+        {
+            Shell.RenderTransformOrigin = new Point(.5, 0);
+            var scale = new ScaleTransform(); Shell.RenderTransform = scale;
+            var ease = new BackEase { Amplitude = .4, EasingMode = EasingMode.EaseOut };
+            scale.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(.4, 1, TimeSpan.FromMilliseconds(700)) { EasingFunction = ease });
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(.08, 1, TimeSpan.FromMilliseconds(700)) { EasingFunction = ease });
+        }
+        else if (!details) Shell.RenderTransform = Transform.Identity;
     }
 
     private static string Help(FileAction action) => action switch
@@ -115,6 +127,7 @@ public partial class FileOrbitWindow : Window
     {
         if (IsRunning) return;
         _selected = null;
+        ActionListPanel.Visibility = ResultPanel.Visibility = DoneButton.Visibility = Visibility.Collapsed;
         SetDetailsPresentation(false);
         OrbitPanel.Visibility = Visibility.Visible;
         OptionsPanel.Visibility = DestinationPanel.Visibility = RunButton.Visibility = OpenButton.Visibility = Visibility.Collapsed;
@@ -126,7 +139,12 @@ public partial class FileOrbitWindow : Window
     private void SelectAction(FileAction action)
     {
         _selected = action;
+        ActionListPanel.Visibility = ResultPanel.Visibility = DoneButton.Visibility = Visibility.Collapsed;
         SetDetailsPresentation(true);
+        Header.Visibility = Visibility.Collapsed;
+        SetAccent(action);
+        ActionChip.Background = new SolidColorBrush(AccentFor(action));
+        ActionIcon.Data = Geometry.Parse(FileOrbitActionVisuals.GeometryFor(action));
         OrbitPanel.Visibility = Visibility.Collapsed;
         OptionsPanel.Visibility = DestinationPanel.Visibility = RunButton.Visibility = Visibility.Visible;
         TrayButton.Visibility = OpenButton.Visibility = Visibility.Collapsed;
@@ -150,17 +168,13 @@ public partial class FileOrbitWindow : Window
             _ => new[] { "jpg", "png", "webp" }
         };
         FormatInput.SelectedIndex = 0;
+        BuildFormatSegments();
         string? missing = FileTools.MissingFor(action);
         RunButton.IsEnabled = missing is null;
         StatusLabel.Text = missing ?? "Pronto. Os resultados serão salvos em uma pasta nova.";
         UpdatePreview();
-        if (!_reduce)
-        {
-            var offset = new TranslateTransform(0, 14);
-            OptionsPanel.RenderTransform = offset;
-            offset.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(220)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
-            OptionsPanel.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)));
-        }
+        AnimateSheet(OptionsPanel);
+
     }
 
     private void UpdatePreview()
@@ -214,23 +228,27 @@ public partial class FileOrbitWindow : Window
         _cancellation = new CancellationTokenSource();
         OptionsPanel.IsEnabled = DestinationPanel.IsEnabled = RunButton.IsEnabled = false;
         WorkProgress.Visibility = CancelButton.Visibility = Visibility.Visible;
+        ShowWork();
         CancelButton.IsEnabled = true; OpenButton.Visibility = Visibility.Collapsed;
         try
         {
             await new FileActionService().RunAsync(action, _paths, output, options,
-                new Progress<string>(text => StatusLabel.Text = text), _cancellation.Token);
+                new Progress<string>(text => { StatusLabel.Text = text; ResultDetail.Text = text; }), _cancellation.Token);
             _results = output;
             StatusLabel.Text = "Concluído · " + output;
             OpenButton.Visibility = Visibility.Visible;
+            FinishWork("Concluído", "✓", "Os resultados foram salvos em uma pasta nova.\n" + output);
         }
         catch (OperationCanceledException)
         {
             StatusLabel.Text = "Cancelado. Os arquivos incompletos deste lote foram descartados.";
+            FinishWork("Operação cancelada", "−", StatusLabel.Text);
             if (Directory.Exists(output)) { _results = output; OpenButton.Visibility = Visibility.Visible; }
         }
         catch (Exception ex)
         {
             StatusLabel.Text = "Não foi possível concluir: " + ex.Message;
+            FinishWork("Não foi possível concluir", "!", ex.Message);
             if (Directory.Exists(output)) { _results = output; OpenButton.Visibility = Visibility.Visible; }
         }
         finally
@@ -238,6 +256,7 @@ public partial class FileOrbitWindow : Window
             _cancellation.Dispose(); _cancellation = null;
             OptionsPanel.IsEnabled = DestinationPanel.IsEnabled = RunButton.IsEnabled = true;
             WorkProgress.Visibility = CancelButton.Visibility = Visibility.Collapsed;
+            RunButton.Visibility = DestinationPanel.Visibility = Visibility.Collapsed;
             if (_closeAfterCancel) Close();
         }
     }

@@ -58,16 +58,19 @@ public partial class IslandWindow
         var orbit = new FileOrbitWindow(existing, _settings().ReduceAnimations) { Owner = this };
         orbit.StoreRequested += files => _vm.Shelf.FileTray.Add(files);
         _fileOrbit = orbit;
-        orbit.Closed += (_, _) => { if (ReferenceEquals(_fileOrbit, orbit)) _fileOrbit = null; };
+        orbit.Closed += (_, _) => { if (ReferenceEquals(_fileOrbit, orbit)) { _fileOrbit = null; IslandShape.Opacity = 1; ClearFileDrag(); } };
         // Work in monitor coordinates, then convert physical pixels to WPF DIPs.
         var area = System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)anchor.X, (int)anchor.Y)).WorkingArea;
         var source = PresentationSource.FromVisual(this);
         var fromDevice = source?.CompositionTarget?.TransformFromDevice ?? Matrix.Identity;
         var topLeft = fromDevice.Transform(new System.Windows.Point(area.Left, area.Top));
         var bottomRight = fromDevice.Transform(new System.Windows.Point(area.Right, area.Bottom));
-        var point = fromDevice.Transform(anchor);
+        // The preview capsule replaces the visible island at its existing position.
+        var point = fromDevice.Transform(IslandShape.PointToScreen(new System.Windows.Point(IslandShape.ActualWidth / 2, 0)));
+        point.Y += 60 + 260d * 460 / 560;
         orbit.PlaceAt(point, new Rect(topLeft, bottomRight));
         if (preview) orbit.BeginDragPreview();
         orbit.Show();
+        IslandShape.Opacity = 0;
     }
 }

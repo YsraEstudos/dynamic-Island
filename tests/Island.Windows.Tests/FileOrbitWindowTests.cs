@@ -23,7 +23,7 @@ public sealed class FileOrbitWindowTests
                 Assert.True(new Typeface(window.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal).TryGetGlyphTypeface(out var font));
                 Assert.Contains(font.FamilyNames.Values, name => name.Contains("Sora", StringComparison.OrdinalIgnoreCase));
                 Assert.InRange(window.Width, 410, 430);
-                Assert.InRange(window.Height, 450, 470);
+                Assert.InRange(window.Height, 510, 530);
                 var canvas = (Canvas)window.FindName("OrbitCanvas");
                 var buttons = canvas.Children.OfType<Button>().Where(b => b.Tag is Island.Core.Files.FileAction).ToArray();
                 if (!reduce)
@@ -39,9 +39,9 @@ public sealed class FileOrbitWindowTests
                 Assert.True(shell.Background is null || shell.Background.Opacity == 0);
                 Assert.True(shell.BorderThickness == new Thickness(0));
                 Assert.Null(canvas.Background);
-                var transparent = new RenderTargetBitmap(420, 460, 96, 96, PixelFormats.Pbgra32);
+                var transparent = new RenderTargetBitmap(420, 520, 96, 96, PixelFormats.Pbgra32);
                 transparent.Render(window);
-                byte[] rgba = new byte[420 * 460 * 4]; transparent.CopyPixels(rgba, 420 * 4, 0);
+                byte[] rgba = new byte[420 * 520 * 4]; transparent.CopyPixels(rgba, 420 * 4, 0);
                 Assert.Equal(0, rgba[3]); // No page background: only sectors and the reference's hub.
                 Assert.Equal("Escolha", ((TextBlock)window.FindName("HubTitle")).Text);
                 Assert.All(buttons, button =>
@@ -57,22 +57,29 @@ public sealed class FileOrbitWindowTests
                 Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("OptionsPanel")).Visibility);
                 Assert.True(((Button)window.FindName("RunButton")).IsEnabled);
                 Assert.False(window.IsRunning);
-                Assert.True(window.Width >= 640);
+                Assert.True(window.Width >= 560);
                 if (!reduce) Pump(300);
                 window.UpdateLayout();
-                var bitmap = new RenderTargetBitmap(720, 640, 96, 96, PixelFormats.Pbgra32);
+                var bitmap = new RenderTargetBitmap(576, 680, 96, 96, PixelFormats.Pbgra32);
                 bitmap.Render(window);
-                var bytes = new byte[720 * 640 * 4]; bitmap.CopyPixels(bytes, 720 * 4, 0);
+                var bytes = new byte[576 * 680 * 4]; bitmap.CopyPixels(bytes, 576 * 4, 0);
                 Assert.Contains(bytes, b => b > 180);
                 if (Environment.GetEnvironmentVariable("FILE_ORBIT_PREVIEW_DIR") is { Length: > 0 } dir)
                 {
                     Directory.CreateDirectory(dir);
                     var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
                     using var stream = File.Create(Path.Combine(dir, "file-orbit-options.png")); encoder.Save(stream);
-                    ((Button)window.FindName("BackButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); window.UpdateLayout();
+                    ((Button)window.FindName("BackButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                    Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("ActionListPanel")).Visibility);
+                    if (!reduce) Pump(700);
+                    window.UpdateLayout();
+                    var list = new RenderTargetBitmap(576, 680, 96, 96, PixelFormats.Pbgra32); list.Render(window);
+                    var listEncoder = new PngBitmapEncoder(); listEncoder.Frames.Add(BitmapFrame.Create(list));
+                    using (var listStream = File.Create(Path.Combine(dir, "file-orbit-actions.png"))) listEncoder.Save(listStream);
+                    ((Button)window.FindName("RadialBackButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); window.UpdateLayout();
                     if (!reduce) Pump(1150);
-                    Assert.Equal(420, window.Width); Assert.Equal(460, window.Height);
-                    var orbit = new RenderTargetBitmap(420, 460, 96, 96, PixelFormats.Pbgra32); orbit.Render(window);
+                    Assert.Equal(420, window.Width); Assert.Equal(520, window.Height);
+                    var orbit = new RenderTargetBitmap(420, 520, 96, 96, PixelFormats.Pbgra32); orbit.Render(window);
                     var second = new PngBitmapEncoder(); second.Frames.Add(BitmapFrame.Create(orbit));
                     using var other = File.Create(Path.Combine(dir, "file-orbit.png")); second.Save(other);
                     // A checkerboard preview makes the verified alpha channel visible in image viewers.
@@ -82,8 +89,8 @@ public sealed class FileOrbitWindowTests
                     tiles.Children.Add(new GeometryDrawing(System.Windows.Media.Brushes.LightGray, null, new RectangleGeometry(new Rect(12, 12, 12, 12))));
                     var checker = new DrawingBrush(tiles) { TileMode = TileMode.Tile, Viewport = new Rect(0, 0, 24, 24), ViewportUnits = BrushMappingMode.Absolute };
                     var visual = new DrawingVisual();
-                    using (var drawing = visual.RenderOpen()) { drawing.DrawRectangle(checker, null, new Rect(0, 0, 420, 460)); drawing.DrawImage(orbit, new Rect(0, 0, 420, 460)); }
-                    var preview = new RenderTargetBitmap(420, 460, 96, 96, PixelFormats.Pbgra32); preview.Render(visual);
+                    using (var drawing = visual.RenderOpen()) { drawing.DrawRectangle(checker, null, new Rect(0, 0, 420, 520)); drawing.DrawImage(orbit, new Rect(0, 0, 420, 520)); }
+                    var preview = new RenderTargetBitmap(420, 520, 96, 96, PixelFormats.Pbgra32); preview.Render(visual);
                     var checkedEncoder = new PngBitmapEncoder(); checkedEncoder.Frames.Add(BitmapFrame.Create(preview));
                     using var checkedStream = File.Create(Path.Combine(dir, "file-orbit-transparency.png")); checkedEncoder.Save(checkedStream);
                     buttons[1].RaiseEvent(new System.Windows.Input.MouseEventArgs(System.Windows.Input.Mouse.PrimaryDevice, 0)
@@ -91,9 +98,9 @@ public sealed class FileOrbitWindowTests
                     if (!reduce) Pump(400);
                     window.UpdateLayout();
                     Assert.Equal("Duplicados", ((TextBlock)window.FindName("HubTitle")).Text);
-                    var highlighted = new RenderTargetBitmap(420, 460, 96, 96, PixelFormats.Pbgra32); highlighted.Render(window);
-                    using (var drawing = visual.RenderOpen()) { drawing.DrawRectangle(checker, null, new Rect(0, 0, 420, 460)); drawing.DrawImage(highlighted, new Rect(0, 0, 420, 460)); }
-                    var highlightedPreview = new RenderTargetBitmap(420, 460, 96, 96, PixelFormats.Pbgra32); highlightedPreview.Render(visual);
+                    var highlighted = new RenderTargetBitmap(420, 520, 96, 96, PixelFormats.Pbgra32); highlighted.Render(window);
+                    using (var drawing = visual.RenderOpen()) { drawing.DrawRectangle(checker, null, new Rect(0, 0, 420, 520)); drawing.DrawImage(highlighted, new Rect(0, 0, 420, 520)); }
+                    var highlightedPreview = new RenderTargetBitmap(420, 520, 96, 96, PixelFormats.Pbgra32); highlightedPreview.Render(visual);
                     var highlightedEncoder = new PngBitmapEncoder(); highlightedEncoder.Frames.Add(BitmapFrame.Create(highlightedPreview));
                     using var highlightedStream = File.Create(Path.Combine(dir, "file-orbit-highlight.png")); highlightedEncoder.Save(highlightedStream);
                 }
@@ -157,6 +164,8 @@ public sealed class FileOrbitWindowTests
                 var detailBounds = new Rect(window.Left, window.Top, window.Width, window.Height);
                 Assert.True(work.Contains(detailBounds), $"Expected {work} to contain {detailBounds}");
                 ((Button)window.FindName("BackButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("ActionListPanel")).Visibility);
+                ((Button)window.FindName("RadialBackButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 Assert.Equal(radial, new Rect(window.Left, window.Top, window.Width, window.Height));
             }
             finally { window.Close(); }
@@ -209,6 +218,8 @@ public sealed class FileOrbitWindowTests
                 Assert.False(window.IsRunning);
                 Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("OptionsPanel")).Visibility);
                 ((Button)window.FindName("BackButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("ActionListPanel")).Visibility);
+                ((Button)window.FindName("RadialBackButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 if (!reduce) Pump(1150);
                 window.UpdateLayout();
                 Assert.Equal("Escolha", ((TextBlock)window.FindName("HubTitle")).Text);
@@ -216,6 +227,74 @@ public sealed class FileOrbitWindowTests
             }
             finally { window.Close(); if (window.IsVisible) Pump(500); }
         });
+    }
+
+    [Fact]
+    public void Sheet_tiles_segments_and_sliders_configure_without_executing()
+    {
+        WpfStaTestHost.Run(_ =>
+        {
+            var window = WpfStaTestHost.KeepOffscreen(new FileOrbitWindow(["photo.png"], true));
+            try
+            {
+                window.Show(); window.UpdateLayout();
+                var canvas = (Canvas)window.FindName("OrbitCanvas");
+                var images = canvas.Children.OfType<Button>().Single(b => b.Tag is Island.Core.Files.FileAction.Images);
+                images.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                var segments = (System.Windows.Controls.Primitives.UniformGrid)window.FindName("FormatSegments");
+                Assert.Equal(3, segments.Children.Count);
+                ((Button)segments.Children[2]).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Assert.Equal("webp", ((ComboBox)window.FindName("FormatInput")).SelectedItem);
+                ((Slider)window.FindName("WidthSlider")).Value = 1280;
+                ((Slider)window.FindName("QualitySlider")).Value = 64;
+                Assert.Equal("1280", ((TextBox)window.FindName("WidthInput")).Text);
+                Assert.Equal("64", ((TextBox)window.FindName("QualityInput")).Text);
+                ((Button)window.FindName("BackButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                var tiles = (System.Windows.Controls.Primitives.UniformGrid)window.FindName("ActionTiles");
+                Assert.Equal(3, tiles.Columns); Assert.Equal(7, tiles.Children.Count);
+                ((Button)tiles.Children.OfType<Button>().Single(b => b.Tag is Island.Core.Files.FileAction.Index)).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Assert.Contains("índice", ((TextBlock)window.FindName("ActionTitle")).Text, StringComparison.OrdinalIgnoreCase);
+                Assert.False(window.IsRunning);
+            }
+            finally { window.Close(); }
+        });
+    }
+
+    [Fact]
+    public void Sheet_progress_finishes_only_after_creating_a_real_zip()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "island-sheet-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        string input = Path.Combine(root, "example.txt"); File.WriteAllText(input, "arquivo original");
+        try
+        {
+            WpfStaTestHost.Run(_ =>
+            {
+                var window = WpfStaTestHost.KeepOffscreen(new FileOrbitWindow([input], true));
+                try
+                {
+                    window.Show(); window.UpdateLayout();
+                    typeof(FileOrbitWindow).GetField("_destination", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.SetValue(window, root);
+                    var canvas = (Canvas)window.FindName("OrbitCanvas");
+                    canvas.Children.OfType<Button>().Single(b => b.Tag is Island.Core.Files.FileAction.Package).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                    Assert.False(window.IsRunning);
+                    ((Button)window.FindName("RunButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                    for (int i = 0; i < 100 && window.IsRunning; i++) Pump(50);
+                    Assert.False(window.IsRunning);
+                    Assert.Equal("Concluído", ((TextBlock)window.FindName("ResultTitle")).Text);
+                    Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("ResultPanel")).Visibility);
+                    Assert.Equal(Visibility.Visible, ((Button)window.FindName("OpenButton")).Visibility);
+                    string zip = Assert.Single(Directory.GetFiles(root, "*.zip", SearchOption.AllDirectories));
+                    using var archive = System.IO.Compression.ZipFile.OpenRead(zip);
+                    Assert.Equal("example.txt", Assert.Single(archive.Entries).Name);
+                    Assert.Equal("arquivo original", File.ReadAllText(input));
+                    ((Button)window.FindName("AnotherActionButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                    Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("ActionListPanel")).Visibility);
+                }
+                finally { window.Close(); }
+            });
+        }
+        finally { Directory.Delete(root, true); }
     }
 
     private static void Pump(int milliseconds)

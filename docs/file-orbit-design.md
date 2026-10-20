@@ -2,9 +2,17 @@
 
 Solicitação: desenhar e implementar diretamente, sem confirmação intermediária.
 
-A ilha aceita arquivos e pastas em qualquer modo visível. Ao arrastar sobre ela, um menu circular surge no ponto de entrada, limitado à área útil do monitor. O desenho atual reproduz o arquivo **Radial Drop.html** fornecido: setores arredondados, ícone e rótulo dentro de cada fatia, centro informativo e cores por ação. O desktop permanece visível fora da roda e entre as fatias, sem fundo de página ou grade. É possível soltar diretamente em uma ação ou soltar na ilha e escolher depois. Soltar fora ou cancelar o arrasto dispensa a prévia. Reduzir animações elimina movimentos e partículas. Escape e Fechar dispensam o menu.
+A ilha aceita arquivos e pastas em qualquer modo visível. Ao arrastar sobre ela, um menu circular surge no ponto de entrada, limitado à área útil do monitor. O desenho atual segue **Ilha de arquivos_ painel de ações.html** fornecido: setores arredondados, ícone e rótulo dentro de cada fatia, centro informativo e cores por ação. O desktop permanece visível fora da roda e entre as fatias, sem fundo de página ou grade. É possível soltar diretamente em uma ação ou soltar na ilha e escolher depois. Soltar fora ou cancelar o arrasto dispensa a prévia. Reduzir animações elimina movimentos e partículas. Escape e Fechar dispensam o menu.
 
 Escolher uma ação abre opções explícitas, lista dos arquivos e Executar. Selecionar nunca executa. Trabalho em segundo plano, cancelamento e status mantêm a interface responsiva. Resultados vão para uma pasta nova escolhida pelo usuário; originais não são alterados. Renomeação em lote produz cópias com prévia de nomes. ZIP preserva pastas; extração rejeita caminhos externos e links. Duplicados são relatados, nunca apagados.
+
+## Painel atual: Ilha de arquivos
+
+Cápsula de indicação na posição da ilha, com estados de 210 × 46 e 256 × 52 DIP e acento da ação sob o ponteiro. A ilha original fica invisível durante o painel e volta ao fechar. Radial transparente de 420 × 520 DIP (incluindo cápsula e bandeja); entrada em escala 0,12, rotação −40° e deslocamento vertical −300, durante 800 ms com 55 ms entre setores. A fatia ativa usa texto escuro, conforme o novo HTML.
+
+Escolher abre uma superfície arredondada de até 576 × 680 DIP, limitada ao monitor, com expansão elástica a partir da cápsula. Todas as ações abre uma grade de três colunas, com chips coloridos e cartões que sobem no hover. É possível voltar ao radial. Formatos são seletores segmentados; largura e qualidade têm sliders e valores editáveis. A prévia usa nomes reais, tamanho dos arquivos e miniatura local quando suportada. O botão Executar continua sendo obrigatório.
+
+O progresso usa atividade indeterminada e mensagens reais do serviço, sem porcentagem ou redução de tamanho inventadas. Conclusão, cancelamento e falha têm estados próprios; abrir resultados e fazer outra ação ficam disponíveis após o processamento. Os exemplos de link público e opções sem suporte no núcleo não são oferecidos como operações funcionais. Fonte Sora incorporada, transparência no radial e redução de animações preservadas. O HTML foi usado como referência estática de desenho, sem executar seu script.
 
 ## Implementação
 
@@ -13,7 +21,7 @@ Escolher uma ação abre opções explícitas, lista dos arquivos e Executar. Se
 3. `FileOrbitWindow`: seletor radial, opções por operação, destino, progresso e cancelamento. Arrasto da ilha integrado por partial separado, preservando widgets e trabalho local.
 4. Verificação: testes do núcleo, testes WPF renderizados, conversões reais FFmpeg e suíte da solução. Registrar limites de homologação.
 
-## Réplica atual: Radial Drop
+## Referência anterior: Radial Drop
 
 Geometria portada do SVG: canvas lógico 520 × 520, centro (260,260), raios 105/245, recuo angular equivalente a 9 unidades, stroke 10 e junções arredondadas. O centro tem raio 84 e o anel pontilhado gira em 50 segundos. A janela usa 420 × 460 DIP, incluindo controles discretos da bandeja. O número de setores acompanha o lote real (quatro a sete); ícones e ações demonstrativas de e-mail/link/exclusão não substituem as funções existentes.
 
