@@ -110,6 +110,51 @@ public sealed class FileOrbitWindowTests
     }
 
     [Fact]
+    public void Preview_reveal_starts_on_the_island_rectangle_and_settles_on_the_hint_pill()
+    {
+        WpfStaTestHost.Run(_ =>
+        {
+            var window = WpfStaTestHost.KeepOffscreen(new FileOrbitWindow(["example.pdf"], false));
+            try
+            {
+                var work = new Rect(0, 0, 1920, 1080);
+                var anchor = new Point(960, 400);
+                double top = anchor.Y - 60 - 260 * (520 - 60) / 560;
+                window.PlaceAt(anchor, work, new Rect(anchor.X - 62, top, 124, 36));
+                window.Show(); window.UpdateLayout();
+                var pill = (Border)window.FindName("HintPill");
+                Point Corner() => pill.TranslatePoint(new Point(0, 0), window);
+                // The first frame sits on the island (124 x 36), not on the final 210 x 46 capsule.
+                Assert.InRange(Corner().X, 128, 150);
+                Assert.InRange(Corner().Y, -13, 2);
+                Assert.InRange(pill.ActualWidth, 123, 180);
+                Assert.InRange(pill.ActualHeight, 35, 44);
+                if (Environment.GetEnvironmentVariable("FILE_ORBIT_PREVIEW_DIR") is { Length: > 0 } dir)
+                {
+                    Directory.CreateDirectory(dir);
+                    int frame = 0;
+                    void Shot()
+                    {
+                        window.UpdateLayout();
+                        var bitmap = new RenderTargetBitmap((int)window.Width, (int)window.Height, 96, 96, PixelFormats.Pbgra32);
+                        bitmap.Render(window);
+                        var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                        using var stream = File.Create(Path.Combine(dir, $"reveal-{frame++:00}.png")); encoder.Save(stream);
+                    }
+                    Shot();
+                    foreach (int wait in new[] { 100, 120, 120, 160, 300, 400 }) { Pump(wait); Shot(); }
+                }
+                Pump(600); window.UpdateLayout();
+                Assert.InRange(Corner().X, 104, 106);
+                Assert.InRange(Corner().Y, 6, 8);
+                Assert.InRange(pill.ActualWidth, 209, 211);
+                Assert.InRange(pill.ActualHeight, 45, 47);
+            }
+            finally { window.Close(); if (window.IsVisible) Pump(500); }
+        });
+    }
+
+    [Fact]
     public void Drag_preview_does_not_activate_or_execute_and_drop_keeps_choices_open()
     {
         WpfStaTestHost.Run(_ =>

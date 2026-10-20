@@ -33,9 +33,11 @@ public partial class IslandWindow
             OpenFileOrbit(paths, PointToScreen(e.GetPosition(this)), preview: true);
     }
 
+    private void ClearDropHint() => IslandShape.BorderThickness = new Thickness(0);
+
     private void ClearFileDrag()
     {
-        IslandShape.BorderThickness = new Thickness(0);
+        ClearDropHint();
         _dragActive = false;
         UpdateInteraction(_vm.Mode);
     }
@@ -58,19 +60,38 @@ public partial class IslandWindow
         var orbit = new FileOrbitWindow(existing, _settings().ReduceAnimations) { Owner = this };
         orbit.StoreRequested += files => _vm.Shelf.FileTray.Add(files);
         _fileOrbit = orbit;
-        orbit.Closed += (_, _) => { if (ReferenceEquals(_fileOrbit, orbit)) { _fileOrbit = null; IslandShape.Opacity = 1; ClearFileDrag(); } };
+        // The island fades back in under the menu's own exit motion, so the two windows cross-fade.
+        orbit.DismissStarted += () => { if (ReferenceEquals(_fileOrbit, orbit)) ShowIsland(); };
+        orbit.Closed += (_, _) => { if (ReferenceEquals(_fileOrbit, orbit)) { _fileOrbit = null; ClearFileDrag(); ShowIsland(); } };
         // Work in monitor coordinates, then convert physical pixels to WPF DIPs.
         var area = System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)anchor.X, (int)anchor.Y)).WorkingArea;
         var source = PresentationSource.FromVisual(this);
         var fromDevice = source?.CompositionTarget?.TransformFromDevice ?? Matrix.Identity;
         var topLeft = fromDevice.Transform(new System.Windows.Point(area.Left, area.Top));
         var bottomRight = fromDevice.Transform(new System.Windows.Point(area.Right, area.Bottom));
-        // The preview capsule replaces the visible island at its existing position.
+        // The preview capsule starts exactly over the visible island, then grows out of it.
+        var islandTopLeft = fromDevice.Transform(IslandShape.PointToScreen(new System.Windows.Point(0, 0)));
+        var islandBottomRight = fromDevice.Transform(IslandShape.PointToScreen(
+            new System.Windows.Point(IslandShape.ActualWidth, IslandShape.ActualHeight)));
         var point = fromDevice.Transform(IslandShape.PointToScreen(new System.Windows.Point(IslandShape.ActualWidth / 2, 0)));
         point.Y += 60 + 260d * 460 / 560;
-        orbit.PlaceAt(point, new Rect(topLeft, bottomRight));
+        orbit.PlaceAt(point, new Rect(topLeft, bottomRight), new Rect(islandTopLeft, islandBottomRight));
         if (preview) orbit.BeginDragPreview();
         orbit.Show();
-        IslandShape.Opacity = 0;
+        HideIsland();
+    }
+
+    private void HideIsland()
+    {
+        if (_settings().ReduceAnimations) _transitions.SnapRootOpacity(0.0);
+        else _transitions.FadeRoot(0.0, null);
+    }
+
+    private void ShowIsland()
+    {
+        ClearDropHint();
+        if (_vm.Suspended) return;
+        if (_settings().ReduceAnimations) _transitions.SnapRootOpacity(1.0);
+        else _transitions.FadeRoot(1.0, null);
     }
 }

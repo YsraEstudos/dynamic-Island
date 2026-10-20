@@ -24,6 +24,8 @@ public partial class FileOrbitWindow : Window
     public bool IsRunning => _cancellation is not null;
     public Point RevealOrigin { get; set; } = new(260, 260);
     public event Action<IReadOnlyList<string>>? StoreRequested;
+    /// <summary>The exit motion started: the island behind the menu can fade back in while the menu fades out.</summary>
+    public event Action? DismissStarted;
 
     public FileOrbitWindow(IReadOnlyList<string> paths, bool reduceAnimations)
     {
@@ -55,7 +57,7 @@ public partial class FileOrbitWindow : Window
             if (!IsRunning) { AnimateClose(e); return; }
             e.Cancel = true; _closeAfterCancel = true; _cancellation?.Cancel(); StatusLabel.Text = "Cancelando antes de fechar…";
         };
-        Loaded += (_, _) => AnimateOrbit();
+        Loaded += (_, _) => AnimateReveal();
         Deactivated += (_, _) => { if (!IsDragPreview && OrbitPanel.Visibility == Visibility.Visible && !IsRunning) Close(); };
     }
 

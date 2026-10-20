@@ -112,7 +112,7 @@
     </Border>
     <Viewbox Grid.Row="1" Stretch="Uniform"><Canvas x:Name="OrbitCanvas" Width="520" Height="560">
      <Ellipse x:Name="OrbitDecoration" Width="512" Height="512" Canvas.Left="4" Canvas.Top="4" Stroke="#26FFFFFF" StrokeThickness="2" StrokeDashArray="1 5" StrokeDashCap="Round" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5"/>
-     <Grid x:Name="Hub" Width="168" Height="168" Canvas.Left="176" Canvas.Top="176" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5">
+     <Grid x:Name="Hub" Width="168" Height="168" Canvas.Left="176" Canvas.Top="176" Panel.ZIndex="4" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5">
       <Ellipse Fill="#191B20"/>
       <Ellipse x:Name="HubRing" Stroke="#5B8CFF" StrokeThickness="2" Opacity="0.85"/>
       <StackPanel VerticalAlignment="Center" Margin="12,0">
