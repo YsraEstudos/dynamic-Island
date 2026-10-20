@@ -53,27 +53,23 @@
    </ControlTemplate></Setter.Value></Setter>
   </Style>
  </Window.Resources>
- <Border x:Name="Shell" Margin="8" CornerRadius="32" BorderBrush="#3B5042" BorderThickness="1" Background="#101813">
-  <Grid Margin="28,22">
+ <Border x:Name="Shell" CornerRadius="32" BorderBrush="#3B5042" BorderThickness="0">
+  <Grid x:Name="SheetGrid">
    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-   <Grid x:Name="Header" Margin="0,0,0,10">
+   <Grid x:Name="Header" Margin="0,0,0,10" Visibility="Collapsed">
     <StackPanel><TextBlock Text="DYNAMIC ISLAND  /  ARQUIVOS" FontSize="10" Foreground="#A6F4C5"/>
      <TextBlock x:Name="Heading" Text="O que vamos fazer?" FontSize="27" FontWeight="SemiBold" Margin="0,8,0,2"/>
      <TextBlock x:Name="BatchLabel" FontSize="12" Foreground="#A4B7AA" TextTrimming="CharacterEllipsis" MaxWidth="560" HorizontalAlignment="Left"/>
     </StackPanel>
     <Button x:Name="CloseButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="11,7" ToolTip="Fechar (Esc)" AutomationProperties.Name="Fechar"/>
    </Grid>
-   <Grid Grid.Row="1" x:Name="OrbitPanel">
-    <Viewbox Stretch="Uniform"><Canvas x:Name="OrbitCanvas" Width="640" Height="388">
-     <Ellipse Width="386" Height="278" Canvas.Left="127" Canvas.Top="48" Stroke="#2A4434" StrokeThickness="1" StrokeDashArray="2 8"/>
-     <Ellipse Width="220" Height="220" Canvas.Left="210" Canvas.Top="78">
-      <Ellipse.Fill><RadialGradientBrush><GradientStop Color="#244C35" Offset="0"/><GradientStop Color="#00101813" Offset="1"/></RadialGradientBrush></Ellipse.Fill>
-     </Ellipse>
-     <StackPanel Width="160" Canvas.Left="240" Canvas.Top="126" IsHitTestVisible="False">
-      <Path Data="M 22,0 L 42,30 L 22,62 L 2,30 Z M 22,0 L 22,62 M 2,30 L 42,30" Stroke="#BDFFD4" StrokeThickness="1.5" Fill="#345A40" Width="44" Height="64" HorizontalAlignment="Center"/>
-      <TextBlock x:Name="CenterCount" Text="SEU LOTE" HorizontalAlignment="Center" FontSize="11" Foreground="#A6F4C5" Margin="0,13,0,0"/>
-      <TextBlock Text="Escolha uma ação" HorizontalAlignment="Center" FontSize="11" Foreground="#A4B7AA" Margin="0,4,0,0"/>
-     </StackPanel>
+   <Grid Grid.Row="0" Grid.RowSpan="3" x:Name="OrbitPanel">
+    <Viewbox Stretch="Uniform"><Canvas x:Name="OrbitCanvas" Width="720" Height="640">
+     <TextBlock x:Name="CenterCount" Canvas.Left="160" Canvas.Top="568" Width="400" TextAlignment="Center" FontSize="12" Foreground="#F0F5F2" IsHitTestVisible="False">
+      <TextBlock.Effect><DropShadowEffect BlurRadius="6" ShadowDepth="1" Opacity="1"/></TextBlock.Effect>
+     </TextBlock>
+     <Button x:Name="OrbitTrayButton" Content="Guardar na bandeja" Canvas.Left="230" Canvas.Top="590" Width="190" Height="38"/>
+     <Button x:Name="OrbitCloseButton" Content="✕" Canvas.Left="430" Canvas.Top="590" Width="42" Height="38" ToolTip="Fechar (Esc)" AutomationProperties.Name="Fechar menu radial"/>
     </Canvas></Viewbox>
    </Grid>
    <ScrollViewer Grid.Row="1" x:Name="OptionsPanel" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,12,0,6">
@@ -103,7 +99,7 @@
      <TextBlock x:Name="InputPreview" FontSize="12" Foreground="#C8D6CD" TextWrapping="Wrap" MaxHeight="96" TextTrimming="CharacterEllipsis"/>
     </StackPanel>
    </ScrollViewer>
-   <StackPanel Grid.Row="2">
+   <StackPanel Grid.Row="2" x:Name="FooterPanel" Visibility="Collapsed">
     <Border Height="1" Background="#304036" Margin="0,6,0,14"/>
     <Grid x:Name="DestinationPanel" Visibility="Collapsed" Margin="0,0,0,12">
      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>

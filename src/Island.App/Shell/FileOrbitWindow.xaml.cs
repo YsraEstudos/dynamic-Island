@@ -22,6 +22,7 @@ public partial class FileOrbitWindow : Window
     private string? _results;
     private bool _closeAfterCancel;
     public bool IsRunning => _cancellation is not null;
+    public Point RevealOrigin { get; set; } = new(360, 320);
     public event Action<IReadOnlyList<string>>? StoreRequested;
 
     public FileOrbitWindow(IReadOnlyList<string> paths, bool reduceAnimations)
@@ -31,11 +32,14 @@ public partial class FileOrbitWindow : Window
         _destination = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
         DestinationLabel.Text = _destination;
         BatchLabel.Text = $"{paths.Count} {(paths.Count == 1 ? "item" : "itens")} · " + string.Join(", ", paths.Take(3).Select(Path.GetFileName));
-        CenterCount.Text = paths.Count == 1 ? "1 ITEM" : $"{paths.Count} ITENS";
+        CenterCount.Text = paths.Count == 1 ? Path.GetFileName(paths[0]) : $"{paths.Count} itens · Escolha uma ação";
         string suggested = paths.Count == 1 ? Path.GetFileNameWithoutExtension(paths[0]) : "arquivos-" + DateTime.Now.ToString("yyyy-MM-dd");
         NameInput.Text = FileActionService.SafeName(suggested);
         BuildOrbit();
         CloseButton.Click += (_, _) => Close();
+        OrbitCloseButton.Click += (_, _) => Close();
+        OrbitTrayButton.Click += (_, _) => { StoreRequested?.Invoke(_paths); Close(); };
+        AttachActionDrop(OrbitTrayButton, null);
         BackButton.Click += (_, _) => ShowOrbit();
         DestinationButton.Click += (_, _) => ChooseDestination();
         RunButton.Click += async (_, _) => await RunAction();
@@ -49,15 +53,8 @@ public partial class FileOrbitWindow : Window
             if (!IsRunning) return;
             e.Cancel = true; _closeAfterCancel = true; _cancellation?.Cancel(); StatusLabel.Text = "Cancelando antes de fechar…";
         };
-        Loaded += (_, _) =>
-        {
-            if (!_reduce)
-            {
-                var transform = new TranslateTransform(0, -12); Shell.RenderTransform = transform;
-                transform.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(320)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
-                Shell.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200)));
-            }
-        };
+        Loaded += (_, _) => AnimateOrbit();
+        Deactivated += (_, _) => { if (!IsDragPreview && _selected is null && !IsRunning) Close(); };
     }
 
     private void BuildOrbit()
@@ -68,17 +65,53 @@ public partial class FileOrbitWindow : Window
             FileAction action = actions[i];
             double angle = -Math.PI / 2 + i * Math.PI * 2 / actions.Count;
             var button = new Button { Content = FileActionCatalog.Label(action), Tag = action, Width = 174, Height = 44,
-                ToolTip = Help(action), RenderTransformOrigin = new Point(.5, .5) };
+                ToolTip = Help(action), RenderTransformOrigin = new Point(.5, .5),
+                Effect = new System.Windows.Media.Effects.DropShadowEffect { BlurRadius = 14, ShadowDepth = 3, Opacity = .3 } };
             System.Windows.Automation.AutomationProperties.SetName(button, FileActionCatalog.Label(action));
-            Canvas.SetLeft(button, 320 + Math.Cos(angle) * 224 - 87);
-            Canvas.SetTop(button, 190 + Math.Sin(angle) * 160 - 22);
+            Canvas.SetLeft(button, 360 + Math.Cos(angle) * 220 - 87);
+            Canvas.SetTop(button, 320 + Math.Sin(angle) * 220 - 22);
             button.Click += (_, _) => SelectAction(action);
-            var scale = new ScaleTransform(1, 1); button.RenderTransform = scale;
+            AttachActionDrop(button, action);
+            var scale = new ScaleTransform(1, 1);
+            button.RenderTransform = new TransformGroup { Children = { scale, new TranslateTransform() } };
             button.MouseEnter += (_, _) => Hover(scale, 1.045);
             button.MouseLeave += (_, _) => Hover(scale, 1);
             OrbitCanvas.Children.Add(button);
-            if (!_reduce) button.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(240)) { BeginTime = TimeSpan.FromMilliseconds(45 * i) });
         }
+    }
+
+    private void AnimateOrbit()
+    {
+        int i = 0;
+        foreach (var button in OrbitCanvas.Children.OfType<Button>().Where(b => b.Tag is FileAction))
+        {
+            var transforms = (TransformGroup)button.RenderTransform;
+            var scale = (ScaleTransform)transforms.Children[0];
+            var offset = (TranslateTransform)transforms.Children[1];
+            double x = Canvas.GetLeft(button) + button.Width / 2 - RevealOrigin.X;
+            double y = Canvas.GetTop(button) + button.Height / 2 - RevealOrigin.Y;
+            TimeSpan delay = TimeSpan.FromMilliseconds(i++ * 22);
+            button.IsHitTestVisible = _reduce;
+            if (_reduce) continue;
+            DoubleAnimation Motion(double from, double to) => new(from, to, TimeSpan.FromMilliseconds(360))
+            { BeginTime = delay, EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
+            offset.BeginAnimation(TranslateTransform.XProperty, Motion(-x * .82, 0));
+            var reveal = Motion(-y * .82, 0);
+            reveal.Completed += (_, _) => button.IsHitTestVisible = true;
+            offset.BeginAnimation(TranslateTransform.YProperty, reveal);
+            scale.BeginAnimation(ScaleTransform.ScaleXProperty, Motion(.6, 1));
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, Motion(.6, 1));
+            button.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)) { BeginTime = delay });
+        }
+    }
+
+    private void SetDetailsPresentation(bool details)
+    {
+        Shell.Background = details ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(16, 24, 19)) : null;
+        Shell.BorderThickness = new Thickness(details ? 1 : 0);
+        Shell.Margin = new Thickness(details ? 8 : 0);
+        SheetGrid.Margin = details ? new Thickness(28, 22, 28, 22) : new Thickness(0);
+        Header.Visibility = FooterPanel.Visibility = details ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void Hover(ScaleTransform scale, double value)
@@ -112,15 +145,18 @@ public partial class FileOrbitWindow : Window
     {
         if (IsRunning) return;
         _selected = null;
+        SetDetailsPresentation(false);
         OrbitPanel.Visibility = Visibility.Visible;
         OptionsPanel.Visibility = DestinationPanel.Visibility = RunButton.Visibility = OpenButton.Visibility = Visibility.Collapsed;
         TrayButton.Visibility = Visibility.Visible;
         StatusLabel.Text = "Os originais ficam intactos. Você escolhe onde salvar.";
+        AnimateOrbit();
     }
 
     private void SelectAction(FileAction action)
     {
         _selected = action;
+        SetDetailsPresentation(true);
         OrbitPanel.Visibility = Visibility.Collapsed;
         OptionsPanel.Visibility = DestinationPanel.Visibility = RunButton.Visibility = Visibility.Visible;
         TrayButton.Visibility = OpenButton.Visibility = Visibility.Collapsed;
@@ -148,6 +184,13 @@ public partial class FileOrbitWindow : Window
         RunButton.IsEnabled = missing is null;
         StatusLabel.Text = missing ?? "Pronto. Os resultados serão salvos em uma pasta nova.";
         UpdatePreview();
+        if (!_reduce)
+        {
+            var offset = new TranslateTransform(0, 14);
+            OptionsPanel.RenderTransform = offset;
+            offset.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(220)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
+            OptionsPanel.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)));
+        }
     }
 
     private void UpdatePreview()

@@ -2,7 +2,7 @@
 
 Solicitação: desenhar e implementar diretamente, sem confirmação intermediária.
 
-A ilha aceita arquivos e pastas em qualquer modo visível. Durante o arrasto, recebe um contorno verde; soltar abre uma janela da própria ilha, posicionada perto dela e limitada à área útil do monitor. Uma órbita de até oito ações contextualizadas circunda o lote. O verde jade indica seleção, sobre superfícies pretas, texto branco e bordas sutis. Entrada escalonada, expansão suave e realce de hover respeitam Reduzir animações. Escape e Fechar dispensam a janela.
+A ilha aceita arquivos e pastas em qualquer modo visível. Ao arrastar sobre ela, um menu circular surge no ponto de entrada, limitado à área útil do monitor. O menu é transparente: sem painel, moldura, véu, anel ou símbolo central. Somente as ações individuais têm superfície para leitura sobre o desktop. Elas se expandem a partir do centro com deslocamento, escala e entrada escalonada; hover e arrasto realçam o alvo. É possível soltar diretamente em uma ação ou soltar na ilha e escolher depois. Soltar fora ou cancelar o arrasto dispensa a prévia. Reduzir animações elimina deslocamento/escala. Escape e Fechar dispensam o menu.
 
 Escolher uma ação abre opções explícitas, lista dos arquivos e Executar. Selecionar nunca executa. Trabalho em segundo plano, cancelamento e status mantêm a interface responsiva. Resultados vão para uma pasta nova escolhida pelo usuário; originais não são alterados. Renomeação em lote produz cópias com prévia de nomes. ZIP preserva pastas; extração rejeita caminhos externos e links. Duplicados são relatados, nunca apagados.
 

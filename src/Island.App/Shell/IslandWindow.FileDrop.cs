@@ -29,6 +29,8 @@ public partial class IslandWindow
         IslandShape.BorderThickness = new Thickness(2);
         _dragActive = true;
         UpdateInteraction(_vm.Mode);
+        if (_fileOrbit is null && e.Data.GetData(System.Windows.DataFormats.FileDrop) is string[] paths)
+            OpenFileOrbit(paths, PointToScreen(e.GetPosition(this)), preview: true);
     }
 
     private void ClearFileDrag()
@@ -43,6 +45,12 @@ public partial class IslandWindow
         if (!e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop)) return;
         ClearFileDrag(); e.Handled = true;
         if (_vm.Suspended || e.Data.GetData(System.Windows.DataFormats.FileDrop) is not string[] paths) return;
+        if (_fileOrbit is { IsDragPreview: true }) { _fileOrbit.CompleteDrop(); return; }
+        OpenFileOrbit(paths, PointToScreen(e.GetPosition(this)), preview: false);
+    }
+
+    private void OpenFileOrbit(string[] paths, System.Windows.Point anchor, bool preview)
+    {
         var existing = paths.Where(p => File.Exists(p) || Directory.Exists(p)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         if (existing.Length == 0) return;
         if (_fileOrbit is { IsRunning: true }) { _fileOrbit.Activate(); return; }
@@ -52,7 +60,6 @@ public partial class IslandWindow
         _fileOrbit = orbit;
         orbit.Closed += (_, _) => { if (ReferenceEquals(_fileOrbit, orbit)) _fileOrbit = null; };
         // Work in monitor coordinates, then convert physical pixels to WPF DIPs.
-        System.Windows.Point anchor = IslandShape.PointToScreen(new System.Windows.Point(IslandShape.ActualWidth / 2, IslandShape.ActualHeight));
         var area = System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)anchor.X, (int)anchor.Y)).WorkingArea;
         var source = PresentationSource.FromVisual(this);
         var fromDevice = source?.CompositionTarget?.TransformFromDevice ?? Matrix.Identity;
@@ -62,7 +69,12 @@ public partial class IslandWindow
         orbit.Width = Math.Min(720, bottomRight.X - topLeft.X);
         orbit.Height = Math.Min(640, bottomRight.Y - topLeft.Y);
         orbit.Left = Math.Clamp(point.X - orbit.Width / 2, topLeft.X, Math.Max(topLeft.X, bottomRight.X - orbit.Width));
-        orbit.Top = Math.Clamp(point.Y + 8, topLeft.Y, Math.Max(topLeft.Y, bottomRight.Y - orbit.Height));
+        orbit.Top = Math.Clamp(point.Y - orbit.Height / 2, topLeft.Y, Math.Max(topLeft.Y, bottomRight.Y - orbit.Height));
+        double scale = Math.Min(orbit.Width / 720, orbit.Height / 640);
+        orbit.RevealOrigin = new System.Windows.Point(
+            (point.X - orbit.Left - (orbit.Width - 720 * scale) / 2) / scale,
+            (point.Y - orbit.Top - (orbit.Height - 640 * scale) / 2) / scale);
+        if (preview) orbit.BeginDragPreview();
         orbit.Show();
     }
 }
