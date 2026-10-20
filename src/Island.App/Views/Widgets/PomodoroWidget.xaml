@@ -54,7 +54,19 @@
         </Grid>
 
         <!-- Row 4: minute ruler, drag to change the duration (only while stopped). -->
-        <wid:MinuteRuler x:Name="Ruler" Grid.Row="4" Height="44" HorizontalAlignment="Stretch" />
+        <Grid Grid.Row="4">
+            <wid:MinuteRuler x:Name="Ruler" Height="44" Margin="0,0,30,0" HorizontalAlignment="Stretch" />
+            <Border x:Name="SessionSummary" Margin="0,1,30,1" CornerRadius="8" Padding="7,2" Visibility="Collapsed">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="SessionProfileText" FontSize="9" Foreground="#AE9779" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock x:Name="SessionGoalText" FontSize="13" FontWeight="SemiBold" Foreground="#ECECF1"
+                               TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Border>
+            <wid:ShelfButton x:Name="SessionSetupButton" Width="26" Height="30" CornerRadius="8" LabelText="···"
+                             Background="{StaticResource PomodoroChipBrush}" LabelBrush="{StaticResource PomodoroOrangeBrush}"
+                             HorizontalAlignment="Right" VerticalAlignment="Center" ToolTip="Objetivo e perfis da sessão"/>
+        </Grid>
 
         <!-- Row 5: controls on the left, remaining time on the right. -->
         <Grid Grid.Row="5">

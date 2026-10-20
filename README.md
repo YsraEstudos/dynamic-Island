@@ -116,12 +116,21 @@ otes.json`.
 Widget da estante (adicione em Customize Shelf) que divide a porcentagem restante de cada IA pelos dias úteis até o reinício e mostra "Pode usar hoje" (sempre arredondado para baixo) e "Sobra no fim do dia". Botões **+1%** / **+5%** registram uso, ‹ › trocam de IA e **Abrir** abre a janela de edição (período, hora de reinício, dias sem uso, total, modo Consumido/Restante). Dados em `%LocalAppData%\DynamicIslandudgets.json`. Código: `Island.Core/Budgets` (cálculo e `BudgetBook`), `Island.Windows/Budgets` (JSON), `Island.App/Budgets` (janela) e `Views/Widgets/BudgetWidget`.
 
 ## Pomodoro com ciclos
-No widget Pomodoro, escolha a duração do foco (pílula **Focus** + régua) e do descanso (pílula **Break** + régua) e a quantidade de pomodoros na pílula **×N** (clique soma 1, a roda do mouse sobe/desce; 1 a 12). **Play** com o foco intacto inicia o plano: foco → descanso → foco … → descanso, tudo automático. A cada troca a ilha abre um aviso ("Hora do descanso" / "Volte ao foco" / "Sessão concluída"), mesmo se estiver recolhida ou com a estante aberta, e toca um som se o botão de som estiver ligado. Durante o plano a pílula mostra o progresso (2/3); Pause mantém o plano e Reset o cancela. Os pomodoros e descansos são contados com o relógio do sistema, sem deriva.
+No widget Pomodoro, ajuste a quantidade de pomodoros com **− / +** (1 a 24). **Play** com o foco intacto inicia o plano: foco → descanso → foco … → descanso. Pause mantém o plano e Reset o cancela. Os pomodoros e descansos são contados com o relógio do sistema, sem deriva.
+
+O botão **···** abre o painel de sessão:
+- **Objetivo:** opcional, salvo ao sair do campo ou fechar o painel; aparece no widget e na tela de retorno ao foco. O objetivo da sessão em andamento permanece até seu término.
+- **Perfis:** Estudo (25/5), Leitura (50/10) e Trabalho (45/15) são os modelos iniciais. É possível criar, editar e excluir perfis, mantendo pelo menos um. **Salvar perfil** aplica nome, tempos, sons e avanço; escolher um perfil existente prepara a sessão, sem iniciá-la.
+- **Avanço:** automático inicia a próxima etapa; manual mantém o ciclo aguardando **Iniciar**. A previsão manual mostra a duração das etapas, sem prometer um horário de término. Os ajustes ficam bloqueados durante uma sessão ativa ou aguardando a próxima etapa.
+
+Nos últimos 30 segundos do foco, o widget mostra um realce âmbar e um lembrete para concluir o raciocínio. Com ele recolhido, a ilha mostra um aviso curto, sem som. O aviso aparece uma vez por foco, sem repetir ao pausar e retomar; se o PC voltar da suspensão após o foco já ter terminado, segue direto para o descanso.
+
+A cada transição natural, uma tela de 6 segundos apresenta o descanso ou o retorno ao foco. **Esc** e **Fechar** dispensam a tela; no modo manual, somente **Iniciar** avança o cronômetro. Entradas, trocas de perfil e pulsação respeitam a opção de reduzir animações. Em **Settings → Sons do Pomodoro**, escolha e ouça Sino suave, Piano, Digital ou Café separadamente para foco e descanso. O botão de som do widget continua silenciando os avisos automáticos.
 
 A pílula **Pré** é um preparo fixo de 5 minutos para se organizar antes de estudar. Ela roda sozinha, fora do plano: ao terminar, a ilha avisa "Hora de estudar" e deixa o foco pronto para o Play.
 
 ## Pomodoro raivoso
-A pílula **Angry** inicia uma sessão de foco que não pode ser pausada, reiniciada ou editada. Enquanto ela roda, janelas de navegador cujo título mostra YouTube, X (Twitter), Instagram, Reddit ou conteúdo adulto (sites e termos pornográficos conhecidos) são minimizadas e aparece um aviso.
+A pílula **Angry** seleciona o modo; **Play** inicia uma sessão de foco que não pode ser pausada, reiniciada ou editada. No avanço manual, a espera e o descanso ficam livres; o próximo foco só volta a bloquear ao clicar em **Iniciar**. Enquanto o foco roda, janelas de navegador cujo título mostra YouTube, X (Twitter), Instagram, Reddit ou conteúdo adulto (sites e termos pornográficos conhecidos) são minimizadas e aparece um aviso.
 Só há duas saídas: o timer de foco terminar, ou digitar uma frase longa em português que não pode ser colada. A mesma frase é pedida ao escolher Quit no menu da ilha ou na bandeja enquanto a sessão estiver travada.
 
 ### Bloqueio do celular

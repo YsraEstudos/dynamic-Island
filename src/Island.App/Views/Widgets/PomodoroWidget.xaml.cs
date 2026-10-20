@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Windows;
+using System.Windows.Media.Animation;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -50,6 +52,7 @@ public partial class PomodoroWidget : UserControl
     private int _shownCycles = -1;
     private string _shownForecast = string.Empty;
     private Brush? _shownScheduleBrush;
+    private bool _warningAnimated;
     private DispatcherTimer? _forecastTimer;
 
     public PomodoroWidget(ShelfContext ctx)
@@ -81,6 +84,7 @@ public partial class PomodoroWidget : UserControl
         PlayButton.Click += OnPlayClicked;
         ResetButton.Click += () => _ctx.Pomodoro.Reset();
         ScheduleButton.Click += OnScheduleClicked;
+        SessionSetupButton.Click += () => { PomodoroSessionWindow.ShowFor(_ctx); Refresh(); };
         SoundButton.Click += ToggleSound;
 
         // Live drag: the timer's duration follows the ruler; release stores it in the settings for the phase.
@@ -112,6 +116,8 @@ public partial class PomodoroWidget : UserControl
         _ctx.Schedule.Changed -= OnScheduleChanged;
         _subscribed = false;
         _forecastTimer?.Stop();
+        SessionSummary.BeginAnimation(OpacityProperty, null);
+        _warningAnimated = false;
     }
 
     /// <summary>Arbitrary thread.</summary>
@@ -209,6 +215,7 @@ public partial class PomodoroWidget : UserControl
         bool rulerFixed = running || locked || planActive || phase == PomodoroPhase.Prep;
         Ruler.Editable = !rulerFixed;
         Ruler.Opacity = rulerFixed ? 0.4 : 1.0;
+        RefreshSessionSummary(timer, settings, running, planActive);
 
         // The forecast clock only needs ticking while the timer is stopped; a running timer refreshes on every change.
         if (_forecastTimer is not null)
@@ -217,6 +224,31 @@ public partial class PomodoroWidget : UserControl
             if (wantTicks && !_forecastTimer.IsEnabled) _forecastTimer.Start();
             else if (!wantTicks && _forecastTimer.IsEnabled) _forecastTimer.Stop();
         }
+    }
+
+    private void RefreshSessionSummary(PomodoroTimer timer, IslandSettings settings, bool running, bool planActive)
+    {
+        string goal = running || planActive || timer.Remaining < timer.PhaseDuration || timer.IsAwaitingNextPhase
+            ? timer.SessionGoal : settings.PomodoroGoal;
+        bool warning = timer.IsPreparingForBreak;
+        bool show = running || planActive || timer.IsAwaitingNextPhase || !string.IsNullOrWhiteSpace(goal);
+        Ruler.Visibility = show ? Visibility.Collapsed : Visibility.Visible;
+        SessionSummary.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+        var profile = settings.PomodoroProfiles.FirstOrDefault(p => p.Id == settings.PomodoroProfileId);
+        SessionProfileText.Text = timer.IsAwaitingNextPhase ? "AGUARDANDO INICIAR"
+            : warning ? "PAUSA EM INSTANTES" : (profile?.Name ?? "Personalizado").ToUpperInvariant();
+        SessionGoalText.Text = warning ? "Conclua seu raciocínio…"
+            : !string.IsNullOrWhiteSpace(goal) ? goal : timer.IsAwaitingNextPhase ? "Clique em ▶ para continuar"
+            : timer.Phase == PomodoroPhase.Break ? "Uma pausa para respirar" : "Foco em andamento";
+        SessionSummary.ToolTip = goal;
+        SessionSummary.Background = warning ? OrangeSoft : null;
+        PlayButton.ToolTip = timer.IsAwaitingNextPhase ? "Iniciar próxima etapa" : running ? "Pausar" : "Iniciar";
+        bool animate = warning && !settings.ReduceAnimations && SystemParameters.ClientAreaAnimation && IsLoaded;
+        if (animate == _warningAnimated) return;
+        _warningAnimated = animate;
+        SessionSummary.BeginAnimation(OpacityProperty, animate
+            ? new DoubleAnimation(0.55, 1, TimeSpan.FromSeconds(1.2)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever }
+            : null);
     }
 
     /// <summary>Completed pomodoros plus the fraction of the current one (a pomodoro is focus plus break).</summary>
@@ -241,6 +273,12 @@ public partial class PomodoroWidget : UserControl
     /// </summary>
     private void RefreshForecast(PomodoroTimer timer, IslandSettings settings, bool planActive, ScheduledStart? pending)
     {
+        if (planActive && !timer.AutoAdvance)
+        {
+            string manual = timer.IsAwaitingNextPhase ? "aguardando iniciar" : $"{FormatDuration(timer.TimeToFinish(settings.PomodoroCycles))} · manual";
+            if (_shownForecast != manual) { _shownForecast = manual; ForecastText.Text = manual; }
+            return;
+        }
         // A pending start shows its own time while nothing runs; otherwise the forecast of the work left.
         bool showSchedule = pending is not null && !timer.IsRunning && !planActive;
         TimeSpan rest = showSchedule ? TimeSpan.Zero : timer.TimeToFinish(settings.PomodoroCycles);

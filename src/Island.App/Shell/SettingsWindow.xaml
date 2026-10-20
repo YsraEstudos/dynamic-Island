@@ -523,6 +523,68 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Pomodoro sounds -->
+                <Border x:Name="PomodoroSoundCard" Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SettingsSectionHeader}" Text="SONS DO POMODORO"/>
+                        <Grid Margin="0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,12,0">
+                                <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Avisos sonoros"/>
+                                <TextBlock Style="{StaticResource SettingsRowDescription}" Text="Toques curtos ao trocar de etapa."/>
+                            </StackPanel>
+                            <ToggleButton x:Name="PomodoroSoundSwitch" Grid.Column="1"
+                                          Style="{StaticResource SettingsSwitch}" VerticalAlignment="Center"
+                                          AutomationProperties.Name="Avisos sonoros do Pomodoro"
+                                          IsChecked="{Binding PomodoroSoundEnabled, Mode=TwoWay}"/>
+                        </Grid>
+                        <Border Style="{StaticResource SettingsDivider}"/>
+                        <StackPanel Margin="0,10,0,4">
+                            <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Ao entrar no descanso"/>
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="PomodoroBreakSoundPicker"
+                                          Style="{StaticResource SettingsComboBox}" ItemContainerStyle="{StaticResource SettingsComboItem}"
+                                          ItemsSource="{Binding PomodoroSounds}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                                          AutomationProperties.Name="Som ao entrar no descanso"
+                                          SelectedValue="{Binding PomodoroBreakSound, Mode=TwoWay}"/>
+                                <Button x:Name="PreviewPomodoroBreakSoundButton" Grid.Column="1" Margin="10,0,0,0"
+                                        Content="Ouvir" Style="{StaticResource SettingsButton}"
+                                        AutomationProperties.Name="Ouvir som do descanso"
+                                        Command="{Binding PreviewPomodoroBreakSoundCommand}"/>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Margin="0,10,0,4">
+                            <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Ao voltar ao foco"/>
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="PomodoroFocusSoundPicker"
+                                          Style="{StaticResource SettingsComboBox}" ItemContainerStyle="{StaticResource SettingsComboItem}"
+                                          ItemsSource="{Binding PomodoroSounds}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                                          AutomationProperties.Name="Som ao voltar ao foco"
+                                          SelectedValue="{Binding PomodoroFocusSound, Mode=TwoWay}"/>
+                                <Button x:Name="PreviewPomodoroFocusSoundButton" Grid.Column="1" Margin="10,0,0,0"
+                                        Content="Ouvir" Style="{StaticResource SettingsButton}"
+                                        AutomationProperties.Name="Ouvir som do foco"
+                                        Command="{Binding PreviewPomodoroFocusSoundCommand}"/>
+                            </Grid>
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource SettingsRowDescription}" Margin="0,8,0,0"
+                                   Text="Escolher salva a preferência. Ouvir toca uma amostra, mesmo com os avisos silenciados."/>
+                        <TextBlock Style="{StaticResource SettingsRowDescription}" Text="{Binding SoundPreviewStatus}"
+                                   AutomationProperties.LiveSetting="Polite"/>
+                    </StackPanel>
+                </Border>
+
                 <!-- Quick notes -->
                 <Border Style="{StaticResource SettingsCard}">
                     <StackPanel>

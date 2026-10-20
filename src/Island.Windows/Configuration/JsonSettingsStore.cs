@@ -113,7 +113,7 @@ public sealed class JsonSettingsStore : ISettingsStore
     internal static IslandSettings Sanitize(IslandSettings s)
     {
         var d = new IslandSettings();
-        return s with
+        return Island.Core.Pomodoro.PomodoroProfiles.Normalize(s with
         {
             MonitorIndex = Math.Max(0, s.MonitorIndex),
             CompactWidth = Math.Clamp(s.CompactWidth, 40, 1000),
@@ -130,10 +130,12 @@ public sealed class JsonSettingsStore : ISettingsStore
             PomodoroFocusMinutes = Math.Clamp(s.PomodoroFocusMinutes, 1, 120),
             PomodoroBreakMinutes = Math.Clamp(s.PomodoroBreakMinutes, 1, 120),
             PomodoroCycles = Math.Clamp(s.PomodoroCycles, 1, 24),
+            PomodoroFocusSound = Enum.IsDefined(s.PomodoroFocusSound) ? s.PomodoroFocusSound : d.PomodoroFocusSound,
+            PomodoroBreakSound = Enum.IsDefined(s.PomodoroBreakSound) ? s.PomodoroBreakSound : d.PomodoroBreakSound,
             ClipboardMaxItems = Math.Clamp(s.ClipboardMaxItems, 1, 500),
             UpdateRepository = string.IsNullOrWhiteSpace(s.UpdateRepository) ? d.UpdateRepository : s.UpdateRepository.Trim(),
             WeatherCity = CleanCity(s.WeatherCity),
-        };
+        });
     }
 
     /// <summary>Trimmed and cut to <see cref="MaxWeatherCityLength"/>. A null city is empty.</summary>

@@ -142,6 +142,7 @@ public static class ServiceRegistration
 
         s.AddSingleton<SettingsApplier>();
         s.AddSingleton<PomodoroTimer>();
+        s.AddSingleton<Island.App.Audio.PomodoroSoundPlayer>();
         s.AddSingleton<AngryPomodoro>();
         s.AddSingleton(sp => new PomodoroSchedule(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<IIslandScheduler>(),

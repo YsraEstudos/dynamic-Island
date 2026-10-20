@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.IO;
-using System.Media;
+using Island.App.Audio;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -35,6 +35,7 @@ public partial class App : System.Windows.Application
     private SingleInstanceGuard? _guard;
     private ServiceProvider? _services;
     private IslandWindow? _window;
+    private PomodoroTransitionWindow? _pomodoroTransitionWindow;
     private SettingsWindow? _settingsWindow;
     private TrayIconService? _tray;
     private DispatcherTimer? _demoTimer;
@@ -202,8 +203,31 @@ public partial class App : System.Windows.Application
         pomodoro.Transitioned += t =>
         {
             coordinator.Post(new IslandEvent.NoticeRaised(PomodoroNotices.For(t)));
-            if (holder.Current.PomodoroSound) PlayPomodoroSound();
+            if (PomodoroSoundSelection.For(t, holder.Current) is { } sound)
+                sp.GetRequiredService<PomodoroSoundPlayer>().Play(sound);
+            Dispatcher.BeginInvoke(() =>
+            {
+                _pomodoroTransitionWindow?.Close();
+                if (t.PlanFinished || _window is not { IsLoaded: true }) return;
+                var interlude = new PomodoroTransitionWindow(t, holder.Current.ReduceAnimations, pomodoro.SessionGoal,
+                    t.AutoStarted ? null : () =>
+                    {
+                        if (pomodoro.IsAwaitingNextPhase && pomodoro.Phase == t.Next) pomodoro.Start();
+                    });
+                _pomodoroTransitionWindow = interlude;
+                interlude.Closed += (_, _) =>
+                {
+                    if (ReferenceEquals(_pomodoroTransitionWindow, interlude)) _pomodoroTransitionWindow = null;
+                };
+                interlude.ShowOnIslandMonitor(_window);
+            });
         };
+        pomodoro.BreakApproaching += () => Dispatcher.BeginInvoke(() =>
+        {
+            if (!pomodoro.IsPreparingForBreak) return;
+            if (coordinator.State.Mode == IslandMode.Expanded && holder.Current.ShelfWidgets.Contains("pomodoro")) return;
+            coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Pausa em 30 segundos", "Conclua seu raciocínio; a pausa está chegando.", "timer", Urgent: true)));
+        });
         var clipboard = sp.GetRequiredService<IClipboardService>();
         var history = sp.GetRequiredService<ClipboardHistory>();
         // Captures go through one background chain, in order, so screenshots are compressed off the clipboard thread.
@@ -287,13 +311,6 @@ public partial class App : System.Windows.Application
         if (!timer.PlanActive) return TimeSpan.Zero;
         var breakLength = TimeSpan.FromMinutes(Math.Clamp(settings.PomodoroBreakMinutes, PomodoroTimer.MinMinutes, PomodoroTimer.MaxMinutes));
         return timer.Remaining + breakLength;
-    }
-
-    /// <summary>Runs on the timer thread. Audio failures are logged and ignored: the toast still shows.</summary>
-    private static void PlayPomodoroSound()
-    {
-        try { SystemSounds.Asterisk.Play(); }
-        catch (Exception ex) { Log.Debug(ex, "Pomodoro sound failed to play"); }
     }
 
     /// <summary>Quit from the island menu or the tray. While an angry pomodoro is locked, the unlock dialog must release it first.</summary>
@@ -411,7 +428,8 @@ public partial class App : System.Windows.Application
             var phone = _services!.GetRequiredService<IPhoneBlockNotifier>();
             var updates = _services!.GetRequiredService<IUpdateService>();
             var svm = new SettingsViewModel(holder.Current, names, applier.Apply, (span, token) => phone.NotifyAsync(span, token),
-                () => CheckForUpdatesAsync(updates), () => holder.Current);
+                () => CheckForUpdatesAsync(updates), () => holder.Current,
+                _services!.GetRequiredService<PomodoroSoundPlayer>().Play);
             _settingsWindow = new SettingsWindow(svm);
             // Closing really closes it, so its visual tree is freed instead of sitting hidden for the app's lifetime.
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;
@@ -520,6 +538,7 @@ public partial class App : System.Windows.Application
         _tray?.Dispose();
         _quickNotesWindowManager?.CloseForShutdown();
         _settingsWindow?.CloseForShutdown();
+        _pomodoroTransitionWindow?.Close();
         _window?.Close();
         _services?.Dispose();
         _guard?.Dispose();

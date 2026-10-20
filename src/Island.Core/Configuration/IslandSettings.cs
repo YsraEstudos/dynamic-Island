@@ -47,6 +47,12 @@ public sealed record IslandSettings
     /// <summary>Number of pomodoros (focus + break) run back to back when Play starts a fresh focus.</summary>
     public int PomodoroCycles { get; init; } = 1;
     public bool PomodoroSound { get; init; } = true;
+    public string PomodoroGoal { get; init; } = string.Empty;
+    public bool PomodoroAutoAdvance { get; init; } = true;
+    public string PomodoroProfileId { get; init; } = "study";
+    public IReadOnlyList<Island.Core.Pomodoro.PomodoroProfile> PomodoroProfiles { get; init; } = Island.Core.Pomodoro.PomodoroProfiles.Defaults;
+    public Island.Core.Pomodoro.PomodoroSoundKind PomodoroFocusSound { get; init; } = Island.Core.Pomodoro.PomodoroSoundKind.SoftBell;
+    public Island.Core.Pomodoro.PomodoroSoundKind PomodoroBreakSound { get; init; } = Island.Core.Pomodoro.PomodoroSoundKind.Coffee;
     public bool ClipboardEnabled { get; init; } = true;
     public int ClipboardMaxItems { get; init; } = 50;
     /// <summary>Whether the global Ctrl+Alt+N shortcut opens quick-note capture.</summary>
@@ -70,7 +76,7 @@ public sealed record IslandSettings
     public IReadOnlyList<IReadOnlyList<string>> GetShelfRows() => ShelfLayout.ToRows(ShelfWidgets, ShelfRows);
 
     // Records compare collections by reference; settings must compare by value (ShelfWidgets, ShelfRows).
-    public bool Equals(IslandSettings? other) => other is not null && MonitorIndex == other.MonitorIndex && CompactWidth == other.CompactWidth && CompactHeight == other.CompactHeight && TopMargin == other.TopMargin && VolumeDisplaySeconds == other.VolumeDisplaySeconds && MediaPreviewSeconds == other.MediaPreviewSeconds && HideInFullscreen == other.HideInFullscreen && UseCustomPosition == other.UseCustomPosition && Dock == other.Dock && Minimized == other.Minimized && PositionX == other.PositionX && PositionY == other.PositionY && GameProcesses.SequenceEqual(other.GameProcesses) && ReduceAnimations == other.ReduceAnimations && StartWithWindows == other.StartWithWindows && ShowVolume == other.ShowVolume && ShowMedia == other.ShowMedia && ShelfWidgets.SequenceEqual(other.ShelfWidgets) && ShelfRows.SequenceEqual(other.ShelfRows) && PomodoroFocusMinutes == other.PomodoroFocusMinutes && PomodoroBreakMinutes == other.PomodoroBreakMinutes && PomodoroCycles == other.PomodoroCycles && PomodoroSound == other.PomodoroSound && ClipboardEnabled == other.ClipboardEnabled && ClipboardMaxItems == other.ClipboardMaxItems && QuickNotesHotkeyEnabled == other.QuickNotesHotkeyEnabled && NoticeSeconds == other.NoticeSeconds && PhoneBlockEnabled == other.PhoneBlockEnabled && PhoneFcmToken == other.PhoneFcmToken && UpdateRepository == other.UpdateRepository && IdleModeEnabled == other.IdleModeEnabled && WeatherCity == other.WeatherCity;
+    public bool Equals(IslandSettings? other) => other is not null && MonitorIndex == other.MonitorIndex && CompactWidth == other.CompactWidth && CompactHeight == other.CompactHeight && TopMargin == other.TopMargin && VolumeDisplaySeconds == other.VolumeDisplaySeconds && MediaPreviewSeconds == other.MediaPreviewSeconds && HideInFullscreen == other.HideInFullscreen && UseCustomPosition == other.UseCustomPosition && Dock == other.Dock && Minimized == other.Minimized && PositionX == other.PositionX && PositionY == other.PositionY && GameProcesses.SequenceEqual(other.GameProcesses) && ReduceAnimations == other.ReduceAnimations && StartWithWindows == other.StartWithWindows && ShowVolume == other.ShowVolume && ShowMedia == other.ShowMedia && ShelfWidgets.SequenceEqual(other.ShelfWidgets) && ShelfRows.SequenceEqual(other.ShelfRows) && PomodoroFocusMinutes == other.PomodoroFocusMinutes && PomodoroBreakMinutes == other.PomodoroBreakMinutes && PomodoroCycles == other.PomodoroCycles && PomodoroGoal == other.PomodoroGoal && PomodoroAutoAdvance == other.PomodoroAutoAdvance && PomodoroProfileId == other.PomodoroProfileId && PomodoroProfiles.SequenceEqual(other.PomodoroProfiles) && PomodoroSound == other.PomodoroSound && PomodoroFocusSound == other.PomodoroFocusSound && PomodoroBreakSound == other.PomodoroBreakSound && ClipboardEnabled == other.ClipboardEnabled && ClipboardMaxItems == other.ClipboardMaxItems && QuickNotesHotkeyEnabled == other.QuickNotesHotkeyEnabled && NoticeSeconds == other.NoticeSeconds && PhoneBlockEnabled == other.PhoneBlockEnabled && PhoneFcmToken == other.PhoneFcmToken && UpdateRepository == other.UpdateRepository && IdleModeEnabled == other.IdleModeEnabled && WeatherCity == other.WeatherCity;
 
     public override int GetHashCode()
     {
@@ -97,7 +103,13 @@ public sealed record IslandSettings
         h.Add(PomodoroFocusMinutes);
         h.Add(PomodoroBreakMinutes);
         h.Add(PomodoroCycles);
+        h.Add(PomodoroGoal);
+        h.Add(PomodoroAutoAdvance);
+        h.Add(PomodoroProfileId);
+        foreach (var profile in PomodoroProfiles) h.Add(profile);
         h.Add(PomodoroSound);
+        h.Add(PomodoroFocusSound);
+        h.Add(PomodoroBreakSound);
         h.Add(ClipboardEnabled);
         h.Add(ClipboardMaxItems);
         h.Add(QuickNotesHotkeyEnabled);

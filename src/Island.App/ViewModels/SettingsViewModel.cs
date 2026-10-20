@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Island.Core.Abstractions;
 using Island.Core.Configuration;
+using Island.Core.Pomodoro;
 
 namespace Island.App.ViewModels;
 
@@ -39,6 +40,11 @@ public sealed class SettingsViewModel : ObservableObject
     private string _phoneFcmToken = string.Empty;
     private string _phoneStatus = string.Empty;
     private bool _sendingPhoneTest;
+    private bool _pomodoroSoundEnabled;
+    private PomodoroSoundKind _pomodoroFocusSound;
+    private PomodoroSoundKind _pomodoroBreakSound;
+    private readonly Func<PomodoroSoundKind, bool>? _previewPomodoroSound;
+    private string _soundPreviewStatus = string.Empty;
 
     private readonly Func<TimeSpan, string, Task<PhoneBlockOutcome>>? _sendPhoneBlock;
     private readonly Func<Task<string>>? _checkForUpdates;
@@ -51,7 +57,8 @@ public sealed class SettingsViewModel : ObservableObject
         Action<IslandSettings> apply,
         Func<TimeSpan, string, Task<PhoneBlockOutcome>>? sendPhoneBlock = null,
         Func<Task<string>>? checkForUpdates = null,
-        Func<IslandSettings>? getCurrent = null)
+        Func<IslandSettings>? getCurrent = null,
+        Func<PomodoroSoundKind, bool>? previewPomodoroSound = null)
     {
         ArgumentNullException.ThrowIfNull(initial);
         ArgumentNullException.ThrowIfNull(monitorNames);
@@ -61,11 +68,14 @@ public sealed class SettingsViewModel : ObservableObject
         _apply = apply;
         _sendPhoneBlock = sendPhoneBlock;
         _checkForUpdates = checkForUpdates;
+        _previewPomodoroSound = previewPomodoroSound;
         ResetToDefaultsCommand = new RelayCommand(ResetToDefaults);
 
         // Construction does not push to apply: the store already holds `initial`.
         _current = Normalize(initial);
         _getCurrent = getCurrent ?? (() => _current);
+        PreviewPomodoroFocusSoundCommand = new RelayCommand(() => PreviewSound(_getCurrent().PomodoroFocusSound), () => _previewPomodoroSound is not null);
+        PreviewPomodoroBreakSoundCommand = new RelayCommand(() => PreviewSound(_getCurrent().PomodoroBreakSound), () => _previewPomodoroSound is not null);
         LoadFrom(_current);
     }
 
@@ -76,6 +86,56 @@ public sealed class SettingsViewModel : ObservableObject
     public IReadOnlyList<string> MonitorNames { get; }
 
     public IRelayCommand ResetToDefaultsCommand { get; }
+
+    public IReadOnlyList<PomodoroSoundOption> PomodoroSounds { get; } =
+    [
+        new(PomodoroSoundKind.SoftBell, "Sino suave"),
+        new(PomodoroSoundKind.Piano, "Piano"),
+        new(PomodoroSoundKind.Digital, "Digital"),
+        new(PomodoroSoundKind.Coffee, "Café"),
+    ];
+    public IRelayCommand PreviewPomodoroFocusSoundCommand { get; }
+    public IRelayCommand PreviewPomodoroBreakSoundCommand { get; }
+
+    public string SoundPreviewStatus
+    {
+        get => _soundPreviewStatus;
+        private set => SetProperty(ref _soundPreviewStatus, value);
+    }
+
+    public bool PomodoroSoundEnabled
+    {
+        get => _pomodoroSoundEnabled;
+        set { if (SetProperty(ref _pomodoroSoundEnabled, value)) Commit(s => s with { PomodoroSound = value }); }
+    }
+
+    public PomodoroSoundKind PomodoroFocusSound
+    {
+        get => _pomodoroFocusSound;
+        set
+        {
+            if (!Enum.IsDefined(value)) return;
+            if (SetProperty(ref _pomodoroFocusSound, value)) Commit(s => s with { PomodoroFocusSound = value });
+        }
+    }
+
+    public PomodoroSoundKind PomodoroBreakSound
+    {
+        get => _pomodoroBreakSound;
+        set
+        {
+            if (!Enum.IsDefined(value)) return;
+            if (SetProperty(ref _pomodoroBreakSound, value)) Commit(s => s with { PomodoroBreakSound = value });
+        }
+    }
+
+    private void PreviewSound(PomodoroSoundKind kind)
+    {
+        // An explicit preview works even when automatic alerts are muted, without changing that preference.
+        SoundPreviewStatus = _previewPomodoroSound?.Invoke(kind) == true
+            ? "Reproduzindo amostra."
+            : "Não foi possível tocar o som. Confira a saída de áudio.";
+    }
 
     public int SelectedMonitorIndex
     {
@@ -368,6 +428,9 @@ public sealed class SettingsViewModel : ObservableObject
             QuickNotesHotkeyEnabled = defaults.QuickNotesHotkeyEnabled,
             IdleModeEnabled = defaults.IdleModeEnabled,
             WeatherCity = defaults.WeatherCity,
+            PomodoroSound = defaults.PomodoroSound,
+            PomodoroFocusSound = defaults.PomodoroFocusSound,
+            PomodoroBreakSound = defaults.PomodoroBreakSound,
         });
         LoadFrom(_current);
         _apply(_current);
@@ -387,6 +450,9 @@ public sealed class SettingsViewModel : ObservableObject
         SetProperty(ref _startWithWindows, s.StartWithWindows, nameof(StartWithWindows));
         SetProperty(ref _showVolume, s.ShowVolume, nameof(ShowVolume));
         SetProperty(ref _showMedia, s.ShowMedia, nameof(ShowMedia));
+        SetProperty(ref _pomodoroSoundEnabled, s.PomodoroSound, nameof(PomodoroSoundEnabled));
+        SetProperty(ref _pomodoroFocusSound, s.PomodoroFocusSound, nameof(PomodoroFocusSound));
+        SetProperty(ref _pomodoroBreakSound, s.PomodoroBreakSound, nameof(PomodoroBreakSound));
         SetProperty(ref _quickNotesHotkeyEnabled, s.QuickNotesHotkeyEnabled, nameof(QuickNotesHotkeyEnabled));
         SetProperty(ref _idleModeEnabled, s.IdleModeEnabled, nameof(IdleModeEnabled));
         SetProperty(ref _weatherCity, s.WeatherCity ?? string.Empty, nameof(WeatherCity));
@@ -405,6 +471,8 @@ public sealed class SettingsViewModel : ObservableObject
         VolumeDisplaySeconds = SnapSeconds(s.VolumeDisplaySeconds, VolumeSecondsMin, VolumeSecondsMax),
         MediaPreviewSeconds = SnapSeconds(s.MediaPreviewSeconds, MediaSecondsMin, MediaSecondsMax),
         WeatherCity = (s.WeatherCity ?? string.Empty).Trim(),
+        PomodoroFocusSound = PomodoroSoundSelection.Normalize(s.PomodoroFocusSound, PomodoroSoundKind.SoftBell),
+        PomodoroBreakSound = PomodoroSoundSelection.Normalize(s.PomodoroBreakSound, PomodoroSoundKind.Coffee),
     };
 
     private bool IsValidMonitor(int index) => index >= 0 && index < Math.Max(1, MonitorNames.Count);
@@ -412,3 +480,5 @@ public sealed class SettingsViewModel : ObservableObject
     private static double SnapSeconds(double value, double min, double max) =>
         Math.Round(Math.Clamp(value, min, max), 1, MidpointRounding.AwayFromZero);
 }
+
+public sealed record PomodoroSoundOption(PomodoroSoundKind Value, string Label);

@@ -2,7 +2,7 @@ namespace Island.Core.Pomodoro;
 
 /// <summary>
 /// Locks the focus phases of a pomodoro plan so they cannot be paused, reset or re-timed. A session covers the whole
-/// plan: every focus is locked, every break is free, and the next focus locks again by itself. The only early exit is
+/// plan: every running focus is locked, every break and manual wait is free, and the next focus locks on Start. The only early exit is
 /// typing an <see cref="UnlockPhrases"/> phrase. Without a plan, a session lasts for one focus.
 /// </summary>
 public sealed class AngryPomodoro : IDisposable
@@ -159,14 +159,14 @@ public sealed class AngryPomodoro : IDisposable
         lock (_gate) session = _session && !_disposed;
         if (!session) return;
 
-        if (transition.PlanFinished || transition.Ended == PomodoroPhase.Prep || !transition.AutoStarted)
+        if (transition.PlanFinished || transition.Ended == PomodoroPhase.Prep || !_timer.PlanActive)
         {
             Transition(session: false, locked: false);
         }
         else if (transition.Next == PomodoroPhase.Focus)
         {
             // A break ended and the next focus started by itself: lock it again.
-            Transition(session: true, locked: true);
+            Transition(session: true, locked: _timer.IsRunning);
         }
         else
         {
@@ -184,6 +184,7 @@ public sealed class AngryPomodoro : IDisposable
         }
 
         if (!_timer.PlanActive) Transition(session: false, locked: false);
+        else if (_timer.Phase == PomodoroPhase.Focus && _timer.IsRunning) Transition(session: true, locked: true);
     }
 
     /// <summary>

@@ -78,6 +78,7 @@ public partial class IslandWindow : System.Windows.Window
         Action<IslandSettings>? saveSettings = null, Func<UpdateInfo?>? availableUpdate = null)
     {
         InitializeComponent();
+        AttachFileDrop();
 
         _vm = vm;
         _monitors = monitors;

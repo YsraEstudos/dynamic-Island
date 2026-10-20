@@ -11,7 +11,8 @@ public enum PomodoroPhase { Focus, Break, Prep }
 /// ticks land on whole-second boundaries of the remaining time. Remaining time is derived from the clock
 /// (start instant plus remaining-at-start), so it never drifts with timer jitter. Thread-safe.
 /// A plan (<see cref="StartPlan"/>) runs a number of focus/break pairs back to back: each natural phase end starts
-/// the next phase by itself until the last break ends. Without a plan a phase end just pauses on the next phase.
+/// the next phase automatically or waits for Start, according to the plan's captured preference. The last break ends
+/// the plan. Without a plan a phase end just pauses on the next phase.
 /// </summary>
 public sealed class PomodoroTimer : IDisposable
 {
@@ -42,6 +43,28 @@ public sealed class PomodoroTimer : IDisposable
     // Bumped whenever the live timer is cancelled or replaced, so a callback that was already dispatched does nothing.
     private int _generation;
     private bool _disposed;
+    private bool _autoAdvance = true;
+    private bool _awaitingNextPhase;
+    private bool _prepareNotified;
+    private string _sessionGoal = string.Empty;
+    private TimeSpan _planFocusDuration, _planBreakDuration;
+
+    public string SessionGoal { get { lock (_gate) return _sessionGoal; } }
+    public bool IsAwaitingNextPhase { get { lock (_gate) return _awaitingNextPhase; } }
+    public bool AutoAdvance { get { lock (_gate) { if (_planTotal > 0) return _autoAdvance; } return _settings().PomodoroAutoAdvance; } }
+    public bool IsPreparingForBreak
+    {
+        get
+        {
+            lock (_gate)
+            {
+                var remaining = RemainingLocked(_clock());
+                return _running && _phase == PomodoroPhase.Focus && remaining > TimeSpan.Zero && remaining <= TimeSpan.FromSeconds(30);
+            }
+        }
+    }
+    /// <summary>Raised once per focus when its running countdown enters the final 30 seconds.</summary>
+    public event Action? BreakApproaching;
 
     public PomodoroTimer(IIslandScheduler scheduler, Func<IslandSettings> settings, Func<DateTimeOffset>? clock = null)
     {
@@ -137,11 +160,15 @@ public sealed class PomodoroTimer : IDisposable
     /// <summary>Starts counting down. No-op while already running.</summary>
     public void Start()
     {
+        var settings = _settings();
         lock (_gate)
         {
             if (_disposed) return;
             if (!_running)
             {
+                if (_planTotal == 0 && _remainingAtStart == _phaseDuration && !_awaitingNextPhase)
+                    _sessionGoal = PomodoroProfiles.CleanText(settings.PomodoroGoal, 160);
+                _awaitingNextPhase = false;
                 _running = true;
                 _startedAt = _clock();
                 ArmLocked(DelayFor(_remainingAtStart));
@@ -153,7 +180,7 @@ public sealed class PomodoroTimer : IDisposable
 
     /// <summary>
     /// Starts a plan of <paramref name="cycles"/> focus/break pairs (clamped to <see cref="MinCycles"/>..<see cref="MaxCycles"/>).
-    /// A fresh focus starts counting at once and every later phase starts by itself. No-op while controls are locked.
+    /// A fresh focus starts counting at once; later phases follow the captured auto/manual preference. No-op while controls are locked.
     /// </summary>
     public void StartPlan(int cycles)
     {
@@ -167,6 +194,12 @@ public sealed class PomodoroTimer : IDisposable
             _remainingAtStart = _phaseDuration;
             _planTotal = Math.Clamp(cycles, MinCycles, MaxCycles);
             _planCycle = 1;
+            _planFocusDuration = FocusDuration(settings);
+            _planBreakDuration = BreakDuration(settings);
+            _autoAdvance = settings.PomodoroAutoAdvance;
+            _sessionGoal = PomodoroProfiles.CleanText(settings.PomodoroGoal, 160);
+            _awaitingNextPhase = false;
+            _prepareNotified = false;
             _running = true;
             _startedAt = _clock();
             ArmLocked(DelayFor(_remainingAtStart));
@@ -250,7 +283,7 @@ public sealed class PomodoroTimer : IDisposable
             var remaining = RemainingLocked(_clock());
             if (_planTotal > 0)
             {
-                return PomodoroForecast.Remaining(_phase, remaining, _planCycle, _planTotal, FocusDuration(settings), BreakDuration(settings));
+                return PomodoroForecast.Remaining(_phase, remaining, _planCycle, _planTotal, _planFocusDuration, _planBreakDuration);
             }
 
             var freshFocus = !_running && _phase == PomodoroPhase.Focus && _remainingAtStart == _phaseDuration;
@@ -271,6 +304,8 @@ public sealed class PomodoroTimer : IDisposable
         {
             if (_disposed || _controlsLocked) return;
             StopLocked();
+            _awaitingNextPhase = false;
+            _prepareNotified = false;
             if (_planTotal > 0)
             {
                 ClearPlanLocked();
@@ -292,6 +327,8 @@ public sealed class PomodoroTimer : IDisposable
             if (_disposed || _controlsLocked) return;
             StopLocked();
             ClearPlanLocked();
+            _awaitingNextPhase = false;
+            _prepareNotified = false;
             _phase = phase;
             _phaseDuration = DurationFor(phase, settings);
             _remainingAtStart = _phaseDuration;
@@ -309,11 +346,27 @@ public sealed class PomodoroTimer : IDisposable
             if (_disposed || _controlsLocked) return;
             StopLocked();
             ClearPlanLocked();
+            _awaitingNextPhase = false;
+            _prepareNotified = false;
             _phaseDuration = clamped;
             _remainingAtStart = clamped;
         }
 
         RaiseChanged();
+    }
+
+    /// <summary>Refreshes the prepared duration, but never resets a running, paused or pending plan.</summary>
+    public bool RefreshConfigurationIfIdle()
+    {
+        var settings = _settings();
+        lock (_gate)
+        {
+            if (_disposed || _controlsLocked || _running || _awaitingNextPhase || _planTotal > 0 || _remainingAtStart != _phaseDuration) return false;
+            _phaseDuration = DurationFor(_phase, settings);
+            _remainingAtStart = _phaseDuration;
+        }
+        RaiseChanged();
+        return true;
     }
 
     public void Dispose()
@@ -331,6 +384,7 @@ public sealed class PomodoroTimer : IDisposable
     {
         var settings = _settings();
         PomodoroTransition? transition = null;
+        bool warn = false;
 
         lock (_gate)
         {
@@ -343,6 +397,11 @@ public sealed class PomodoroTimer : IDisposable
             var remaining = RemainingLocked(_clock());
             if (remaining > TimeSpan.Zero)
             {
+                if (_phase == PomodoroPhase.Focus && !_prepareNotified && remaining <= TimeSpan.FromSeconds(30))
+                {
+                    _prepareNotified = true;
+                    warn = true;
+                }
                 ArmLocked(DelayFor(remaining));
             }
             else
@@ -352,6 +411,7 @@ public sealed class PomodoroTimer : IDisposable
         }
 
         RaiseChanged();
+        if (warn) BreakApproaching?.Invoke();
         if (transition is { } t)
         {
             PhaseCompleted?.Invoke(t.Ended);
@@ -361,7 +421,7 @@ public sealed class PomodoroTimer : IDisposable
 
     /// <summary>
     /// Switches to the next phase when the countdown reaches zero. Without a plan the timer stops on the next phase.
-    /// With a plan, a focus starts its break and a break starts the next focus, both by themselves; the last break
+    /// With a plan, a focus prepares its break and a break prepares the next focus, automatically or waiting for Start; the last break
     /// ends the plan and the timer stops on a fresh focus. Caller holds the lock.
     /// </summary>
     private PomodoroTransition CompletePhaseLocked(IslandSettings settings)
@@ -369,6 +429,7 @@ public sealed class PomodoroTimer : IDisposable
         var ended = _phase;
         var cycle = _planCycle;
         var total = _planTotal;
+        _prepareNotified = false;
 
         if (total == 0)
         {
@@ -376,6 +437,7 @@ public sealed class PomodoroTimer : IDisposable
             _phaseDuration = DurationFor(_phase, settings);
             _remainingAtStart = _phaseDuration;
             _running = false;
+            _awaitingNextPhase = true;
             CancelTimerLocked();
             return new PomodoroTransition(ended, _phase, 0, 0, false, false, _phaseDuration);
         }
@@ -387,6 +449,7 @@ public sealed class PomodoroTimer : IDisposable
             _phaseDuration = FocusDuration(settings);
             _remainingAtStart = _phaseDuration;
             _running = false;
+            _awaitingNextPhase = false;
             CancelTimerLocked();
             return new PomodoroTransition(ended, _phase, cycle, total, true, false, _phaseDuration);
         }
@@ -400,12 +463,14 @@ public sealed class PomodoroTimer : IDisposable
             _planCycle = cycle + 1;
             _phase = PomodoroPhase.Focus;
         }
-        _phaseDuration = DurationFor(_phase, settings);
+        _phaseDuration = _phase == PomodoroPhase.Focus ? _planFocusDuration : _planBreakDuration;
         _remainingAtStart = _phaseDuration;
-        // Still running: re-arm for the next phase instead of cancelling.
+        _running = _autoAdvance;
+        _awaitingNextPhase = !_autoAdvance;
         _startedAt = _clock();
-        ArmLocked(DelayFor(_remainingAtStart));
-        return new PomodoroTransition(ended, _phase, cycle, total, false, true, _phaseDuration);
+        if (_running) ArmLocked(DelayFor(_remainingAtStart));
+        else CancelTimerLocked();
+        return new PomodoroTransition(ended, _phase, cycle, total, false, _running, _phaseDuration);
     }
 
     /// <summary>Time left at the clock's current instant. Caller holds the lock.</summary>
