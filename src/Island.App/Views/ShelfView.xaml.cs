@@ -53,6 +53,7 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
     private IslandViewModel? _vm;
     private readonly Dictionary<string, ShelfCard> _cards = new(StringComparer.Ordinal);
     private readonly List<ShelfCard> _all = new();                 // every card, stepped by the frame pump
+    private readonly HashSet<string> _warmed = new(StringComparer.Ordinal); // cards that already had a layout pass
     private readonly Dictionary<string, double> _slotX = new(StringComparer.Ordinal);
     private readonly TranslateTransform _pageOffset = new();       // slides the cards when the row changes
     private List<List<string>> _savedRows = new() { new List<string>() };    // rows as saved; never empty
@@ -67,6 +68,7 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
     private bool _panning;                                         // a tile press became a sideways pan of the tray
     private double _panStartX;
     private double _panStartOffset;
+    private bool _warmScheduled;
 
     public ShelfView()
     {
@@ -77,6 +79,10 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
         MouseMove += OnPointerMove;
         MouseLeftButtonUp += OnPointerUp;
         LostMouseCapture += OnCaptureLost;
+        IsVisibleChanged += (_, e) =>
+        {
+            if ((bool)e.NewValue) ScheduleWarm();
+        };
     }
 
     /// <summary>Raised when the rows, the drag preview or the row on screen change, so the island can resize to them.</summary>
@@ -146,6 +152,7 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
         int target = _page + delta;
         if (target < 0 || target >= Rows.Count) return false;
 
+        WarmPage(target);
         SlidePage(delta, () => _page = target);
         return true;
     }
@@ -155,7 +162,57 @@ public partial class ShelfView : System.Windows.Controls.UserControl, IFrameClie
     {
         CancelSlide();
         _page = Math.Clamp(page, 0, Rows.Count - 1);
+        WarmPage(_page);
         Relayout(instant: true);
+    }
+
+    /// <summary>
+    /// Creates and lays out a row's cards before they are shown, so entering the row costs no XAML load or first
+    /// layout at the middle of the slide. The cards are taken off the canvas again; only their layout is kept.
+    /// </summary>
+    private void WarmPage(int page)
+    {
+        if (_vm is null) return;
+        List<List<string>> rows = Rows;
+        if (page < 0 || page >= rows.Count) return;
+
+        List<ShelfCard>? added = null;
+        foreach (WidgetDescriptor descriptor in IslandShapeTable.Resolve(rows[page]))
+        {
+            if (_warmed.Contains(descriptor.Id) || IsDragged(descriptor.Id)) continue;
+
+            ShelfCard card = GetCard(descriptor);
+            if (IsOnCanvas(card) || card.Mode != CardMode.Normal) continue;
+
+            WidgetCanvas.Children.Add(card.Root);
+            (added ??= new List<ShelfCard>()).Add(card);
+        }
+        if (added is null) return;
+
+        UpdateLayout();
+        foreach (ShelfCard card in added)
+        {
+            if (IsOnCanvas(card)) WidgetCanvas.Children.Remove(card.Root);
+            _warmed.Add(card.Id);
+        }
+    }
+
+    /// <summary>Warms the rows off screen while the shelf is open; a row the user reaches sooner is warmed on demand.</summary>
+    private void ScheduleWarm()
+    {
+        if (_warmScheduled || _vm is null) return;
+
+        _warmScheduled = true;
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle, new Action(() =>
+        {
+            _warmScheduled = false;
+            if (!IsVisible || _sliding || _drag is not null || _press is not null) return;
+
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                if (i != _page) WarmPage(i);
+            }
+        }));
     }
 
     // ---- Rows -----------------------------------------------------------------------------------------------

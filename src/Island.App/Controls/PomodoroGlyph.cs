@@ -135,6 +135,14 @@ public sealed class PomodoroGlyph : FrameworkElement, IFrameClient
         }
 
         _elapsed += Math.Max(0.0, dt);
+        if (_elapsed >= PulseSeconds())
+        {
+            _motionRequested = false;
+            _elapsed = 0.0;
+            InvalidateVisual();
+            return false;
+        }
+
         InvalidateVisual();
         return true;
     }
@@ -182,17 +190,18 @@ public sealed class PomodoroGlyph : FrameworkElement, IFrameClient
 
     private double MotionScale()
     {
-        if (!CanAnimate()) return 1.0;
+        if (!CanAnimate() || !_motionRequested) return 1.0;
 
-        double period = IsAngry && Phase != PomodoroPhase.Break
-            ? AngryPulseSeconds
-            : Phase == PomodoroPhase.Break ? BreakPulseSeconds : TargetPulseSeconds;
-        double pulse = (1.0 - Math.Cos(_elapsed * Math.PI * 2.0 / period)) * 0.5;
+        double pulse = (1.0 - Math.Cos(_elapsed * Math.PI * 2.0 / PulseSeconds())) * 0.5;
         double amplitude = IsAngry && Phase != PomodoroPhase.Break
             ? 0.10
             : Phase == PomodoroPhase.Break ? 0.04 : 0.07;
         return 1.0 + amplitude * pulse;
     }
+
+    private double PulseSeconds() => IsAngry && Phase != PomodoroPhase.Break
+        ? AngryPulseSeconds
+        : Phase == PomodoroPhase.Break ? BreakPulseSeconds : TargetPulseSeconds;
 
     private Brush BrushForCurrentState() => IsAngry && Phase != PomodoroPhase.Break
         ? AngryBrush
@@ -223,7 +232,7 @@ public sealed class PomodoroGlyph : FrameworkElement, IFrameClient
 
     private void DrawSteam(DrawingContext dc, Pen pen, StreamGeometry steam, MatrixTransform transform, double phaseOffset)
     {
-        if (!CanAnimate())
+        if (!_motionRequested)
         {
             dc.DrawGeometry(null, pen, steam);
             return;
