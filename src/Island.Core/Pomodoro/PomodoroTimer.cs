@@ -182,7 +182,7 @@ public sealed class PomodoroTimer : IDisposable
     /// Starts a plan of <paramref name="cycles"/> focus/break pairs (clamped to <see cref="MinCycles"/>..<see cref="MaxCycles"/>).
     /// A fresh focus starts counting at once; later phases follow the captured auto/manual preference. No-op while controls are locked.
     /// </summary>
-    public void StartPlan(int cycles)
+    public void StartPlan(int cycles, string? sessionName = null)
     {
         var settings = _settings();
         lock (_gate)
@@ -197,7 +197,7 @@ public sealed class PomodoroTimer : IDisposable
             _planFocusDuration = FocusDuration(settings);
             _planBreakDuration = BreakDuration(settings);
             _autoAdvance = settings.PomodoroAutoAdvance;
-            _sessionGoal = PomodoroProfiles.CleanText(settings.PomodoroGoal, 160);
+            _sessionGoal = PomodoroProfiles.CleanText(sessionName ?? settings.PomodoroGoal, 160);
             _awaitingNextPhase = false;
             _prepareNotified = false;
             _running = true;

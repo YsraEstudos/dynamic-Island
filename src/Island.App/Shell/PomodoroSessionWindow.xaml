@@ -117,10 +117,10 @@
         </StackPanel>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="28,0,28,14" IsEnabled="{Binding CanConfigure}">
-                <TextBlock Text="OBJETIVO DA SESSÃO" Style="{StaticResource Caption}"/>
+                <TextBlock Text="NOME DA SESSÃO" Style="{StaticResource Caption}"/>
                 <TextBox x:Name="GoalBox" MaxLength="160" Text="{Binding Goal, UpdateSourceTrigger=LostFocus}"
-                         AutomationProperties.Name="Objetivo da sessão" ToolTip="Exemplo: Revisar matemática"/>
-                <TextBlock Text="Opcional · aparece na ilha e no retorno ao foco" Foreground="#737780" FontSize="11" Margin="0,6,0,13"/>
+                         AutomationProperties.Name="Nome da sessão" ToolTip="Exemplo: Revisar matemática"/>
+                <TextBlock Text="Opcional · aparece ao lado do contador; passe o mouse para ler o nome completo" Foreground="#737780" FontSize="11" Margin="0,6,0,13"/>
                 <TextBlock Text="PERFIL" Style="{StaticResource Caption}"/>
                 <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>

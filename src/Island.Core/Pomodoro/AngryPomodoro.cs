@@ -14,6 +14,7 @@ public sealed class AngryPomodoro : IDisposable
     private readonly object _gate = new();
     private bool _session;
     private bool _locked;
+    private bool _scheduledSession;
     private string? _currentPhrase;
     private bool _disposed;
 
@@ -62,6 +63,13 @@ public sealed class AngryPomodoro : IDisposable
     /// keeps running. A running single focus keeps its remaining time.
     /// </summary>
     public void Engage(int cycles)
+        => EngageCore(cycles, sessionName: null, scheduled: false);
+
+    /// <summary>Starts an Angry plan owned by the weekly schedule so its time block can end it automatically.</summary>
+    public void EngageScheduled(int cycles, string? sessionName)
+        => EngageCore(cycles, sessionName, scheduled: true);
+
+    private void EngageCore(int cycles, string? sessionName, bool scheduled)
     {
         lock (_gate)
         {
@@ -71,7 +79,7 @@ public sealed class AngryPomodoro : IDisposable
         if (!_timer.PlanActive)
         {
             if (_timer.Phase != PomodoroPhase.Focus) _timer.SetPhase(PomodoroPhase.Focus);
-            if (!_timer.IsRunning && _timer.Remaining == _timer.PhaseDuration) _timer.StartPlan(cycles);
+            if (!_timer.IsRunning && _timer.Remaining == _timer.PhaseDuration) _timer.StartPlan(cycles, sessionName);
             else if (!_timer.IsRunning) _timer.Start();
         }
         else if (!_timer.IsRunning)
@@ -92,6 +100,7 @@ public sealed class AngryPomodoro : IDisposable
             {
                 _session = true;
                 _locked = lockNow;
+                _scheduledSession = scheduled;
             }
         }
 
@@ -108,6 +117,19 @@ public sealed class AngryPomodoro : IDisposable
 
         // Focus can end between Start and the flag above. Its handlers ignored us then, so check for it now.
         if (lockNow && _timer.Phase != PomodoroPhase.Focus) Transition(session: _timer.PlanActive, locked: false);
+    }
+
+    /// <summary>Ends an Angry session only when it belongs to the weekly schedule. Returns false for manual sessions.</summary>
+    public bool EndScheduledSession()
+    {
+        lock (_gate)
+        {
+            if (!_session || !_scheduledSession || _disposed) return false;
+        }
+
+        Transition(session: false, locked: false);
+        _timer.Reset();
+        return true;
     }
 
     /// <summary>Picks and stores a fresh phrase for the next unlock attempt. Works whether or not the session is active.</summary>
@@ -199,7 +221,11 @@ public sealed class AngryPomodoro : IDisposable
             changed = _session != session || _locked != locked;
             _session = session;
             _locked = locked;
-            if (!session) _currentPhrase = null;
+            if (!session)
+            {
+                _currentPhrase = null;
+                _scheduledSession = false;
+            }
         }
 
         _timer.ControlsLocked = locked;

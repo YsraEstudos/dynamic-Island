@@ -71,34 +71,38 @@
         <!-- Row 5: controls on the left, remaining time on the right. -->
         <Grid Grid.Row="5">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <wid:ShelfButton x:Name="PlayButton" Width="38" Height="38" CornerRadius="19"
+                <wid:ShelfButton x:Name="PlayButton" Width="34" Height="34" CornerRadius="17"
                                  Background="{StaticResource PomodoroOrangeSoftBrush}"
                                  IconBrush="{StaticResource PomodoroOrangeBrush}"
                                  Icon="{StaticResource IconPlay}" AltIcon="{StaticResource IconPause}"
                                  IsFilled="True" IconSize="18" />
-                <wid:ShelfButton x:Name="SoundButton" Width="34" Height="34" CornerRadius="17" Margin="10,0,0,0"
+                <wid:ShelfButton x:Name="SoundButton" Width="30" Height="30" CornerRadius="15" Margin="6,0,0,0"
                                  Background="{StaticResource PomodoroChipBrush}"
                                  IconBrush="{StaticResource TextSecondaryBrush}"
                                  Icon="{StaticResource IconSpeakerWaves}" AltIcon="{StaticResource IconSpeakerMute}"
                                  IconSize="16" />
-                <wid:ShelfButton x:Name="ResetButton" Width="34" Height="34" CornerRadius="17" Margin="8,0,0,0"
+                <wid:ShelfButton x:Name="ResetButton" Width="30" Height="30" CornerRadius="15" Margin="4,0,0,0"
                                  Background="{StaticResource PomodoroChipBrush}"
                                  IconBrush="{StaticResource TextSecondaryBrush}"
                                  Icon="{StaticResource WidgetIcon.Stopwatch}" IconSize="16" />
-                <wid:ShelfButton x:Name="ScheduleButton" Width="34" Height="34" CornerRadius="17" Margin="8,0,0,0"
+                <wid:ShelfButton x:Name="ScheduleButton" Width="30" Height="30" CornerRadius="15" Margin="4,0,0,0"
                                  Background="{StaticResource PomodoroChipBrush}"
                                  IconBrush="{StaticResource TextSecondaryBrush}"
                                  Icon="{StaticResource WidgetIcon.Clock}" IconSize="16" />
             </StackPanel>
 
-            <TextBlock x:Name="TimeText"
-                       Text="25:00"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       FontSize="32"
-                       FontWeight="SemiBold"
-                       Foreground="{StaticResource PomodoroOrangeBrush}"
-                       Typography.NumeralAlignment="Tabular" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <TextBlock x:Name="SessionNameText" MaxWidth="52" Margin="0,0,7,0"
+                           VerticalAlignment="Center" FontSize="11" Foreground="{StaticResource PomodoroGreyBrush}"
+                           TextTrimming="CharacterEllipsis" Visibility="Collapsed" />
+                <TextBlock x:Name="TimeText"
+                           Text="25:00"
+                           VerticalAlignment="Center"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource PomodoroOrangeBrush}"
+                           Typography.NumeralAlignment="Tabular" />
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

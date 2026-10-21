@@ -27,6 +27,7 @@ using Island.Windows.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Serilog;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Island.App;
 
@@ -228,6 +229,31 @@ public partial class App : System.Windows.Application
             if (coordinator.State.Mode == IslandMode.Expanded && holder.Current.ShelfWidgets.Contains("pomodoro")) return;
             coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Pausa em 30 segundos", "Conclua seu raciocínio; a pausa está chegando.", "timer", Urgent: true)));
         });
+        var weeklyPomodoroSchedule = sp.GetRequiredService<PomodoroWeeklySchedule>();
+        if (!smoke)
+        {
+            bool resumePromptOpen = false;
+            void ShowResumePrompt()
+            {
+                if (resumePromptOpen) return;
+                resumePromptOpen = true;
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    try
+                    {
+                        if (!weeklyPomodoroSchedule.HasPendingResumePrompt) return;
+                        MessageBoxResult answer = MessageBox.Show(_window,
+                            "A rotina semanal ficou pausada por um dia. Deseja reativá-la para hoje?",
+                            "Rotina do Pomodoro", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        weeklyPomodoroSchedule.AnswerResumePrompt(answer == MessageBoxResult.Yes);
+                    }
+                    finally { resumePromptOpen = false; }
+                }), DispatcherPriority.ApplicationIdle);
+            }
+            weeklyPomodoroSchedule.ResumeConfirmationRequested += ShowResumePrompt;
+            if (weeklyPomodoroSchedule.HasPendingResumePrompt) ShowResumePrompt();
+        }
+        if (!smoke) weeklyPomodoroSchedule.RefreshNow();
         var clipboard = sp.GetRequiredService<IClipboardService>();
         var history = sp.GetRequiredService<ClipboardHistory>();
         // Captures go through one background chain, in order, so screenshots are compressed off the clipboard thread.
@@ -264,6 +290,7 @@ public partial class App : System.Windows.Application
         SystemEvents.DisplaySettingsChanged += OnDisplayChanged;
         SystemEvents.SessionSwitch += OnSessionSwitch;
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
+        SystemEvents.TimeChanged += OnSystemTimeChanged;
 
         // Soak test (--soak): fake events for the given duration, then shut down. Its verdict is in the log.
         if (soak is { } soakDuration)
@@ -446,8 +473,13 @@ public partial class App : System.Windows.Application
 
     private void OnPowerModeChanged(object? s, PowerModeChangedEventArgs e)
     {
-        if (e.Mode == PowerModes.Resume) Dispatcher.BeginInvoke(() => _window?.Nudge());
+        if (e.Mode != PowerModes.Resume) return;
+        Dispatcher.BeginInvoke(() => _window?.Nudge());
+        Dispatcher.BeginInvoke(new Action(() => _services?.GetService<PomodoroWeeklySchedule>()?.RefreshNow()));
     }
+
+    private void OnSystemTimeChanged(object? s, EventArgs e) =>
+        Dispatcher.BeginInvoke(new Action(() => _services?.GetService<PomodoroWeeklySchedule>()?.RefreshNow()));
 
     /// <summary>Demo: a looping fake playlist plus periodic volume changes, so every state can be seen without real media.</summary>
     private void StartDemo(IServiceProvider sp)
@@ -531,6 +563,7 @@ public partial class App : System.Windows.Application
         SystemEvents.DisplaySettingsChanged -= OnDisplayChanged;
         SystemEvents.SessionSwitch -= OnSessionSwitch;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
+        SystemEvents.TimeChanged -= OnSystemTimeChanged;
         _demoTimer?.Stop();
         _soak?.Dispose();
         _hotkey?.Dispose();

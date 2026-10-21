@@ -30,16 +30,19 @@ public partial class ScheduleWindow : Window
     private static readonly string[] TimeFormats = ["HH:mm", "H:mm"];
 
     private readonly PomodoroSchedule _schedule;
+    private readonly PomodoroWeeklySchedule? _weeklySchedule;
     private ScheduledStartMode _mode = ScheduledStartMode.Focus;
     private int _cycles;
     private int _dayOffset;
 
-    public ScheduleWindow(PomodoroSchedule schedule, int defaultCycles)
+    public ScheduleWindow(PomodoroSchedule schedule, int defaultCycles, PomodoroWeeklySchedule? weeklySchedule = null)
     {
         ArgumentNullException.ThrowIfNull(schedule);
 
         InitializeComponent();
         _schedule = schedule;
+        _weeklySchedule = weeklySchedule;
+        WeeklyButton.Visibility = weeklySchedule is null ? Visibility.Collapsed : Visibility.Visible;
 
         // Form defaults: today, the next five-minute mark after now, Focus, and the configured cycles.
         _cycles = Math.Clamp(defaultCycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles);
@@ -58,7 +61,7 @@ public partial class ScheduleWindow : Window
     /// Shows the dialog modally. Only one is open at a time: when it is already open it is activated instead. Nothing
     /// is changed unless the user adds or deletes a start.
     /// </summary>
-    public static void ShowFor(PomodoroSchedule schedule, int defaultCycles)
+    public static void ShowFor(PomodoroSchedule schedule, int defaultCycles, PomodoroWeeklySchedule? weeklySchedule = null)
     {
         ArgumentNullException.ThrowIfNull(schedule);
 
@@ -68,7 +71,7 @@ public partial class ScheduleWindow : Window
             return;
         }
 
-        var window = new ScheduleWindow(schedule, defaultCycles);
+        var window = new ScheduleWindow(schedule, defaultCycles, weeklySchedule);
         _open = window;
         try
         {
@@ -276,6 +279,12 @@ public partial class ScheduleWindow : Window
     }
 
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();
+
+    private void OnWeeklyClicked(object sender, RoutedEventArgs e)
+    {
+        if (_weeklySchedule is not null)
+            WeeklyPomodoroScheduleWindow.ShowFor(_weeklySchedule, _cycles);
+    }
 
 
     private static Brush Frozen(byte r, byte g, byte b, byte a)

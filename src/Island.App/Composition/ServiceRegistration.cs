@@ -147,6 +147,9 @@ public static class ServiceRegistration
         s.AddSingleton(sp => new PomodoroSchedule(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<IIslandScheduler>(),
             store: new Island.Windows.Pomodoro.JsonPomodoroScheduleStore(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "pomodoro-schedule.json"))));
+        s.AddSingleton(sp => new PomodoroWeeklySchedule(
+            sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<IIslandScheduler>(),
+            store: new Island.Windows.Pomodoro.JsonPomodoroWeeklyScheduleStore(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "pomodoro-weekly-schedule.json"))));
         s.AddSingleton(sp => new ForegroundSiteGuard(sp.GetService<ILogger<ForegroundSiteGuard>>()));
         s.AddSingleton<ClipboardHistory>();
         s.AddSingleton<FileTray>();
@@ -191,7 +194,8 @@ public static class ServiceRegistration
             sp.GetRequiredService<CaptureController>(), sp.GetRequiredService<CaptureHotkeys>(),
             sp.GetRequiredService<IAudioMixerService>(),
             // Simulated services stay silent: --demo never opens an audio device for the focus sounds.
-            focusAudioOutput: () => demo ? new NullFocusAudioOutput() : new FocusAudioOutput()));
+            focusAudioOutput: () => demo ? new NullFocusAudioOutput() : new FocusAudioOutput(),
+            weeklySchedule: sp.GetRequiredService<PomodoroWeeklySchedule>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,

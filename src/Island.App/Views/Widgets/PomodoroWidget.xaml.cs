@@ -195,7 +195,8 @@ public partial class PomodoroWidget : UserControl
         double dim = locked ? 0.4 : 1.0;
         PlayButton.Opacity = dim;
         ResetButton.Opacity = dim;
-        ScheduleButton.Opacity = dim;
+        // Schedule settings remain available during Angry so the user can pause or change future blocks.
+        ScheduleButton.Opacity = 1.0;
 
         // A pending scheduled start colours the clock icon: orange for Focus, red for Angry.
         Brush scheduleBrush = pending is null ? Grey
@@ -230,6 +231,9 @@ public partial class PomodoroWidget : UserControl
     {
         string goal = running || planActive || timer.Remaining < timer.PhaseDuration || timer.IsAwaitingNextPhase
             ? timer.SessionGoal : settings.PomodoroGoal;
+        SessionNameText.Text = goal;
+        SessionNameText.ToolTip = string.IsNullOrWhiteSpace(goal) ? null : goal;
+        SessionNameText.Visibility = string.IsNullOrWhiteSpace(goal) ? Visibility.Collapsed : Visibility.Visible;
         bool warning = timer.IsPreparingForBreak;
         bool show = running || planActive || timer.IsAwaitingNextPhase || !string.IsNullOrWhiteSpace(goal);
         Ruler.Visibility = show ? Visibility.Collapsed : Visibility.Visible;
@@ -343,11 +347,10 @@ public partial class PomodoroWidget : UserControl
         return rest == 0 ? $"{hours}h" : $"{hours}h{rest:00}";
     }
 
-    /// <summary>Opens the schedule dialog. Ignored while locked: the dimmed clock button does nothing then.</summary>
+    /// <summary>Opens schedule management, including future weekly blocks, even during a locked session.</summary>
     private void OnScheduleClicked()
     {
-        if (_ctx.Angry.IsLocked) return;
-        ScheduleWindow.ShowFor(_ctx.Schedule, _ctx.Settings().PomodoroCycles);
+        ScheduleWindow.ShowFor(_ctx.Schedule, _ctx.Settings().PomodoroCycles, _ctx.WeeklySchedule);
     }
 
     /// <summary>Phase pills are ignored during a plan: the plan decides the phase. Choosing one clears Angry selection.</summary>

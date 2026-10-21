@@ -36,13 +36,16 @@ public sealed class ShelfContext(
     CaptureController? capture = null,
     ICaptureShortcutStatus? captureShortcuts = null,
     IAudioMixerService? mixer = null,
-    Func<IFocusAudioOutput>? focusAudioOutput = null) : IDisposable
+    Func<IFocusAudioOutput>? focusAudioOutput = null,
+    PomodoroWeeklySchedule? weeklySchedule = null) : IDisposable
 {
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
     public AngryPomodoro Angry { get; } = angry;
     /// <summary>Scheduled start: a plan (Focus or Angry) that begins by itself at a clock time.</summary>
     public PomodoroSchedule Schedule { get; } = schedule;
+    /// <summary>Recurring weekly Pomodoro blocks; null only in isolated widget fixtures.</summary>
+    public PomodoroWeeklySchedule? WeeklySchedule { get; } = weeklySchedule;
     public FileTray FileTray { get; } = fileTray;
     public ClipboardHistory Clipboard { get; } = clipboard;
     public IClipboardService ClipboardService { get; } = clipboardService;
