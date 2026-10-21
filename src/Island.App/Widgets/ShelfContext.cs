@@ -37,7 +37,9 @@ public sealed class ShelfContext(
     ICaptureShortcutStatus? captureShortcuts = null,
     IAudioMixerService? mixer = null,
     Func<IFocusAudioOutput>? focusAudioOutput = null,
-    PomodoroWeeklySchedule? weeklySchedule = null) : IDisposable
+    PomodoroWeeklySchedule? weeklySchedule = null,
+    AngryDesktopLock? angryDesktop = null,
+    IVirtualDesktopService? desktops = null) : IDisposable
 {
     public PomodoroTimer Pomodoro { get; } = pomodoro;
     /// <summary>Angry mode for the focus session: locks the timer and guards distracting sites.</summary>
@@ -46,6 +48,10 @@ public sealed class ShelfContext(
     public PomodoroSchedule Schedule { get; } = schedule;
     /// <summary>Recurring weekly Pomodoro blocks; null only in isolated widget fixtures.</summary>
     public PomodoroWeeklySchedule? WeeklySchedule { get; } = weeklySchedule;
+    /// <summary>Holds Angry focus on the chosen Windows virtual desktop; null in isolated widget fixtures.</summary>
+    public AngryDesktopLock? AngryDesktop { get; } = angryDesktop;
+    /// <summary>Lists and reads the Windows virtual desktops for the Angry desktop picker; null in isolated widget fixtures.</summary>
+    public IVirtualDesktopService? Desktops { get; } = desktops;
     public FileTray FileTray { get; } = fileTray;
     public ClipboardHistory Clipboard { get; } = clipboard;
     public IClipboardService ClipboardService { get; } = clipboardService;

@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Island.App.Shell;
 using Island.App.Widgets;
+using Island.Core.Abstractions;
 using Island.Core.Configuration;
 using Island.Core.Pomodoro;
 using Brush = System.Windows.Media.Brush;
@@ -78,6 +79,7 @@ public partial class PomodoroWidget : UserControl
         AngryPill.LabelBrush = Grey;
         AngryPill.Background = Chip;
         AngryPill.Click += OnAngryClicked;
+        AngryPill.MouseRightButtonUp += OnAngryPillRightClicked;
 
         Stepper.Stepped += OnStepped;
 
@@ -103,6 +105,7 @@ public partial class PomodoroWidget : UserControl
         _ctx.Angry.LockChanged += OnLockChanged;
         _ctx.Schedule.Changed += OnScheduleChanged;
         _subscribed = true;
+        AngryPill.ToolTip = DesktopTooltip(AngryDesktopLock.ParseDesktopId(_ctx.Settings().PomodoroAngryDesktopId));
         _forecastTimer ??= CreateForecastTimer();
         Refresh();
     }
@@ -375,6 +378,70 @@ public partial class PomodoroWidget : UserControl
             _angrySelected = true;
             Refresh();
         }
+    }
+
+    /// <summary>
+    /// Right-click on Angry: picks the Windows virtual desktop the Angry focus is held on. Works outside a session too;
+    /// the choice applies when the next Angry focus locks.
+    /// </summary>
+    private void OnAngryPillRightClicked(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+        Guid? chosen = AngryDesktopLock.ParseDesktopId(_ctx.Settings().PomodoroAngryDesktopId);
+
+        var menu = new System.Windows.Controls.ContextMenu
+        {
+            PlacementTarget = AngryPill,
+            Placement = System.Windows.Controls.Primitives.PlacementMode.Top,
+        };
+        var none = new System.Windows.Controls.MenuItem { Header = "Sem área fixa", IsCheckable = true, IsChecked = chosen is null };
+        none.Click += (_, _) => SetAngryDesktop(null);
+        menu.Items.Add(none);
+
+        IReadOnlyList<VirtualDesktopInfo>? desktops = _ctx.Desktops?.GetDesktops();
+        if (desktops is not { Count: > 0 })
+        {
+            menu.Items.Add(new System.Windows.Controls.MenuItem { Header = "Áreas de trabalho indisponíveis", IsEnabled = false });
+        }
+        else
+        {
+            foreach (VirtualDesktopInfo desktop in desktops)
+            {
+                Guid id = desktop.Id;
+                var item = new System.Windows.Controls.MenuItem { Header = desktop.Name, IsCheckable = true, IsChecked = id == chosen };
+                item.Click += (_, _) => SetAngryDesktop(id);
+                menu.Items.Add(item);
+            }
+        }
+
+        menu.IsOpen = true;
+    }
+
+    private void SetAngryDesktop(Guid? desktopId)
+    {
+        _ctx.AngryDesktop?.SetTargetDesktop(desktopId);
+        _ctx.ApplySettings(_ctx.Settings() with { PomodoroAngryDesktopId = AngryDesktopLock.FormatDesktopId(desktopId) });
+        AngryPill.ToolTip = DesktopTooltip(desktopId);
+        if (desktopId is not null) PulseAngryPill();
+        Refresh();
+    }
+
+    /// <summary>Reads the desktop list only when a desktop is chosen, so a widget without one never touches the shell.</summary>
+    private string DesktopTooltip(Guid? desktopId)
+    {
+        if (desktopId is null) return "Angry: clique direito para escolher a área de trabalho";
+        string? name = _ctx.Desktops?.GetDesktops().FirstOrDefault(d => d.Id == desktopId)?.Name;
+        return name is null ? "Angry: área de trabalho indisponível" : $"Angry fixo em {name}";
+    }
+
+    /// <summary>One-shot fade of the Angry pill when a desktop is chosen. Plays once, and not at all when animations are reduced.</summary>
+    private void PulseAngryPill()
+    {
+        if (_ctx.Settings().ReduceAnimations || !SystemParameters.ClientAreaAnimation) return;
+        AngryPill.BeginAnimation(OpacityProperty, new DoubleAnimation(0.35, 1, TimeSpan.FromMilliseconds(450))
+        {
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
+        });
     }
 
     private void OnPlayClicked()
