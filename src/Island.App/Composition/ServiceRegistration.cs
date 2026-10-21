@@ -34,6 +34,7 @@ using Island.Windows.Media;
 using Island.Windows.Performance;
 using Island.Windows.Phone;
 using Island.Windows.Progress;
+using Island.Windows.VirtualDesktops;
 using Island.Windows.Updates;
 using Island.Windows.Weather;
 using Microsoft.Extensions.DependencyInjection;
@@ -144,6 +145,11 @@ public static class ServiceRegistration
         s.AddSingleton<PomodoroTimer>();
         s.AddSingleton<Island.App.Audio.PomodoroSoundPlayer>();
         s.AddSingleton<AngryPomodoro>();
+        // Virtual desktops: demo uses the in-memory fake. The real service turns itself off when the shell API is missing.
+        if (demo) s.AddSingleton<IVirtualDesktopService>(_ => new FakeVirtualDesktopService());
+        else s.AddSingleton<IVirtualDesktopService>(sp => new WindowsVirtualDesktopService(sp.GetService<ILogger<WindowsVirtualDesktopService>>()));
+        s.AddSingleton(sp => new AngryDesktopLock(
+            sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<IVirtualDesktopService>(), sp.GetRequiredService<IIslandScheduler>()));
         s.AddSingleton(sp => new PomodoroSchedule(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<IIslandScheduler>(),
             store: new Island.Windows.Pomodoro.JsonPomodoroScheduleStore(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "pomodoro-schedule.json"))));
@@ -195,7 +201,9 @@ public static class ServiceRegistration
             sp.GetRequiredService<IAudioMixerService>(),
             // Simulated services stay silent: --demo never opens an audio device for the focus sounds.
             focusAudioOutput: () => demo ? new NullFocusAudioOutput() : new FocusAudioOutput(),
-            weeklySchedule: sp.GetRequiredService<PomodoroWeeklySchedule>()));
+            weeklySchedule: sp.GetRequiredService<PomodoroWeeklySchedule>(),
+            angryDesktop: sp.GetRequiredService<AngryDesktopLock>(),
+            desktops: sp.GetRequiredService<IVirtualDesktopService>()));
         if (demo) s.AddSingleton<IUpdateService, FakeUpdateService>();
         else s.AddSingleton<IUpdateService>(sp => new GitHubUpdateService(
             GitHubUpdateService.CreateHttpClient(), () => sp.GetRequiredService<SettingsHolder>().Current.UpdateRepository,

@@ -170,6 +170,8 @@ public partial class App : System.Windows.Application
             angry.IsLocked ? SiteGuardMode.All : angry.IsSessionActive ? SiteGuardMode.AdultOnly : SiteGuardMode.Off));
         // The scheduled start is resolved here so it exists (and is disposed with the container) from launch.
         sp.GetRequiredService<PomodoroSchedule>();
+        // The chosen Angry desktop (saved in settings) is held while a focus is locked; see AngryDesktopLock.
+        sp.GetRequiredService<AngryDesktopLock>().SetTargetDesktop(AngryDesktopLock.ParseDesktopId(holder.Current.PomodoroAngryDesktopId));
         siteGuard.SiteBlocked += site => coordinator.Post(new IslandEvent.NoticeRaised(
             new Notice($"{site} bloqueado", "Pomodoro raivoso ativo", "timer")));
 
