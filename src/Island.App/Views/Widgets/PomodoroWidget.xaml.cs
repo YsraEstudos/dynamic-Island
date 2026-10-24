@@ -211,6 +211,10 @@ public partial class PomodoroWidget : UserControl
         }
 
         PlayButton.IsAltShown = running;
+        // Reset cancels whatever was started (a running or paused phase, a plan, a phase waiting to start) and says so.
+        bool canCancel = running || planActive || timer.IsAwaitingNextPhase || timer.Remaining < timer.PhaseDuration;
+        ResetButton.IsAltShown = canCancel;
+        ResetButton.ToolTip = canCancel ? "Cancelar pomodoro" : "Redefinir";
         SoundButton.IsAltShown = !settings.PomodoroSound;
 
         int minutes = (int)Math.Round(timer.PhaseDuration.TotalMinutes);
@@ -280,12 +284,6 @@ public partial class PomodoroWidget : UserControl
     /// </summary>
     private void RefreshForecast(PomodoroTimer timer, IslandSettings settings, bool planActive, ScheduledStart? pending)
     {
-        if (planActive && !timer.AutoAdvance)
-        {
-            string manual = timer.IsAwaitingNextPhase ? "aguardando iniciar" : $"{FormatDuration(timer.TimeToFinish(settings.PomodoroCycles))} · manual";
-            if (_shownForecast != manual) { _shownForecast = manual; ForecastText.Text = manual; }
-            return;
-        }
         // A pending start shows its own time while nothing runs; otherwise the forecast of the work left.
         bool showSchedule = pending is not null && !timer.IsRunning && !planActive;
         TimeSpan rest = showSchedule ? TimeSpan.Zero : timer.TimeToFinish(settings.PomodoroCycles);
@@ -302,8 +300,10 @@ public partial class PomodoroWidget : UserControl
         }
         else
         {
+            // Manual steps still show their end time; the note says the plan waits for Start between phases.
             string clock = (DateTime.Now + rest).ToString("HH:mm", PtBr);
-            key = $"{clock}|{FormatDuration(rest)}|{planActive}";
+            string note = planActive && !timer.AutoAdvance ? " · manual" : string.Empty;
+            key = $"{clock}|{FormatDuration(rest)}{note}|{planActive}";
         }
 
         if (key == _shownForecast) return;

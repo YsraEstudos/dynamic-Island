@@ -273,7 +273,8 @@ public sealed class PomodoroTimer : IDisposable
 
     /// <summary>
     /// Time until everything the Play button would run is done: the rest of the active plan; a fresh focus with no
-    /// plan, as a plan of <paramref name="idleCycles"/> pomodoros; otherwise just the remaining time of the current phase.
+    /// plan, as a plan of <paramref name="idleCycles"/> pomodoros; a break on its own, its remaining time plus that plan;
+    /// otherwise just the remaining time of the current phase.
     /// </summary>
     public TimeSpan TimeToFinish(int idleCycles)
     {
@@ -286,10 +287,17 @@ public sealed class PomodoroTimer : IDisposable
                 return PomodoroForecast.Remaining(_phase, remaining, _planCycle, _planTotal, _planFocusDuration, _planBreakDuration);
             }
 
+            int cycles = Math.Clamp(idleCycles, MinCycles, MaxCycles);
             var freshFocus = !_running && _phase == PomodoroPhase.Focus && _remainingAtStart == _phaseDuration;
             if (freshFocus)
             {
-                return PomodoroForecast.ForNewPlan(Math.Clamp(idleCycles, MinCycles, MaxCycles), FocusDuration(settings), BreakDuration(settings));
+                return PomodoroForecast.ForNewPlan(cycles, FocusDuration(settings), BreakDuration(settings));
+            }
+
+            // A break on its own: its remaining time, then the plan Play starts once it ends, with the same count.
+            if (_phase == PomodoroPhase.Break)
+            {
+                return remaining + PomodoroForecast.ForNewPlan(cycles, FocusDuration(settings), BreakDuration(settings));
             }
 
             return remaining;

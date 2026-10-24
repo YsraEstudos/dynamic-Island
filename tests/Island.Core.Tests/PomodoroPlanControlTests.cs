@@ -192,12 +192,22 @@ public class PomodoroPlanControlTests
     }
 
     [Fact]
-    public void TimeToFinish_without_a_plan_on_a_fresh_break_is_just_the_break()
+    public void TimeToFinish_without_a_plan_on_a_fresh_break_is_the_break_then_the_plan_of_idle_cycles()
     {
         using var rig = new Rig(Minutes(focus: 25, breakMinutes: 5));
         rig.Timer.SetPhase(PomodoroPhase.Break);
 
-        Assert.Equal(TimeSpan.FromMinutes(5), rig.Timer.TimeToFinish(3));
+        Assert.Equal(TimeSpan.FromMinutes(5 + 3 * 30), rig.Timer.TimeToFinish(3));
+    }
+
+    [Fact]
+    public void TimeToFinish_on_a_break_on_its_own_follows_the_count()
+    {
+        using var rig = new Rig(Minutes(focus: 25, breakMinutes: 5));
+        rig.Timer.SetPhase(PomodoroPhase.Break);
+
+        Assert.True(rig.Timer.TimeToFinish(4) > rig.Timer.TimeToFinish(3));
+        Assert.Equal(TimeSpan.FromMinutes(5 + 4 * 30), rig.Timer.TimeToFinish(4));
     }
 
     [Fact]
