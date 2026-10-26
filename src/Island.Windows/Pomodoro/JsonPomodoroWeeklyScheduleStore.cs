@@ -32,7 +32,9 @@ public sealed class JsonPomodoroWeeklyScheduleStore(string path) : IPomodoroWeek
                     || !TimeOnly.TryParseExact(entry.Start, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out TimeOnly start)
                     || !TimeOnly.TryParseExact(entry.End, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out TimeOnly end))
                     continue;
-                blocks.Add(new PomodoroWeeklyBlock(entry.Id, day, start, end, mode, entry.Cycles, entry.Name ?? string.Empty));
+                // Blocks saved before the lengths were stored use the default focus and break.
+                blocks.Add(new PomodoroWeeklyBlock(entry.Id, day, start, end, mode, entry.Name ?? string.Empty,
+                    entry.FocusMinutes ?? PomodoroTimer.DefaultFocusMinutes, entry.BreakMinutes ?? PomodoroTimer.DefaultBreakMinutes));
             }
 
             return new PomodoroWeeklyScheduleState(blocks, file.Enabled, file.SkippedDate, file.ResumePromptPending);
@@ -75,7 +77,8 @@ public sealed class JsonPomodoroWeeklyScheduleStore(string path) : IPomodoroWeek
                     Start = block.Start.ToString("HH:mm", CultureInfo.InvariantCulture),
                     End = block.End.ToString("HH:mm", CultureInfo.InvariantCulture),
                     Mode = block.Mode.ToString(),
-                    Cycles = block.Cycles,
+                    FocusMinutes = block.FocusMinutes,
+                    BreakMinutes = block.BreakMinutes,
                     Name = block.Name,
                 }).ToList(),
             }, Options);
@@ -102,7 +105,8 @@ public sealed class JsonPomodoroWeeklyScheduleStore(string path) : IPomodoroWeek
         public string? Start { get; set; }
         public string? End { get; set; }
         public string? Mode { get; set; }
-        public int Cycles { get; set; }
+        public int? FocusMinutes { get; set; }
+        public int? BreakMinutes { get; set; }
         public string? Name { get; set; }
     }
 }

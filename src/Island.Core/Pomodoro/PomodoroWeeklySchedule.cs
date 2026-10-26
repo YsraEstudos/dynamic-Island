@@ -2,15 +2,23 @@ using Island.Core.Abstractions;
 
 namespace Island.Core.Pomodoro;
 
-/// <summary>A repeating Pomodoro block on one weekday. The end time is exclusive.</summary>
+/// <summary>
+/// A repeating Pomodoro block on one weekday, from <see cref="Start"/> to <see cref="End"/> (exclusive). Each focus of
+/// <see cref="FocusMinutes"/> is followed by a break of <see cref="BreakMinutes"/>; as many pairs as fit the block run.
+/// </summary>
 public sealed record PomodoroWeeklyBlock(
     Guid Id,
     DayOfWeek Day,
     TimeOnly Start,
     TimeOnly End,
     ScheduledStartMode Mode,
-    int Cycles,
-    string Name);
+    string Name,
+    int FocusMinutes = PomodoroTimer.DefaultFocusMinutes,
+    int BreakMinutes = PomodoroTimer.DefaultBreakMinutes)
+{
+    /// <summary>Focus/break pairs that fit in the block.</summary>
+    public int Cycles => PomodoroTimer.CyclesFor(End - Start, FocusMinutes, BreakMinutes);
+}
 
 /// <summary>Persisted weekly routine and its temporary pause state.</summary>
 public sealed record PomodoroWeeklyScheduleState(
@@ -26,10 +34,10 @@ public interface IPomodoroWeeklyScheduleStore
 }
 
 /// <summary>
-/// Runs a recurring weekly Pomodoro routine. Each block starts a named Focus or Angry plan at its start time and
-/// stops starting new plans at the exclusive end time, allowing an in-progress plan to finish. A one-day skip pauses
-/// the routine for the next local date, then asks whether to resume on the following date. This service owns only
-/// sessions it started itself.
+/// Runs a recurring weekly Pomodoro routine. Each block starts a named Focus or Angry plan at its start time and stops
+/// at its exclusive end time, even in the middle of a plan. Every plan is sized to the time left in the block, so it
+/// ends before the block does. A one-day skip pauses the routine for the next local date, then asks whether to resume
+/// on the following date. This service owns only sessions it started itself.
 /// </summary>
 public sealed class PomodoroWeeklySchedule : IDisposable
 {
@@ -42,12 +50,15 @@ public sealed class PomodoroWeeklySchedule : IDisposable
     private readonly List<PomodoroWeeklyBlock> _blocks = [];
     private IDisposable? _handle;
     private PomodoroWeeklyBlock? _active;
-    private PomodoroWeeklyBlock? _finishingBlock;
+    // True while the session running for _active was started here. Only such a session is ended at the block's end.
+    private bool _ownsSession;
     private DateOnly? _skippedDate;
     private bool _enabled;
     private bool _resumePromptPending;
     private int _generation;
     private bool _disposed;
+
+    private const string OverlapMessage = "Esta faixa se sobrepõe a outra em pelo menos um dos dias selecionados.";
 
     public PomodoroWeeklySchedule(PomodoroTimer timer, AngryPomodoro angry, IIslandScheduler scheduler,
         Func<DateTime>? clock = null, IPomodoroWeeklyScheduleStore? store = null)
@@ -94,14 +105,14 @@ public sealed class PomodoroWeeklySchedule : IDisposable
     /// <summary>Re-evaluates local clock-based blocks after a clock change or system resume.</summary>
     public void RefreshNow() => Reconcile();
 
-    /// <summary>Adds a block, rejecting empty names, invalid ranges, and overlaps on the same weekday.</summary>
-    public bool TryAdd(DayOfWeek day, TimeOnly start, TimeOnly end, ScheduledStartMode mode, int cycles,
+    /// <summary>Adds a block, rejecting empty names, invalid ranges, lengths that do not fit a pomodoro, and overlaps on the same weekday.</summary>
+    public bool TryAdd(DayOfWeek day, TimeOnly start, TimeOnly end, ScheduledStartMode mode, int focusMinutes, int breakMinutes,
         string? name, out string error)
-        => TryAddDays([day], start, end, mode, cycles, name, out error);
+        => TryAddDays([day], start, end, mode, focusMinutes, breakMinutes, name, out error);
 
     /// <summary>Adds the same time block to several weekdays atomically.</summary>
     public bool TryAddDays(IEnumerable<DayOfWeek> days, TimeOnly start, TimeOnly end, ScheduledStartMode mode,
-        int cycles, string? name, out string error)
+        int focusMinutes, int breakMinutes, string? name, out string error)
     {
         string cleanName = PomodoroProfiles.CleanText(name, 160);
         DayOfWeek[] selectedDays = days.Distinct().ToArray();
@@ -110,25 +121,60 @@ public sealed class PomodoroWeeklySchedule : IDisposable
             error = "Dê um nome para esta faixa.";
             return false;
         }
-        if (selectedDays.Length == 0 || selectedDays.Any(day => !Enum.IsDefined(day))
-            || !Enum.IsDefined(mode) || start >= end)
-        {
-            error = selectedDays.Length == 0 ? "Escolha pelo menos um dia da semana."
-                : "O horário final precisa ser depois do horário inicial no mesmo dia.";
-            return false;
-        }
+        if (!ValidateBlock(selectedDays, start, end, mode, focusMinutes, breakMinutes, out error)) return false;
 
         lock (_gate)
         {
             if (_disposed) { error = "A rotina semanal foi encerrada."; return false; }
-            if (selectedDays.Any(day => _blocks.Any(existing => existing.Day == day && start < existing.End && existing.Start < end)))
+            if (OverlapsLocked(selectedDays, start, end, excludeId: null))
             {
-                error = "Esta faixa se sobrepõe a outra em pelo menos um dos dias selecionados.";
+                error = OverlapMessage;
                 return false;
             }
             foreach (DayOfWeek day in selectedDays)
-                _blocks.Add(new PomodoroWeeklyBlock(Guid.NewGuid(), day, start, end, mode,
-                    Math.Clamp(cycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles), cleanName));
+                _blocks.Add(new PomodoroWeeklyBlock(Guid.NewGuid(), day, start, end, mode, cleanName,
+                    ClampMinutes(focusMinutes), ClampMinutes(breakMinutes)));
+            SortBlocksLocked();
+            SaveLocked();
+            error = string.Empty;
+        }
+
+        Reconcile();
+        Changed?.Invoke();
+        return true;
+    }
+
+    /// <summary>
+    /// Replaces the block <paramref name="id"/> with the given day, times, mode and lengths, keeping its id. Validated like
+    /// <see cref="TryAddDays"/>. A block that is running now keeps its session; the new times apply from then on.
+    /// </summary>
+    public bool TryUpdate(Guid id, DayOfWeek day, TimeOnly start, TimeOnly end, ScheduledStartMode mode,
+        int focusMinutes, int breakMinutes, string? name, out string error)
+    {
+        string cleanName = PomodoroProfiles.CleanText(name, 160);
+        if (cleanName.Length == 0)
+        {
+            error = "Dê um nome para esta faixa.";
+            return false;
+        }
+        if (!ValidateBlock([day], start, end, mode, focusMinutes, breakMinutes, out error)) return false;
+
+        lock (_gate)
+        {
+            if (_disposed) { error = "A rotina semanal foi encerrada."; return false; }
+            int index = _blocks.FindIndex(block => block.Id == id);
+            if (index < 0)
+            {
+                error = "Esta faixa não existe mais.";
+                return false;
+            }
+            if (OverlapsLocked([day], start, end, excludeId: id))
+            {
+                error = OverlapMessage;
+                return false;
+            }
+            _blocks[index] = new PomodoroWeeklyBlock(id, day, start, end, mode, cleanName,
+                ClampMinutes(focusMinutes), ClampMinutes(breakMinutes));
             SortBlocksLocked();
             SaveLocked();
             error = string.Empty;
@@ -212,7 +258,6 @@ public sealed class PomodoroWeeklySchedule : IDisposable
 
     private void Reconcile()
     {
-        bool timerInProgress = _timer.IsRunning || _timer.PlanActive || _angry.IsSessionActive;
         PomodoroWeeklyBlock? start = null;
         bool stop = false;
         bool prompt = false;
@@ -236,29 +281,20 @@ public sealed class PomodoroWeeklySchedule : IDisposable
 
             if (_active?.Id != desired?.Id)
             {
-                if (_active is { } previous)
+                // The block's end, a disabled routine or a switch to another block ends the session it started, even mid-plan.
+                if (_active is not null && _ownsSession)
                 {
-                    bool endedNaturally = desired is null && _enabled && !_resumePromptPending
-                        && _skippedDate != today && _blocks.Any(block => block.Id == previous.Id)
-                        && previous.Day == today.DayOfWeek && TimeOnly.FromDateTime(now) >= previous.End;
-                    if (endedNaturally && timerInProgress) _finishingBlock = previous;
-                    else stop = true;
+                    stop = true;
+                    _ownsSession = false;
                 }
                 _active = desired;
                 start = desired;
-                if (desired is not null && _finishingBlock is not null)
-                {
-                    stop = true;
-                    _finishingBlock = null;
-                }
                 changed = true;
             }
-            else if (_active is null && _finishingBlock is not null
-                && (!_enabled || _resumePromptPending || _skippedDate == today))
+            else if (desired is not null)
             {
-                stop = true;
-                _finishingBlock = null;
-                changed = true;
+                // The same block, edited in place: its session keeps running and the new end is armed below.
+                _active = desired;
             }
 
             ArmLocked(now, today, desired);
@@ -277,15 +313,12 @@ public sealed class PomodoroWeeklySchedule : IDisposable
     {
         if (!transition.PlanFinished) return;
         PomodoroWeeklyBlock? active;
-        bool wasFinishing;
         lock (_gate)
         {
             if (_disposed) return;
-            wasFinishing = _finishingBlock is not null;
-            if (wasFinishing) _finishingBlock = null;
             active = _active;
             DateTime now = _clock();
-            if (wasFinishing || !_enabled || _resumePromptPending || _skippedDate == DateOnly.FromDateTime(now)
+            if (!_enabled || _resumePromptPending || _skippedDate == DateOnly.FromDateTime(now)
                 || active is null || active.Day != now.DayOfWeek
                 || TimeOnly.FromDateTime(now) < active.Start || TimeOnly.FromDateTime(now) >= active.End) return;
         }
@@ -296,22 +329,29 @@ public sealed class PomodoroWeeklySchedule : IDisposable
 
     private void StartManagedSession(PomodoroWeeklyBlock block)
     {
+        int cycles;
         lock (_gate)
         {
             if (_disposed || _active?.Id != block.Id || !_enabled || _resumePromptPending
                 || _skippedDate == DateOnly.FromDateTime(_clock())) return;
             DateTime now = _clock();
-            if (block.Day != now.DayOfWeek || TimeOnly.FromDateTime(now) < block.Start || TimeOnly.FromDateTime(now) >= block.End) return;
+            TimeOnly time = TimeOnly.FromDateTime(now);
+            if (block.Day != now.DayOfWeek || time < block.Start || time >= block.End) return;
+
+            // Only the pairs that still fit before the block ends, so the plan never runs past the block.
+            cycles = PomodoroTimer.CyclesFor(block.End - time, block.FocusMinutes, block.BreakMinutes);
+            if (cycles < 1) return;
         }
         // Like a one-off scheduled start, a weekly block never takes ownership from an existing Angry session.
         if (_angry.IsSessionActive) return;
 
         _timer.Reset();
         if (_timer.Phase != PomodoroPhase.Focus) _timer.SetPhase(PomodoroPhase.Focus);
+        lock (_gate) _ownsSession = true;
         if (block.Mode == ScheduledStartMode.Angry)
-            _angry.EngageScheduled(block.Cycles, block.Name);
+            _angry.EngageScheduled(cycles, block.Name, block.FocusMinutes, block.BreakMinutes);
         else
-            _timer.StartPlan(block.Cycles, block.Name);
+            _timer.StartPlan(cycles, block.Name, block.FocusMinutes, block.BreakMinutes);
     }
 
     private void StopManagedSession()
@@ -376,11 +416,49 @@ public sealed class PomodoroWeeklySchedule : IDisposable
     private void SaveLocked() => _store?.Save(new PomodoroWeeklyScheduleState(_blocks.ToArray(), _enabled,
         _skippedDate, _resumePromptPending));
 
+    private bool OverlapsLocked(IEnumerable<DayOfWeek> days, TimeOnly start, TimeOnly end, Guid? excludeId) =>
+        days.Any(day => _blocks.Any(existing => existing.Id != excludeId && existing.Day == day
+            && start < existing.End && existing.Start < end));
+
     private void SortBlocksLocked() => _blocks.Sort((a, b) =>
     {
         int day = WeekOrder(a.Day).CompareTo(WeekOrder(b.Day));
         return day != 0 ? day : a.Start.CompareTo(b.Start);
     });
+
+    private static bool ValidateBlock(DayOfWeek[] days, TimeOnly start, TimeOnly end, ScheduledStartMode mode,
+        int focusMinutes, int breakMinutes, out string error)
+    {
+        if (days.Length == 0)
+        {
+            error = "Escolha pelo menos um dia da semana.";
+            return false;
+        }
+        if (days.Any(day => !Enum.IsDefined(day)) || !Enum.IsDefined(mode))
+        {
+            error = "Escolha um dia da semana e um modo válidos.";
+            return false;
+        }
+        if (start >= end)
+        {
+            error = "O horário final precisa ser depois do horário inicial no mesmo dia.";
+            return false;
+        }
+        if (focusMinutes < PomodoroTimer.MinMinutes || focusMinutes > PomodoroTimer.MaxMinutes
+            || breakMinutes < PomodoroTimer.MinMinutes || breakMinutes > PomodoroTimer.MaxMinutes)
+        {
+            error = $"Foco e pausa precisam ter entre {PomodoroTimer.MinMinutes} e {PomodoroTimer.MaxMinutes} minutos.";
+            return false;
+        }
+        if (PomodoroTimer.CyclesFor(end - start, focusMinutes, breakMinutes) < 1)
+        {
+            error = $"A faixa precisa caber ao menos um pomodoro de {focusMinutes + breakMinutes} minutos (foco + pausa).";
+            return false;
+        }
+
+        error = string.Empty;
+        return true;
+    }
 
     private static IReadOnlyList<PomodoroWeeklyBlock> Normalize(IEnumerable<PomodoroWeeklyBlock>? blocks)
     {
@@ -394,7 +472,7 @@ public sealed class PomodoroWeeklySchedule : IDisposable
             ids.Add(id);
             string name = PomodoroProfiles.CleanText(block.Name, 160);
             if (name.Length == 0) continue;
-            var normalized = block with { Id = id, Cycles = Math.Clamp(block.Cycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles), Name = name };
+            var normalized = block with { Id = id, FocusMinutes = ClampMinutes(block.FocusMinutes), BreakMinutes = ClampMinutes(block.BreakMinutes), Name = name };
             if (result.Any(existing => existing.Day == normalized.Day && normalized.Start < existing.End && existing.Start < normalized.End))
                 continue;
             result.Add(normalized);
@@ -406,6 +484,8 @@ public sealed class PomodoroWeeklySchedule : IDisposable
         });
         return result;
     }
+
+    private static int ClampMinutes(int minutes) => Math.Clamp(minutes, PomodoroTimer.MinMinutes, PomodoroTimer.MaxMinutes);
 
     private static int WeekOrder(DayOfWeek day) => ((int)day + 6) % 7;
 }

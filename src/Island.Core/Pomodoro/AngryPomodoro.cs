@@ -60,16 +60,16 @@ public sealed class AngryPomodoro : IDisposable
     /// <summary>
     /// Starts an angry session and locks the timer while it is in a focus phase. A fresh focus starts a plan of
     /// <paramref name="cycles"/> pomodoros; a paused single focus resumes without a plan; a plan already in progress
-    /// keeps running. A running single focus keeps its remaining time.
+    /// keeps running. A running single focus keeps its remaining time. The optional lengths apply to a new plan only.
     /// </summary>
-    public void Engage(int cycles)
-        => EngageCore(cycles, sessionName: null, scheduled: false);
+    public void Engage(int cycles, int? focusMinutes = null, int? breakMinutes = null)
+        => EngageCore(cycles, sessionName: null, scheduled: false, focusMinutes, breakMinutes);
 
     /// <summary>Starts an Angry plan owned by the weekly schedule so its time block can end it automatically.</summary>
-    public void EngageScheduled(int cycles, string? sessionName)
-        => EngageCore(cycles, sessionName, scheduled: true);
+    public void EngageScheduled(int cycles, string? sessionName, int? focusMinutes = null, int? breakMinutes = null)
+        => EngageCore(cycles, sessionName, scheduled: true, focusMinutes, breakMinutes);
 
-    private void EngageCore(int cycles, string? sessionName, bool scheduled)
+    private void EngageCore(int cycles, string? sessionName, bool scheduled, int? focusMinutes, int? breakMinutes)
     {
         lock (_gate)
         {
@@ -79,7 +79,7 @@ public sealed class AngryPomodoro : IDisposable
         if (!_timer.PlanActive)
         {
             if (_timer.Phase != PomodoroPhase.Focus) _timer.SetPhase(PomodoroPhase.Focus);
-            if (!_timer.IsRunning && _timer.Remaining == _timer.PhaseDuration) _timer.StartPlan(cycles, sessionName);
+            if (!_timer.IsRunning && _timer.Remaining == _timer.PhaseDuration) _timer.StartPlan(cycles, sessionName, focusMinutes, breakMinutes);
             else if (!_timer.IsRunning) _timer.Start();
         }
         else if (!_timer.IsRunning)

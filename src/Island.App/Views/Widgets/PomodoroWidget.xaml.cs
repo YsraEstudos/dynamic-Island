@@ -353,7 +353,8 @@ public partial class PomodoroWidget : UserControl
     /// <summary>Opens schedule management, including future weekly blocks, even during a locked session.</summary>
     private void OnScheduleClicked()
     {
-        ScheduleWindow.ShowFor(_ctx.Schedule, _ctx.Settings().PomodoroCycles, _ctx.WeeklySchedule);
+        IslandSettings settings = _ctx.Settings();
+        ScheduleWindow.ShowFor(_ctx.Schedule, settings.PomodoroFocusMinutes, settings.PomodoroBreakMinutes, _ctx.WeeklySchedule);
     }
 
     /// <summary>Phase pills are ignored during a plan: the plan decides the phase. Choosing one clears Angry selection.</summary>

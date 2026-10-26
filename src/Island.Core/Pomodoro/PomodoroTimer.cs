@@ -22,6 +22,9 @@ public sealed class PomodoroTimer : IDisposable
     public const int MaxCycles = 24;
     /// <summary>Length of the Pré phase. Fixed: it is not a setting.</summary>
     public const int PrepMinutes = 5;
+    /// <summary>Focus and break lengths used when a scheduled start does not name its own.</summary>
+    public const int DefaultFocusMinutes = 25;
+    public const int DefaultBreakMinutes = 5;
 
     private readonly IIslandScheduler _scheduler;
     private readonly Func<IslandSettings> _settings;
@@ -108,6 +111,15 @@ public sealed class PomodoroTimer : IDisposable
         }
     }
 
+    /// <summary>The break length of the active plan, as captured when it started. Only meaningful while a plan is active.</summary>
+    public TimeSpan PlanBreakDuration
+    {
+        get
+        {
+            lock (_gate) return _planBreakDuration;
+        }
+    }
+
     /// <summary>True while a plan is active, including while it is paused.</summary>
     public bool PlanActive
     {
@@ -180,22 +192,24 @@ public sealed class PomodoroTimer : IDisposable
 
     /// <summary>
     /// Starts a plan of <paramref name="cycles"/> focus/break pairs (clamped to <see cref="MinCycles"/>..<see cref="MaxCycles"/>).
+    /// <paramref name="focusMinutes"/> and <paramref name="breakMinutes"/> fix the phase lengths of this plan; left null they
+    /// come from the settings, and later changes to the settings do not touch a plan already running.
     /// A fresh focus starts counting at once; later phases follow the captured auto/manual preference. No-op while controls are locked.
     /// </summary>
-    public void StartPlan(int cycles, string? sessionName = null)
+    public void StartPlan(int cycles, string? sessionName = null, int? focusMinutes = null, int? breakMinutes = null)
     {
         var settings = _settings();
         lock (_gate)
         {
             if (_disposed || _controlsLocked) return;
             StopLocked();
+            _planFocusDuration = focusMinutes is { } focus ? PhaseMinutes(focus) : FocusDuration(settings);
+            _planBreakDuration = breakMinutes is { } brk ? PhaseMinutes(brk) : BreakDuration(settings);
             _phase = PomodoroPhase.Focus;
-            _phaseDuration = FocusDuration(settings);
+            _phaseDuration = _planFocusDuration;
             _remainingAtStart = _phaseDuration;
             _planTotal = Math.Clamp(cycles, MinCycles, MaxCycles);
             _planCycle = 1;
-            _planFocusDuration = FocusDuration(settings);
-            _planBreakDuration = BreakDuration(settings);
             _autoAdvance = settings.PomodoroAutoAdvance;
             _sessionGoal = PomodoroProfiles.CleanText(sessionName ?? settings.PomodoroGoal, 160);
             _awaitingNextPhase = false;
@@ -546,4 +560,17 @@ public sealed class PomodoroTimer : IDisposable
 
     // A zero or negative setting would complete immediately; clamp to the same range as SetMinutes.
     private static int ClampSettingMinutes(int minutes) => Math.Clamp(minutes, MinMinutes, MaxMinutes);
+
+    private static TimeSpan PhaseMinutes(int minutes) => TimeSpan.FromMinutes(ClampSettingMinutes(minutes));
+
+    /// <summary>
+    /// How many whole focus-plus-break pairs fit in <paramref name="window"/>, capped at <see cref="MaxCycles"/>. A plan of
+    /// that many pairs ends inside the window. Zero when the window is shorter than one pair.
+    /// </summary>
+    public static int CyclesFor(TimeSpan window, int focusMinutes, int breakMinutes)
+    {
+        if (window <= TimeSpan.Zero) return 0;
+        long pairTicks = (PhaseMinutes(focusMinutes) + PhaseMinutes(breakMinutes)).Ticks;
+        return (int)Math.Min(window.Ticks / pairTicks, MaxCycles);
+    }
 }

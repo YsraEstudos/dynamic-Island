@@ -91,7 +91,9 @@ public sealed class PomodoroSessionFeaturesTests
         using var timer = new PomodoroTimer(scheduler, () => settings, clock);
         using var angry = new AngryPomodoro(timer);
         using var schedule = new PomodoroSchedule(timer, angry, scheduler, clock);
-        schedule.Add(clock() + TimeSpan.FromSeconds(5), ScheduledStartMode.Angry, 2);
+        // Two pomodoros of one minute focus and one minute break fill the four minutes from the start to the end.
+        schedule.Add(clock() + TimeSpan.FromSeconds(5), clock() + TimeSpan.FromSeconds(5) + TimeSpan.FromMinutes(4),
+            ScheduledStartMode.Angry, 1, 1);
         scheduler.Advance(TimeSpan.FromSeconds(5));
         Assert.True(timer.IsRunning);
         Assert.True(angry.IsLocked);

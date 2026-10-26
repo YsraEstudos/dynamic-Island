@@ -197,7 +197,7 @@ public partial class App : System.Windows.Application
                 wasLocked = locked;
             }
             if (!sendBlock) return;
-            _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, AdultSpanFromFocus(focusTimer, holder.Current),
+            _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, AdultSpanFromFocus(focusTimer),
                 holder.Current.PhoneFcmToken);
         };
 
@@ -331,15 +331,15 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>
-    /// How long the phone keeps adult content blocked from now: the focus that is starting, then its break. A plan ends
+    /// How long the phone keeps adult content blocked from now: the focus that is starting, then its break. The break is
+    /// the one the plan captured when it started (a weekly block has its own), not the current setting. A plan ends
     /// after its last break, so the last focus counts its break too. A single focus (no plan) gives zero, because the
     /// session ends with it and the full block already covers it.
     /// </summary>
-    private static TimeSpan AdultSpanFromFocus(PomodoroTimer timer, IslandSettings settings)
+    private static TimeSpan AdultSpanFromFocus(PomodoroTimer timer)
     {
         if (!timer.PlanActive) return TimeSpan.Zero;
-        var breakLength = TimeSpan.FromMinutes(Math.Clamp(settings.PomodoroBreakMinutes, PomodoroTimer.MinMinutes, PomodoroTimer.MaxMinutes));
-        return timer.Remaining + breakLength;
+        return timer.Remaining + timer.PlanBreakDuration;
     }
 
     /// <summary>Quit from the island menu or the tray. While an angry pomodoro is locked, the unlock dialog must release it first.</summary>

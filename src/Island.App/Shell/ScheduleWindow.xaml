@@ -99,7 +99,7 @@
                    Foreground="{StaticResource TextPrimaryBrush}" />
         <TextBlock Grid.Row="1"
                    Margin="0,4,0,0"
-                   Text="Cada início agendado começa sozinho no horário escolhido."
+                   Text="Cada início agendado roda quantos pomodoros couberem entre o começo e o término."
                    Foreground="{StaticResource TextSecondaryBrush}"
                    TextWrapping="Wrap" />
 
@@ -161,7 +161,7 @@
                          FontWeight="SemiBold"
                          MaxLength="5"
                          SpellCheck.IsEnabled="False"
-                         TextChanged="OnTimeChanged" />
+                         TextChanged="OnFormChanged" />
             </Border>
         </Grid>
         <TextBlock x:Name="TimeError"
@@ -196,38 +196,52 @@
                     Click="OnAngryModeClicked" />
         </Grid>
 
-        <!-- Pomodoros in a row: − N + (1 to 24). -->
-        <TextBlock Grid.Row="7"
-                   Margin="0,14,0,0"
-                   Text="Pomodoros seguidos"
-                   FontSize="12"
-                   Foreground="{StaticResource TextSecondaryBrush}" />
-        <StackPanel Grid.Row="8" Margin="0,6,0,0" Orientation="Horizontal">
-            <Button x:Name="MinusButton"
-                    Width="44"
-                    Content="−"
-                    FontSize="18"
-                    Padding="0,4"
-                    Style="{StaticResource ActionButtonStyle}"
-                    Click="OnMinusClicked" />
-            <TextBlock x:Name="CountText"
-                       Width="56"
-                       Margin="6,0"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-                       FontSize="20"
-                       FontWeight="SemiBold"
-                       Foreground="{StaticResource TextPrimaryBrush}"
-                       TextAlignment="Center"
-                       Typography.NumeralAlignment="Tabular" />
-            <Button x:Name="PlusButton"
-                    Width="44"
-                    Content="+"
-                    FontSize="18"
-                    Padding="0,4"
-                    Style="{StaticResource ActionButtonStyle}"
-                    Click="OnPlusClicked" />
-        </StackPanel>
+        <!-- End time, then the focus and break lengths in minutes. The number of pomodoros follows from them (see the preview). -->
+        <Grid Grid.Row="7" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Termina às" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" />
+            <TextBlock Grid.Column="2" Text="Foco (min)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" />
+            <TextBlock Grid.Column="4" Text="Pausa (min)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" />
+        </Grid>
+        <Grid Grid.Row="8" Margin="0,6,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Padding="12,8" Background="{StaticResource ShelfTileBrush}"
+                    BorderBrush="{StaticResource MenuSeparatorBrush}" BorderThickness="1" CornerRadius="10">
+                <TextBox x:Name="EndBox" Padding="0" Background="Transparent" BorderThickness="0"
+                         Foreground="{StaticResource TextPrimaryBrush}" CaretBrush="{StaticResource TextPrimaryBrush}"
+                         FontSize="18" FontWeight="SemiBold" MaxLength="5" HorizontalContentAlignment="Center"
+                         SpellCheck.IsEnabled="False" AutomationProperties.Name="Horário final"
+                         TextChanged="OnFormChanged" />
+            </Border>
+            <Border Grid.Column="2" Padding="12,8" Background="{StaticResource ShelfTileBrush}"
+                    BorderBrush="{StaticResource MenuSeparatorBrush}" BorderThickness="1" CornerRadius="10">
+                <TextBox x:Name="FocusBox" Padding="0" Background="Transparent" BorderThickness="0"
+                         Foreground="{StaticResource TextPrimaryBrush}" CaretBrush="{StaticResource TextPrimaryBrush}"
+                         FontSize="18" FontWeight="SemiBold" MaxLength="3" HorizontalContentAlignment="Center"
+                         SpellCheck.IsEnabled="False" AutomationProperties.Name="Minutos de foco"
+                         TextChanged="OnFormChanged" />
+            </Border>
+            <Border Grid.Column="4" Padding="12,8" Background="{StaticResource ShelfTileBrush}"
+                    BorderBrush="{StaticResource MenuSeparatorBrush}" BorderThickness="1" CornerRadius="10">
+                <TextBox x:Name="BreakBox" Padding="0" Background="Transparent" BorderThickness="0"
+                         Foreground="{StaticResource TextPrimaryBrush}" CaretBrush="{StaticResource TextPrimaryBrush}"
+                         FontSize="18" FontWeight="SemiBold" MaxLength="3" HorizontalContentAlignment="Center"
+                         SpellCheck.IsEnabled="False" AutomationProperties.Name="Minutos de pausa"
+                         TextChanged="OnFormChanged" />
+            </Border>
+        </Grid>
 
         <!-- Preview of the chosen start: day and time. -->
         <TextBlock x:Name="PreviewText"
@@ -269,6 +283,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0"
                                            Width="110"
@@ -294,11 +309,22 @@
                                            Margin="12,0,0,0"
                                            VerticalAlignment="Center"
                                            Text="{Binding Count}"
+                                           TextTrimming="CharacterEllipsis"
                                            Foreground="{StaticResource TextSecondaryBrush}" />
                                 <Button Grid.Column="4"
-                                        Width="28"
                                         Height="28"
                                         Margin="8,0,0,0"
+                                        Padding="10,0"
+                                        Content="Editar"
+                                        FontSize="12"
+                                        ToolTip="Editar faixa"
+                                        Tag="{Binding Id}"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="OnEditClicked" />
+                                <Button Grid.Column="5"
+                                        Width="28"
+                                        Height="28"
+                                        Margin="6,0,0,0"
                                         Padding="0"
                                         Content="✕"
                                         FontSize="12"
@@ -320,6 +346,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Button x:Name="CloseButton"
@@ -330,15 +357,24 @@
                     Style="{StaticResource ActionButtonStyle}"
                     Click="OnCloseClicked" />
 
-            <Button x:Name="WeeklyButton"
+            <!-- Shown only while a scheduled start is being edited. -->
+            <Button x:Name="CancelEditButton"
                     Grid.Column="1"
+                    Margin="0,0,10,0"
+                    Content="Cancelar edição"
+                    Visibility="Collapsed"
+                    Style="{StaticResource ActionButtonStyle}"
+                    Click="OnCancelEditClicked" />
+
+            <Button x:Name="WeeklyButton"
+                    Grid.Column="2"
                     Margin="0,0,10,0"
                     Content="Rotina semanal"
                     Style="{StaticResource ActionButtonStyle}"
                     Click="OnWeeklyClicked" />
 
             <Button x:Name="ConfirmButton"
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Background="{StaticResource AccentBlueBrush}"
                     Content="Agendar"
                     IsDefault="True"

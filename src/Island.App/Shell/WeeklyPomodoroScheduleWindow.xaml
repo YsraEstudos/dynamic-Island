@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Rotina semanal do Pomodoro"
         Width="700"
-        Height="690"
+        Height="720"
         MinHeight="560"
-        MaxHeight="850"
+        MaxHeight="880"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
         ShowInTaskbar="True"
@@ -61,7 +61,7 @@
 
         <TextBlock Grid.Row="0" Text="Rotina semanal" FontSize="21" FontWeight="SemiBold" />
         <TextBlock Grid.Row="1" Margin="0,5,0,0"
-                   Text="Cada faixa inicia o modo escolhido no começo e para no horário final."
+                   Text="Cada faixa inicia o modo escolhido no começo, roda quantos pomodoros couberem e para no horário final."
                    Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
 
         <Grid Grid.Row="2" Margin="0,16,0,14">
@@ -92,15 +92,29 @@
                 <TextBox x:Name="NameBox" Grid.Column="0" MaxLength="160" FontSize="14"
                          ToolTip="Nome que aparece ao lado do contador" AutomationProperties.Name="Nome da sessão" />
                 <TextBox x:Name="StartBox" Grid.Column="2" Width="86" MaxLength="5" FontSize="15"
-                         Text="09:00" HorizontalContentAlignment="Center" AutomationProperties.Name="Horário inicial" />
+                         Text="09:00" HorizontalContentAlignment="Center" AutomationProperties.Name="Horário inicial"
+                         TextChanged="OnFormChanged" />
                 <TextBox x:Name="EndBox" Grid.Column="4" Width="86" MaxLength="5" FontSize="15"
-                         Text="10:00" HorizontalContentAlignment="Center" AutomationProperties.Name="Horário final" />
+                         Text="10:00" HorizontalContentAlignment="Center" AutomationProperties.Name="Horário final"
+                         TextChanged="OnFormChanged" />
             </Grid>
             <TextBlock Grid.Row="2" Margin="0,11,0,4" Text="Dias da semana"
                        FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" />
             <WrapPanel x:Name="DaysPanel" Grid.Row="3" />
+
+            <!-- Mode, then focus and break lengths in minutes. The pomodoro count is worked out from the block's times. -->
             <Grid Grid.Row="4" Margin="0,12,0,12">
-                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="140" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="64" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="64" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Modo" VerticalAlignment="Center" Margin="0,0,8,0"
                            Foreground="{StaticResource TextSecondaryBrush}" />
                 <ComboBox x:Name="ModeBox" Grid.Column="1" SelectedIndex="0" Padding="8,5"
@@ -108,23 +122,29 @@
                     <ComboBoxItem Content="Focus" Tag="Focus" />
                     <ComboBoxItem Content="Angry" Tag="Angry" />
                 </ComboBox>
-                <TextBlock Grid.Column="2" Text="Pomodoros" VerticalAlignment="Center" Margin="18,0,8,0"
+                <TextBlock Grid.Column="3" Text="Foco (min)" VerticalAlignment="Center" Margin="0,0,8,0"
                            Foreground="{StaticResource TextSecondaryBrush}" />
-                <Button x:Name="MinusButton" Grid.Column="3" Content="−" Width="34" Padding="0,5"
-                        Style="{StaticResource ActionButtonStyle}" Click="OnMinusClicked" />
-                <TextBlock x:Name="CyclesText" Grid.Column="4" Text="1" Width="34" VerticalAlignment="Center"
-                           TextAlignment="Center" FontSize="16" FontWeight="SemiBold" />
-                <Button x:Name="PlusButton" Grid.Column="5" Content="+" Width="34" Padding="0,5"
-                        HorizontalAlignment="Left" Style="{StaticResource ActionButtonStyle}" Click="OnPlusClicked" />
+                <TextBox x:Name="FocusBox" Grid.Column="4" MaxLength="3" HorizontalContentAlignment="Center"
+                         AutomationProperties.Name="Minutos de foco" TextChanged="OnFormChanged" />
+                <TextBlock Grid.Column="6" Text="Pausa (min)" VerticalAlignment="Center" Margin="0,0,8,0"
+                           Foreground="{StaticResource TextSecondaryBrush}" />
+                <TextBox x:Name="BreakBox" Grid.Column="7" MaxLength="3" HorizontalContentAlignment="Center"
+                         AutomationProperties.Name="Minutos de pausa" TextChanged="OnFormChanged" />
+                <TextBlock x:Name="CountText" Grid.Column="8" VerticalAlignment="Center" TextAlignment="Right"
+                           TextWrapping="Wrap" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextSecondaryBrush}" />
             </Grid>
 
             <Grid Grid.Row="5">
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                 <Grid Grid.Row="0" Margin="0,0,0,8">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                     <TextBlock x:Name="StatusText" VerticalAlignment="Center" Foreground="#C5AB88"
                                TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
-                    <Button Grid.Column="1" Content="Adicionar faixa" Background="{StaticResource AccentBlueBrush}"
+                    <!-- Shown only while a block is being edited. -->
+                    <Button x:Name="CancelEditButton" Grid.Column="1" Margin="0,0,10,0" Content="Cancelar edição"
+                            Visibility="Collapsed" Style="{StaticResource ActionButtonStyle}" Click="OnCancelEditClicked" />
+                    <Button x:Name="AddButton" Grid.Column="2" Content="Adicionar faixa" Background="{StaticResource AccentBlueBrush}"
                             Style="{StaticResource ActionButtonStyle}" Click="OnAddClicked" />
                 </Grid>
                 <TextBlock Grid.Row="1" Text="Faixas programadas" FontSize="14" FontWeight="SemiBold"
@@ -133,7 +153,7 @@
                     <TextBlock x:Name="EmptyText" Text="Nenhuma faixa semanal cadastrada"
                                Foreground="{StaticResource TextSecondaryBrush}" Margin="0,8,0,0" />
                     <ScrollViewer x:Name="BlocksScroll" VerticalScrollBarVisibility="Auto"
-                                  MaxHeight="240" Visibility="Collapsed">
+                                  MaxHeight="260" Visibility="Collapsed">
                         <ItemsControl x:Name="BlocksList">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -145,8 +165,9 @@
                                                 <ColumnDefinition Width="42" />
                                                 <ColumnDefinition Width="100" />
                                                 <ColumnDefinition Width="52" />
-                                                <ColumnDefinition Width="50" />
+                                                <ColumnDefinition Width="130" />
                                                 <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{Binding Day}" VerticalAlignment="Center"
@@ -156,10 +177,14 @@
                                             <TextBlock Grid.Column="2" Text="{Binding Mode}" VerticalAlignment="Center"
                                                        FontWeight="SemiBold" Foreground="{Binding ModeBrush}" />
                                             <TextBlock Grid.Column="3" Text="{Binding Cycles}" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"
                                                        Foreground="{StaticResource TextSecondaryBrush}" />
                                             <TextBlock Grid.Column="4" Text="{Binding Name}" VerticalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" />
-                                            <Button Grid.Column="5" Width="28" Height="28" Margin="8,0,0,0" Padding="0"
+                                            <Button Grid.Column="5" Height="28" Margin="8,0,0,0" Padding="10,0"
+                                                    Content="Editar" FontSize="12" ToolTip="Editar faixa" Tag="{Binding Id}"
+                                                    Style="{StaticResource ActionButtonStyle}" Click="OnEditClicked" />
+                                            <Button Grid.Column="6" Width="28" Height="28" Margin="6,0,0,0" Padding="0"
                                                     Content="✕" ToolTip="Excluir faixa" Tag="{Binding Id}"
                                                     Foreground="{StaticResource MutedRedBrush}"
                                                     Style="{StaticResource ActionButtonStyle}" Click="OnDeleteClicked" />

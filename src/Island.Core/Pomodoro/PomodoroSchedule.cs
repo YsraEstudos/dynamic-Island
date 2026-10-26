@@ -5,8 +5,16 @@ namespace Island.Core.Pomodoro;
 /// <summary>What a scheduled start runs: a normal Focus plan, or an Angry (locked) plan.</summary>
 public enum ScheduledStartMode { Focus, Angry }
 
-/// <summary>One pending scheduled start. <see cref="Id"/> identifies it, so it can be removed on its own.</summary>
-public sealed record ScheduledStart(Guid Id, DateTimeOffset At, ScheduledStartMode Mode, int Cycles);
+/// <summary>
+/// One pending scheduled start. <see cref="Id"/> identifies it, so it can be removed on its own. The plan runs
+/// <see cref="Cycles"/> focus/break pairs of the given lengths, so it ends at <see cref="End"/>.
+/// </summary>
+public sealed record ScheduledStart(Guid Id, DateTimeOffset At, ScheduledStartMode Mode, int Cycles,
+    int FocusMinutes = PomodoroTimer.DefaultFocusMinutes, int BreakMinutes = PomodoroTimer.DefaultBreakMinutes)
+{
+    /// <summary>When the last break of the plan ends.</summary>
+    public DateTimeOffset End => At + TimeSpan.FromMinutes(Cycles * (FocusMinutes + BreakMinutes));
+}
 
 /// <summary>
 /// Holds scheduled starts of a pomodoro plan, each at its own date and time. When a time comes it starts the plan
@@ -98,8 +106,44 @@ public sealed class PomodoroSchedule : IDisposable
     /// disposed.
     /// </summary>
     public ScheduledStart? Add(DateTimeOffset at, ScheduledStartMode mode, int cycles)
+        => Insert(at, mode, cycles, PomodoroTimer.DefaultFocusMinutes, PomodoroTimer.DefaultBreakMinutes);
+
+    /// <summary>
+    /// Schedules a start whose plan fills <paramref name="at"/>..<paramref name="end"/> with focus/break pairs of the given
+    /// lengths: as many whole pairs as fit, so the plan ends by <paramref name="end"/>. Same rules as
+    /// <see cref="Add(DateTimeOffset, ScheduledStartMode, int)"/> otherwise.
+    /// </summary>
+    public ScheduledStart? Add(DateTimeOffset at, DateTimeOffset end, ScheduledStartMode mode, int focusMinutes, int breakMinutes)
+        => Insert(at, mode, PomodoroTimer.CyclesFor(end - at, focusMinutes, breakMinutes), focusMinutes, breakMinutes);
+
+    /// <summary>
+    /// Replaces the start with <paramref name="id"/> by one at <paramref name="at"/>..<paramref name="end"/>, keeping its id
+    /// and its place in the list. Returns false when there is no such start, when disposed, or when <paramref name="at"/>
+    /// is not ahead of now.
+    /// </summary>
+    public bool Update(Guid id, DateTimeOffset at, DateTimeOffset end, ScheduledStartMode mode, int focusMinutes, int breakMinutes)
     {
-        var start = new ScheduledStart(Guid.NewGuid(), at, mode, Math.Clamp(cycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles));
+        lock (_gate)
+        {
+            if (_disposed) return false;
+
+            var now = _clock();
+            int index = _starts.FindIndex(s => s.Id == id);
+            if (index < 0 || at <= now) return false;
+
+            _starts[index] = MakeStart(id, at, PomodoroTimer.CyclesFor(end - at, focusMinutes, breakMinutes), mode, focusMinutes, breakMinutes);
+            _starts.Sort(ByTime);
+            Save();
+            RearmLocked(now);
+        }
+
+        RaiseChanged();
+        return true;
+    }
+
+    private ScheduledStart? Insert(DateTimeOffset at, ScheduledStartMode mode, int cycles, int focusMinutes, int breakMinutes)
+    {
+        var start = MakeStart(Guid.NewGuid(), at, cycles, mode, focusMinutes, breakMinutes);
 
         bool due;
         lock (_gate)
@@ -240,15 +284,20 @@ public sealed class PomodoroSchedule : IDisposable
         _timer.Reset();
         if (start.Mode == ScheduledStartMode.Focus)
         {
-            _timer.StartPlan(start.Cycles);
+            _timer.StartPlan(start.Cycles, null, start.FocusMinutes, start.BreakMinutes);
         }
         else
         {
             // Reset keeps the phase when no plan was active, so force a fresh focus before engaging.
             if (_timer.Phase != PomodoroPhase.Focus) _timer.SetPhase(PomodoroPhase.Focus);
-            _angry.Engage(start.Cycles);
+            _angry.Engage(start.Cycles, start.FocusMinutes, start.BreakMinutes);
         }
     }
+
+    private static ScheduledStart MakeStart(Guid id, DateTimeOffset at, int cycles, ScheduledStartMode mode, int focusMinutes, int breakMinutes) =>
+        new(id, at, mode, Math.Clamp(cycles, PomodoroTimer.MinCycles, PomodoroTimer.MaxCycles),
+            Math.Clamp(focusMinutes, PomodoroTimer.MinMinutes, PomodoroTimer.MaxMinutes),
+            Math.Clamp(breakMinutes, PomodoroTimer.MinMinutes, PomodoroTimer.MaxMinutes));
 
     // Caller holds the lock. Cancels the live callback and bumps the generation so a dispatched one does nothing.
     private void CancelLocked()
