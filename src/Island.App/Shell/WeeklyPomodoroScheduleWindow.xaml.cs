@@ -113,7 +113,13 @@ public partial class WeeklyPomodoroScheduleWindow : Window
         Refresh();
     }
 
-    private void OnFormChanged(object sender, TextChangedEventArgs e) => UpdateCountText();
+    // TextChanged can fire while InitializeComponent is still connecting the named fields (the XAML sets Text on
+    // some boxes before CountText exists). The constructor calls UpdateCountText once everything is in place.
+    private void OnFormChanged(object sender, TextChangedEventArgs e)
+    {
+        if (CountText is null) return;
+        UpdateCountText();
+    }
 
     /// <summary>Shows how many pomodoros the typed times and lengths fit, or why they do not fit.</summary>
     private void UpdateCountText()
