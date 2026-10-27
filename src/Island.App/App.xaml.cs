@@ -16,6 +16,7 @@ using Island.Core.Pomodoro;
 using Island.Core.Progress;
 using Island.Windows.Focus;
 using Island.Windows.Input;
+using Island.Windows.Pomodoro;
 using Island.Core.Configuration;
 using Island.Core.Fakes;
 using Island.Core.GameNotes;
@@ -115,6 +116,7 @@ public partial class App : System.Windows.Application
         var applier = sp.GetRequiredService<SettingsApplier>();
         var vm = sp.GetRequiredService<IslandViewModel>();
         var updates = sp.GetRequiredService<IUpdateService>();
+        var angryResume = sp.GetRequiredService<JsonAngryResumeStore>();
         _window = new IslandWindow(vm, monitors, sp.GetRequiredService<Func<IslandSettings>>(), applier.Apply, () => updates.Available);
         applier.Applied = () => Dispatcher.BeginInvoke(() =>
         {
@@ -124,7 +126,7 @@ public partial class App : System.Windows.Application
         _quickNotesHotkey.SetEnabled(holder.Current.QuickNotesHotkeyEnabled);
         _window.OpenSettingsRequested += () => OpenSettings(holder, applier, monitors);
         _window.QuitRequested += RequestQuit;
-        _window.InstallUpdateRequested += () => _ = InstallUpdateAsync(updates, coordinator);
+        _window.InstallUpdateRequested += () => _ = InstallUpdateAsync(updates, coordinator, angryResume);
         _window.CheckUpdateRequested += () => _ = CheckUpdatesFromMenuAsync(updates, coordinator);
         _window.TaskbarRecreated += () => _tray?.Refresh();
         _window.Show();
@@ -200,6 +202,12 @@ public partial class App : System.Windows.Application
             _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, AdultSpanFromFocus(focusTimer),
                 holder.Current.PhoneFcmToken);
         };
+
+        // An Angry session that was running when an update restarted the app continues from its saved time. It is restored
+        // after the handlers above are wired (so the lock, phone block and desktop lock follow it) and before the weekly
+        // routine checks the clock, which then does not start a second session.
+        if (!smoke && angryResume.Take(DateTimeOffset.Now, AngryResumeMaxAge) is { } resume)
+            angry.RestoreSession(resume);
 
         // Pomodoro -> toast (and sound when enabled), clipboard capture -> history, global hotkey -> clipboard panel
         var pomodoro = sp.GetRequiredService<PomodoroTimer>();
@@ -361,14 +369,14 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>
-    /// "Install update" from the island menu. Installing replaces the running app, so it passes the same Angry guard as Quit.
-    /// Progress is shown as temporary notices; failures are logged and shown as a notice.
+    /// "Install update" from the island menu. An Angry session does not block it: the session is saved and the new process
+    /// continues it (see <see cref="PrepareForUpdate"/>). Progress is shown as temporary notices; failures are logged and shown as a notice.
     /// </summary>
-    private async Task InstallUpdateAsync(IUpdateService updates, IslandCoordinator coordinator)
+    private async Task InstallUpdateAsync(IUpdateService updates, IslandCoordinator coordinator, JsonAngryResumeStore angryResume)
     {
         if (_quitRequestInProgress) return;
         UpdateInfo? update = updates.Available;
-        if (update is null || !ConfirmNotLocked()) return;
+        if (update is null) return;
         _quitRequestInProgress = true;
         bool launched = false;
         try
@@ -378,7 +386,7 @@ public partial class App : System.Windows.Application
             {
                 // No edits or new note windows may slip between this flush and process exit.
                 _quickNotesWindowManager?.SetEditingEnabled(false);
-                return await FlushQuickNotesBeforeShutdownAsync(reopenOnFailure: false) && ConfirmNotLocked();
+                return await FlushQuickNotesBeforeShutdownAsync(reopenOnFailure: false) && PrepareForUpdate(angryResume);
             }).Task.Unwrap());
             if (launched) Shutdown(); // No awaits or fallible notifications after the helper has started.
         }
@@ -396,6 +404,19 @@ public partial class App : System.Windows.Application
             }
             _quitRequestInProgress = false;
         }
+    }
+
+    // An Angry session saved before an update is taken again only this soon after, so an update that never relaunched cannot resume it later.
+    private static readonly TimeSpan AngryResumeMaxAge = TimeSpan.FromMinutes(10);
+
+    /// <summary>
+    /// The last check before an update replaces the app. An Angry session is saved for the new process to continue, so
+    /// no phrase is asked. When it cannot be saved, the phrase is still required.
+    /// </summary>
+    private bool PrepareForUpdate(JsonAngryResumeStore angryResume)
+    {
+        if (_angry?.CaptureSession() is not { } session) return ConfirmNotLocked();
+        return angryResume.TrySave(session, DateTimeOffset.Now) || ConfirmNotLocked();
     }
 
     private async Task<bool> FlushQuickNotesBeforeShutdownAsync(bool reopenOnFailure = true)

@@ -222,6 +222,49 @@ public sealed class PomodoroTimer : IDisposable
         RaiseChanged();
     }
 
+    /// <summary>The timer's state at this instant, for <see cref="Restore"/> after a restart.</summary>
+    public PomodoroTimerState Capture()
+    {
+        lock (_gate)
+        {
+            return new PomodoroTimerState(_phase, _phaseDuration, RemainingLocked(_clock()), _running, _planTotal, _planCycle,
+                _planFocusDuration, _planBreakDuration, _autoAdvance, _sessionGoal, _awaitingNextPhase);
+        }
+    }
+
+    /// <summary>
+    /// Puts back a state from <see cref="Capture"/>. A running state counts down again from its saved remaining time.
+    /// The controls lock is left alone: the Angry session restores its own. Does nothing on a disposed timer.
+    /// </summary>
+    public void Restore(PomodoroTimerState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        lock (_gate)
+        {
+            if (_disposed) return;
+            StopLocked();
+            _phase = state.Phase;
+            _phaseDuration = state.PhaseDuration;
+            _remainingAtStart = state.Remaining;
+            _planTotal = state.PlanTotal;
+            _planCycle = state.PlanCycle;
+            _planFocusDuration = state.PlanFocusDuration;
+            _planBreakDuration = state.PlanBreakDuration;
+            _autoAdvance = state.AutoAdvance;
+            _sessionGoal = state.SessionGoal;
+            _awaitingNextPhase = state.AwaitingNextPhase;
+            _prepareNotified = false;
+            if (state.Running)
+            {
+                _running = true;
+                _startedAt = _clock();
+                ArmLocked(DelayFor(_remainingAtStart));
+            }
+        }
+
+        RaiseChanged();
+    }
+
     /// <summary>Stops counting down and keeps the remaining time. A plan stays active.</summary>
     public void Pause()
     {

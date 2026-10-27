@@ -342,8 +342,14 @@ public sealed class PomodoroWeeklySchedule : IDisposable
             cycles = PomodoroTimer.CyclesFor(block.End - time, block.FocusMinutes, block.BreakMinutes);
             if (cycles < 1) return;
         }
-        // Like a one-off scheduled start, a weekly block never takes ownership from an existing Angry session.
-        if (_angry.IsSessionActive) return;
+        // Like a one-off scheduled start, a weekly block never takes ownership from an existing Angry session. The one
+        // exception is a session this routine started before a restart: it keeps ownership, so the block's end still stops it.
+        if (_angry.IsSessionActive)
+        {
+            bool scheduled = _angry.IsScheduledSession;
+            lock (_gate) _ownsSession = scheduled;
+            return;
+        }
 
         _timer.Reset();
         if (_timer.Phase != PomodoroPhase.Focus) _timer.SetPhase(PomodoroPhase.Focus);

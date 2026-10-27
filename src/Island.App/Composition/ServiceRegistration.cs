@@ -156,6 +156,7 @@ public static class ServiceRegistration
         s.AddSingleton(sp => new PomodoroWeeklySchedule(
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<IIslandScheduler>(),
             store: new Island.Windows.Pomodoro.JsonPomodoroWeeklyScheduleStore(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "pomodoro-weekly-schedule.json"))));
+        s.AddSingleton(_ => new Island.Windows.Pomodoro.JsonAngryResumeStore(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "angry-resume.json")));
         s.AddSingleton(sp => new ForegroundSiteGuard(sp.GetService<ILogger<ForegroundSiteGuard>>()));
         s.AddSingleton<ClipboardHistory>();
         s.AddSingleton<FileTray>();

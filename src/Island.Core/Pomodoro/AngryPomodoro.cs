@@ -54,6 +54,15 @@ public sealed class AngryPomodoro : IDisposable
         }
     }
 
+    /// <summary>True while the active session was started by the weekly routine, so its block's end ends it.</summary>
+    public bool IsScheduledSession
+    {
+        get
+        {
+            lock (_gate) return _session && _scheduledSession;
+        }
+    }
+
     /// <summary>Raised once for each change of <see cref="IsLocked"/> or <see cref="IsSessionActive"/>. Arbitrary thread, never under the internal lock.</summary>
     public event Action? LockChanged;
 
@@ -117,6 +126,50 @@ public sealed class AngryPomodoro : IDisposable
 
         // Focus can end between Start and the flag above. Its handlers ignored us then, so check for it now.
         if (lockNow && _timer.Phase != PomodoroPhase.Focus) Transition(session: _timer.PlanActive, locked: false);
+    }
+
+    /// <summary>The active session as it is now, for <see cref="RestoreSession"/> after a restart. Null when no session is active.</summary>
+    public AngryResumeState? CaptureSession()
+    {
+        bool locked;
+        bool scheduled;
+        string? phrase;
+        lock (_gate)
+        {
+            if (!_session || _disposed) return null;
+            locked = _locked;
+            scheduled = _scheduledSession;
+            phrase = _currentPhrase;
+        }
+
+        return new AngryResumeState(_timer.Capture(), locked, phrase, scheduled);
+    }
+
+    /// <summary>
+    /// Continues a session from <see cref="CaptureSession"/>: the timer resumes from its saved remaining time, and the lock,
+    /// phrase and ownership come back as they were. Does nothing when a session is already active or this is disposed.
+    /// </summary>
+    public void RestoreSession(AngryResumeState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        lock (_gate)
+        {
+            if (_disposed || _session) return;
+        }
+
+        bool locked = state.Locked && state.Timer.Phase == PomodoroPhase.Focus;
+        _timer.Restore(state.Timer);
+        _timer.ControlsLocked = locked;
+        lock (_gate)
+        {
+            if (_disposed) return;
+            _session = true;
+            _locked = locked;
+            _currentPhrase = state.Phrase;
+            _scheduledSession = state.Scheduled;
+        }
+
+        LockChanged?.Invoke();
     }
 
     /// <summary>Ends an Angry session only when it belongs to the weekly schedule. Returns false for manual sessions.</summary>
