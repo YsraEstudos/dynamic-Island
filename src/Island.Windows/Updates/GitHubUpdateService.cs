@@ -23,6 +23,8 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
     private const string UserAgent = "DynamicIsland-Updater";
     private const int BufferSize = 81920;
     private static readonly TimeSpan CheckTimeout = TimeSpan.FromSeconds(15);
+    // A download that receives no bytes for this long is abandoned, so a dead connection cannot hold the install (and Quit) forever.
+    private static readonly TimeSpan DefaultDownloadStallTimeout = TimeSpan.FromSeconds(30);
 
     private static readonly string InstallLogPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "logs", "update-install.log");
@@ -35,6 +37,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
     private readonly string _exePath;
     private readonly ILogger? _log;
     private readonly Action<string> _launchInstaller;
+    private readonly TimeSpan _downloadStallTimeout;
     private readonly CancellationTokenSource _stop = new();
 
     private volatile UpdateInfo? _available;
@@ -46,7 +49,8 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
     /// <param name="currentVersion">The running version; see <see cref="RunningVersion"/>.</param>
     /// <param name="downloadDirectory">Defaults to %LocalAppData%\DynamicIsland\updates.</param>
     public GitHubUpdateService(HttpClient http, Func<string> repository, Version currentVersion,
-        string? downloadDirectory = null, ILogger? log = null, Action<string>? launchInstaller = null)
+        string? downloadDirectory = null, ILogger? log = null, Action<string>? launchInstaller = null,
+        TimeSpan? downloadStallTimeout = null)
     {
         _http = http ?? throw new ArgumentNullException(nameof(http));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -56,6 +60,7 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         _installDirectory = Path.GetDirectoryName(_exePath)!;
         _log = log;
         _launchInstaller = launchInstaller ?? LaunchInstaller;
+        _downloadStallTimeout = downloadStallTimeout ?? DefaultDownloadStallTimeout;
     }
 
     /// <summary>%LocalAppData%\DynamicIsland\updates</summary>
@@ -176,23 +181,27 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
         Directory.CreateDirectory(_downloadDirectory);
         string target = Path.Combine(_downloadDirectory, $"DynamicIsland-{update.Version}.zip");
         string partial = target + ".part";
+        // Re-armed after every chunk: a slow download keeps going, one that stops receiving bytes times out.
+        using var stall = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        stall.CancelAfter(_downloadStallTimeout);
         try
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, update.DownloadUrl);
             request.Headers.UserAgent.ParseAdd(UserAgent);
-            using HttpResponseMessage response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
+            using HttpResponseMessage response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, stall.Token).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             long? total = response.Content.Headers.ContentLength;
-            await using (Stream source = await response.Content.ReadAsStreamAsync(ct).ConfigureAwait(false))
+            await using (Stream source = await response.Content.ReadAsStreamAsync(stall.Token).ConfigureAwait(false))
             await using (var sink = new FileStream(partial, FileMode.Create, FileAccess.Write, FileShare.None, BufferSize, FileOptions.Asynchronous))
             {
                 byte[] buffer = new byte[BufferSize];
                 long done = 0;
                 int read;
-                while ((read = await source.ReadAsync(buffer, ct).ConfigureAwait(false)) > 0)
+                while ((read = await source.ReadAsync(buffer, stall.Token).ConfigureAwait(false)) > 0)
                 {
-                    await sink.WriteAsync(buffer.AsMemory(0, read), ct).ConfigureAwait(false);
+                    stall.CancelAfter(_downloadStallTimeout);
+                    await sink.WriteAsync(buffer.AsMemory(0, read), stall.Token).ConfigureAwait(false);
                     done += read;
                     if (total is > 0) progress?.Report(Math.Min(1.0, (double)done / total.Value));
                 }
@@ -210,6 +219,10 @@ public sealed class GitHubUpdateService : IUpdateService, IDisposable
             File.Move(partial, target, overwrite: true);
             _log?.LogInformation("Downloaded update {Tag} to {Path}", update.Tag, target);
             return target;
+        }
+        catch (OperationCanceledException) when (stall.IsCancellationRequested && !ct.IsCancellationRequested)
+        {
+            throw new TimeoutException($"The update download received no data for {_downloadStallTimeout.TotalSeconds:0} seconds.");
         }
         finally
         {

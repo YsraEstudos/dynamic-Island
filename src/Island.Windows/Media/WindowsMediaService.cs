@@ -274,28 +274,29 @@ public sealed class WindowsMediaService : IMediaService
             if (trackKey == _thumbnailKey) return _thumbnail;
         }
 
+        // Players often announce a track before its artwork (Spotify, browsers). A missing reference is not cached,
+        // so the MediaPropertiesChanged that brings the artwork reads it.
+        if (props.Thumbnail is not { } reference) return null;
+
         byte[]? bytes = null;
-        if (props.Thumbnail is { } reference)
+        try
         {
-            try
-            {
-                using var winrtStream = await reference.OpenReadAsync().AsTask(ct).ConfigureAwait(false);
-                using var managed = winrtStream.AsStreamForRead();
-                using var buffer = new MemoryStream();
-                await managed.CopyToAsync(buffer, ct).ConfigureAwait(false);
-                bytes = buffer.ToArray();
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogDebug(ex, "Could not read the media thumbnail.");
-            }
+            using var winrtStream = await reference.OpenReadAsync().AsTask(ct).ConfigureAwait(false);
+            using var managed = winrtStream.AsStreamForRead();
+            using var buffer = new MemoryStream();
+            await managed.CopyToAsync(buffer, ct).ConfigureAwait(false);
+            bytes = buffer.ToArray();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Could not read the media thumbnail.");
         }
 
-        // Cache the result, including a failed read, so a missing thumbnail is not retried on every tick.
+        // Cache the result, including a failed read, so a broken thumbnail is not retried on every tick.
         lock (_gate)
         {
             _thumbnailKey = trackKey;

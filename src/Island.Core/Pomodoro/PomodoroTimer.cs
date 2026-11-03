@@ -73,11 +73,18 @@ public sealed class PomodoroTimer : IDisposable
     {
         _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        _clock = clock ?? (() => DateTimeOffset.UtcNow);
+        _clock = clock ?? MonotonicNow;
 
         _phaseDuration = FocusDuration(_settings());
         _remainingAtStart = _phaseDuration;
     }
+
+    /// <summary>
+    /// The default clock: time since boot, which keeps counting through sleep but ignores changes to the system clock.
+    /// The countdown only ever subtracts two readings, so a wall clock moved forward could otherwise end a locked
+    /// (Angry) focus at once. Only differences of its values are meaningful.
+    /// </summary>
+    private static DateTimeOffset MonotonicNow() => DateTimeOffset.UnixEpoch.AddMilliseconds(Environment.TickCount64);
 
     public PomodoroPhase Phase
     {

@@ -23,14 +23,15 @@ public sealed class GitHubUpdateServiceTests : IDisposable
         catch (UnauthorizedAccessException) { }
     }
 
-    private GitHubUpdateService Service(string repository = "YsraEstudos/dynamic-Island")
+    private GitHubUpdateService Service(string repository = "YsraEstudos/dynamic-Island", TimeSpan? stallTimeout = null)
     {
         var handler = new FakeHandler(request =>
         {
             _seen.Add(new Seen(request.RequestUri!.ToString(), request.Headers.UserAgent.ToString()));
             return _reply(request);
         });
-        return new GitHubUpdateService(new HttpClient(handler), () => repository, new Version(0, 1, 0), _dir);
+        return new GitHubUpdateService(new HttpClient(handler), () => repository, new Version(0, 1, 0), _dir,
+            downloadStallTimeout: stallTimeout);
     }
 
     private static HttpResponseMessage Json(string body) =>
@@ -121,6 +122,19 @@ public sealed class GitHubUpdateServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task A_download_that_stops_receiving_data_times_out_instead_of_hanging()
+    {
+        _reply = _ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(new StallingStream()) };
+
+        Task<string> download = Service(stallTimeout: TimeSpan.FromMilliseconds(200)).DownloadAsync(Update());
+
+        Task finished = await Task.WhenAny(download, Task.Delay(TimeSpan.FromSeconds(10)));
+        Assert.Same(download, finished);
+        await Assert.ThrowsAsync<TimeoutException>(() => download);
+        Assert.False(File.Exists(Path.Combine(_dir, "DynamicIsland-0.2.0.0.zip.part")));
+    }
+
+    [Fact]
     public async Task A_download_from_an_untrusted_address_is_refused_before_any_request()
     {
         var update = new UpdateInfo(new Version(0, 2, 0, 0), "v0.2.0", new Uri("https://evil.example.com/a.zip"));
@@ -149,6 +163,40 @@ public sealed class GitHubUpdateServiceTests : IDisposable
     private sealed class Recorder(List<double> values) : IProgress<double>
     {
         public void Report(double value) => values.Add(value);
+    }
+
+    /// <summary>Sends the start of a zip, then never sends another byte (a dead connection).</summary>
+    private sealed class StallingStream : Stream
+    {
+        private bool _sentHeader;
+
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            if (!_sentHeader)
+            {
+                _sentHeader = true;
+                byte[] header = [0x50, 0x4B, 0x03, 0x04];
+                header.CopyTo(buffer);
+                return header.Length;
+            }
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+            return 0;
+        }
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
+            ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override void Flush() { }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
     private sealed class FakeHandler(Func<HttpRequestMessage, HttpResponseMessage> reply) : HttpMessageHandler

@@ -160,6 +160,7 @@ public partial class IslandWindow : System.Windows.Window
         IslandShape.MouseLeftButtonUp += OnIslandReleased;
         IslandShape.MouseLeftButtonUp += OnIslandClicked;
         IslandShape.MouseRightButtonUp += OnIslandRightClicked;
+        IslandShape.LostMouseCapture += OnIslandCaptureLost;
 
         _vm.PropertyChanged += OnViewModelPropertyChanged;
         _vm.Idle.PropertyChanged += OnIdlePropertyChanged;
@@ -793,13 +794,7 @@ public partial class IslandWindow : System.Windows.Window
 
         if (_dragMoved)
         {
-            _saveSettings?.Invoke(_settings() with
-            {
-                UseCustomPosition = true,
-                Dock = _dock,
-                PositionX = _dragX,
-                PositionY = _dragY,
-            });
+            SaveDragPosition();
 
             // A throw upward minimises the island, after its position is saved. Already Mini: nothing to do.
             (double releaseX, double releaseY) = CursorScreen();
@@ -815,6 +810,35 @@ public partial class IslandWindow : System.Windows.Window
         _dragMoved = false;
         _dragSamples.Clear();
     }
+
+    /// <summary>
+    /// The capture was taken away mid-drag (Alt+Tab, the Win key, a popup), so the release never reaches the island.
+    /// The drag ends where the island is, without a throw. Our own release in <see cref="OnIslandReleased"/> clears
+    /// <see cref="_dragging"/> first, so it does not come through here.
+    /// </summary>
+    private void OnIslandCaptureLost(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        if (!_dragging) return;
+
+        _dragging = false;
+        IslandShape.Opacity = 1.0;
+        SetDragHeld(false);
+        // A button still down may be released over the island; that release must not count as a click.
+        _suppressClick = Mouse.LeftButton == MouseButtonState.Pressed;
+
+        if (_dragMoved) SaveDragPosition();
+        _dragMoved = false;
+        _dragSamples.Clear();
+    }
+
+    private void SaveDragPosition() =>
+        _saveSettings?.Invoke(_settings() with
+        {
+            UseCustomPosition = true,
+            Dock = _dock,
+            PositionX = _dragX,
+            PositionY = _dragY,
+        });
 
     /// <summary>Keeps the last <see cref="ThrowBufferMs"/> of a drag's pointer positions.</summary>
     private void RecordDragSample(double cursorX, double cursorY)
@@ -871,6 +895,7 @@ public partial class IslandWindow : System.Windows.Window
     private void OnClosed(object? sender, EventArgs e)
     {
         _vm.PropertyChanged -= OnViewModelPropertyChanged;
+        _vm.Idle.PropertyChanged -= OnIdlePropertyChanged;
         ShelfLayer.LayoutChanged -= OnShelfLayoutChanged;
         ShelfLayer.DragActiveChanged -= OnShelfDragActiveChanged;
         _menu.IsOpen = false;

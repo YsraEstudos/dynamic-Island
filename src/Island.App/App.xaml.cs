@@ -54,6 +54,26 @@ public partial class App : System.Windows.Application
     {
         base.OnStartup(e);
 
+        // A failure anywhere in startup ends the app with a message. Without this, an exception after the first await
+        // reached DispatcherUnhandledException (which marks it handled) and left a process with no tray or hotkeys.
+        try
+        {
+            await StartAsync(e);
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Startup failed");
+            if (!e.Args.Contains("--smoke-test"))
+            {
+                MessageBox.Show("O Dynamic Island não conseguiu iniciar. Os detalhes estão em %LocalAppData%\\DynamicIsland\\logs.",
+                    "Dynamic Island", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            Shutdown(1);
+        }
+    }
+
+    private async Task StartAsync(StartupEventArgs e)
+    {
         // --smoke-test (used by release.ps1): run the real startup with fake services next to a running instance, then
         // exit 0 after a few seconds, or 1 on the first unhandled exception. Catches an app that does not start before it is published.
         bool smoke = e.Args.Contains("--smoke-test");
