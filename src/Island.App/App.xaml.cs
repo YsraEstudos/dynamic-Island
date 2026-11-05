@@ -197,31 +197,51 @@ public partial class App : System.Windows.Application
         siteGuard.SiteBlocked += site => coordinator.Post(new IslandEvent.NoticeRaised(
             new Notice($"{site} bloqueado", "Pomodoro raivoso ativo", "timer")));
 
-        // Each locked focus of an angry plan -> ask the phone to block for the time left of that focus. Breaks are free,
-        // so the full block is released when it expires. The same message carries an adult-only span (adultEndMs) that
-        // runs through this focus and its break when the plan has another focus after it. That next focus sends its own
-        // block when it locks, so the adult block is extended focus by focus. The last focus of a plan sends no adult
-        // span: the full block already covers it. Adult content is never free during an angry session, breaks included.
-        // Leaving Angry early sends nothing: the phone keeps its block until the original end (or until the phrase is
-        // typed on the phone). LockChanged also fires for session changes that are not a new lock, so only a false -> true
-        // edge of IsLocked sends; the lock guards the edge state.
+        // A phone block follows each Angry focus and each timed break. With automatic advance, the focus block already
+        // covers the break up to its final minute; the break notification refreshes that deadline when the break starts.
+        // Manual plans start a break block only when the user starts that timer, so an indefinite wait is not counted as
+        // a break. Adult content stays blocked through each focus and its break, including the phone's final free minute.
+        // One-minute breaks have no full-phone block. Leaving Angry early never sends an unblock; the phone honors the
+        // original deadline (or the phrase entered on the phone). Timer and Angry events are both observed because a
+        // manually started break does not change IsLocked.
         var phone = sp.GetRequiredService<IPhoneBlockNotifier>();
         var focusTimer = sp.GetRequiredService<PomodoroTimer>();
         bool wasLocked = false;
+        bool wasBreakRunning = false;
         object phoneEdgeGate = new();
-        angry.LockChanged += () =>
+        void SyncPhoneBlock()
         {
-            bool sendBlock;
+            bool startFocus;
+            bool startBreak;
             lock (phoneEdgeGate)
             {
-                bool locked = angry.IsLocked;
-                sendBlock = locked && !wasLocked && holder.Current.PhoneBlockEnabled;
+                bool active = angry.IsSessionActive;
+                bool locked = active && angry.IsLocked;
+                bool breakRunning = active && focusTimer.Phase == PomodoroPhase.Break && focusTimer.IsRunning;
+                startFocus = locked && !wasLocked;
+                startBreak = breakRunning && !wasBreakRunning;
                 wasLocked = locked;
+                wasBreakRunning = breakRunning;
             }
-            if (!sendBlock) return;
-            _ = BlockPhoneAsync(phone, coordinator, focusTimer.Remaining, AdultSpanFromFocus(focusTimer),
-                holder.Current.PhoneFcmToken);
-        };
+
+            IslandSettings currentSettings = holder.Current;
+            if (!currentSettings.PhoneBlockEnabled) return;
+
+            if (startFocus)
+            {
+                TimeSpan duration = PhoneSpanFromFocus(focusTimer);
+                if (duration > TimeSpan.Zero)
+                    _ = BlockPhoneAsync(phone, coordinator, duration, AdultSpanFromFocus(focusTimer), currentSettings.PhoneFcmToken);
+            }
+            else if (startBreak)
+            {
+                TimeSpan duration = PhoneSpanFromBreak(focusTimer.Remaining);
+                if (duration > TimeSpan.Zero)
+                    _ = BlockPhoneAsync(phone, coordinator, duration, focusTimer.Remaining, currentSettings.PhoneFcmToken);
+            }
+        }
+        angry.LockChanged += SyncPhoneBlock;
+        focusTimer.Changed += SyncPhoneBlock;
 
         // An Angry session that was running when an update restarted the app continues from its saved time. It is restored
         // after the handlers above are wired (so the lock, phone block and desktop lock follow it) and before the weekly
@@ -370,7 +390,19 @@ public partial class App : System.Windows.Application
         return timer.Remaining + timer.PlanBreakDuration;
     }
 
-    /// <summary>Quit from the island menu or the tray. While an angry pomodoro is locked, the unlock dialog must release it first.</summary>
+    /// <summary>Fully blocks the phone through a focus and all but the final minute of its automatically timed break.</summary>
+    private static TimeSpan PhoneSpanFromFocus(PomodoroTimer timer)
+    {
+        TimeSpan remaining = timer.Remaining;
+        if (!timer.PlanActive || !timer.AutoAdvance) return remaining;
+        return remaining + TimeSpan.FromTicks(Math.Max(0, timer.PlanBreakDuration.Ticks - TimeSpan.FromMinutes(1).Ticks));
+    }
+
+    /// <summary>Leaves only the final minute of a running break available on the phone.</summary>
+    private static TimeSpan PhoneSpanFromBreak(TimeSpan remaining) =>
+        remaining > TimeSpan.FromMinutes(1) ? remaining - TimeSpan.FromMinutes(1) : TimeSpan.Zero;
+
+    /// <summary>Quit from the island menu or tray. An active Angry session must finish or be unlocked during a focus first.</summary>
     private async void RequestQuit()
     {
         if (_quitRequestInProgress) return;
@@ -485,7 +517,7 @@ public partial class App : System.Windows.Application
         coordinator.Post(new IslandEvent.NoticeRaised(new Notice("Update", result, "timer")));
     }
 
-    /// <summary>True when no angry session is locked, or when the unlock phrase was typed (which releases the lock).</summary>
+    /// <summary>True when no Angry session is active, or when its phrase was entered during a locked focus.</summary>
     private bool ConfirmNotLocked() => _angry is not { IsSessionActive: true } || UnlockWindow.ShowFor(_angry);
 
     private void OpenSettings(SettingsHolder holder, SettingsApplier applier, MonitorService monitors)

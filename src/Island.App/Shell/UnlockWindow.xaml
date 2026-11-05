@@ -65,7 +65,7 @@
                    Foreground="{StaticResource TextPrimaryBrush}" />
         <TextBlock Grid.Row="1"
                    Margin="0,4,0,0"
-                   Text="O Pomodoro raivoso está ativo. Para sair antes do fim, digite a frase abaixo exatamente como está, sem copiar e colar."
+                   Text="O Angry só pode ser encerrado durante o foco. No descanso, ele continua ativo. Para sair durante o foco, digite a frase abaixo sem copiar e colar."
                    FontSize="13"
                    Foreground="{StaticResource TextSecondaryBrush}"
                    TextWrapping="Wrap" />

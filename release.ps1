@@ -60,7 +60,7 @@ if ($smoke.ExitCode -ne 0) {
 
 [System.IO.Compression.ZipFile]::CreateFromDirectory($publish, $zip, [System.IO.Compression.CompressionLevel]::Optimal, $false)
 
-git add -A -- . ':(exclude).claude/**' ':(exclude).superpowers/**'
+git add -A -- . ':(exclude).claude/**' ':(exclude).superpowers/**' ':(exclude).nightshift/**'
 git commit -m "Release $tag"
 if ($LASTEXITCODE -ne 0) { throw 'git commit falhou.' }
 git tag $tag

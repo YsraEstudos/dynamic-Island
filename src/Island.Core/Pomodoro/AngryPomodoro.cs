@@ -2,8 +2,9 @@ namespace Island.Core.Pomodoro;
 
 /// <summary>
 /// Locks the focus phases of a pomodoro plan so they cannot be paused, reset or re-timed. A session covers the whole
-/// plan: every running focus is locked, every break and manual wait is free, and the next focus locks on Start. The only early exit is
-/// typing an <see cref="UnlockPhrases"/> phrase. Without a plan, a session lasts for one focus.
+/// plan: distractions are blocked during each focus, and that lock lifts during breaks and manual waits while the
+/// timer controls and cycle count stay protected. The next focus locks on Start. An early exit is available only during
+/// a locked focus by typing an <see cref="UnlockPhrases"/> phrase. Without a plan, a session lasts for one focus.
 /// </summary>
 public sealed class AngryPomodoro : IDisposable
 {
@@ -27,7 +28,7 @@ public sealed class AngryPomodoro : IDisposable
         _timer.Changed += OnChanged;
     }
 
-    /// <summary>True while the timer is locked. Only ever true during a focus phase of the session.</summary>
+    /// <summary>True while the distraction lock is active during a focus; false during breaks and manual waits.</summary>
     public bool IsLocked
     {
         get
@@ -67,7 +68,7 @@ public sealed class AngryPomodoro : IDisposable
     public event Action? LockChanged;
 
     /// <summary>
-    /// Starts an angry session and locks the timer while it is in a focus phase. A fresh focus starts a plan of
+    /// Starts an angry session, protects its timer controls and locks distractions during focus phases. A fresh focus starts a plan of
     /// <paramref name="cycles"/> pomodoros; a paused single focus resumes without a plan; a plan already in progress
     /// keeps running. A running single focus keeps its remaining time. The optional lengths apply to a new plan only.
     /// </summary>
@@ -117,11 +118,14 @@ public sealed class AngryPomodoro : IDisposable
         if (disposed)
         {
             _timer.ControlsLocked = false;
+            _timer.PlanChangesLocked = false;
             return;
         }
 
         if (!engaged) return;
 
+        _timer.ControlsLocked = true;
+        _timer.PlanChangesLocked = true;
         LockChanged?.Invoke();
 
         // Focus can end between Start and the flag above. Its handlers ignored us then, so check for it now.
@@ -159,7 +163,8 @@ public sealed class AngryPomodoro : IDisposable
 
         bool locked = state.Locked && state.Timer.Phase == PomodoroPhase.Focus;
         _timer.Restore(state.Timer);
-        _timer.ControlsLocked = locked;
+        _timer.ControlsLocked = true;
+        _timer.PlanChangesLocked = true;
         lock (_gate)
         {
             if (_disposed) return;
@@ -194,8 +199,9 @@ public sealed class AngryPomodoro : IDisposable
     }
 
     /// <summary>
-    /// Ends the session when <paramref name="typed"/> matches the current phrase, then resets the timer.
-    /// Always true while no session is active.
+    /// Ends the session when a locked focus is active and <paramref name="typed"/> matches the current phrase, then
+    /// resets the timer. A break keeps the Angry session active and cannot be used to unlock it. Always true while no
+    /// session is active.
     /// </summary>
     public bool TryUnlock(string? typed)
     {
@@ -203,13 +209,29 @@ public sealed class AngryPomodoro : IDisposable
         lock (_gate)
         {
             if (!_session) return true;
+            if (!_locked || _timer.Phase != PomodoroPhase.Focus) return false;
             expected = _currentPhrase;
         }
 
         if (expected is null || !UnlockPhrases.IsMatch(expected, typed)) return false;
 
+        lock (_gate)
+        {
+            if (!_session) return true;
+            // The focus may have ended while the user was typing the phrase.
+            if (!_locked || _timer.Phase != PomodoroPhase.Focus || !string.Equals(expected, _currentPhrase, StringComparison.Ordinal))
+                return false;
+
+            _session = false;
+            _locked = false;
+            _currentPhrase = null;
+            _scheduledSession = false;
+        }
+
         // End the session before the reset: the timer refuses Reset while its controls are locked.
-        Transition(session: false, locked: false);
+        _timer.ControlsLocked = false;
+        _timer.PlanChangesLocked = false;
+        LockChanged?.Invoke();
         _timer.Reset();
         return true;
     }
@@ -263,7 +285,7 @@ public sealed class AngryPomodoro : IDisposable
     }
 
     /// <summary>
-    /// Moves to the given state, keeps the timer's ControlsLocked in step with the lock, and raises
+    /// Moves to the given state, keeps the timer controls protected for the whole session, and raises
     /// <see cref="LockChanged"/> once when <see cref="IsLocked"/> or <see cref="IsSessionActive"/> changed.
     /// </summary>
     private void Transition(bool session, bool locked)
@@ -271,6 +293,9 @@ public sealed class AngryPomodoro : IDisposable
         bool changed;
         lock (_gate)
         {
+            // A timer callback can arrive after a concurrent explicit exit; never resurrect that session.
+            if (session && !_session) return;
+
             changed = _session != session || _locked != locked;
             _session = session;
             _locked = locked;
@@ -281,7 +306,8 @@ public sealed class AngryPomodoro : IDisposable
             }
         }
 
-        _timer.ControlsLocked = locked;
+        _timer.ControlsLocked = session;
+        _timer.PlanChangesLocked = session;
         if (changed) LockChanged?.Invoke();
     }
 }

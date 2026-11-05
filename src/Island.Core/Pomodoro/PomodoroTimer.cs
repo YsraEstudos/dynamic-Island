@@ -39,6 +39,7 @@ public sealed class PomodoroTimer : IDisposable
     private DateTimeOffset _startedAt;
     private bool _running;
     private bool _controlsLocked;
+    private bool _planChangesLocked;
     // Pomodoros in the active plan (0 = no plan) and the 1-based pomodoro currently running in it.
     private int _planTotal;
     private int _planCycle;
@@ -164,6 +165,19 @@ public sealed class PomodoroTimer : IDisposable
         set
         {
             lock (_gate) _controlsLocked = value;
+        }
+    }
+
+    /// <summary>When true, the total cycle count cannot be changed for the active plan.</summary>
+    public bool PlanChangesLocked
+    {
+        get
+        {
+            lock (_gate) return _planChangesLocked;
+        }
+        set
+        {
+            lock (_gate) _planChangesLocked = value;
         }
     }
 
@@ -318,14 +332,15 @@ public sealed class PomodoroTimer : IDisposable
 
     /// <summary>
     /// Changes the number of pomodoros of the active plan, clamped to the current pomodoro..<see cref="MaxCycles"/>.
-    /// Allowed while controls are locked: the countdown is never touched. Returns false, with no event, when no plan
-    /// is active or the value did not change.
+    /// Normally allowed while controls are locked because the countdown is untouched. A caller can lock plan changes
+    /// for a protected session. Returns false, with no event, when no plan is active, changes are locked, or the value
+    /// did not change.
     /// </summary>
     public bool SetPlanTotal(int total)
     {
         lock (_gate)
         {
-            if (_disposed || _planTotal == 0) return false;
+            if (_disposed || _planTotal == 0 || _planChangesLocked) return false;
             var clamped = Math.Clamp(total, Math.Max(MinCycles, _planCycle), MaxCycles);
             if (clamped == _planTotal) return false;
             _planTotal = clamped;

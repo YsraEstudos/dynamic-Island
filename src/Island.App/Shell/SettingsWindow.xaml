@@ -662,7 +662,7 @@
                             <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
                                 <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Block phone during Angry"/>
                                 <TextBlock Style="{StaticResource SettingsRowDescription}"
-                                           Text="Angry also turns on the phone's scheduled block for the same time. Leaving Angry early does not free the phone."/>
+                                           Text="The phone stays blocked through focus and until the final minute of each timed break. Adult content stays blocked through the whole break."/>
                             </StackPanel>
                             <ToggleButton Grid.Column="1" Style="{StaticResource SettingsSwitch}"
                                           VerticalAlignment="Center"

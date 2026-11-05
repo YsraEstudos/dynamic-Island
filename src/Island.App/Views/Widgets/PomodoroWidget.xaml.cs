@@ -18,14 +18,15 @@ namespace Island.App.Views.Widgets;
 
 /// <summary>
 /// Pomodoro widget (300 x 152). Phase pills (Pré, Focus, Break and Angry) on the left and a stepper on the right
-/// (− N + pomodoros, 1 to 24, usable while stopped, running or locked; a running plan changes its total live). Below
+/// (− N + pomodoros, 1 to 24, normally usable while stopped or running). Below
 /// them a plan track (one segment per pomodoro, filled as the plan advances) and a forecast of when the plan ends
 /// ("até 15:30 · 1h30"). Then a minute ruler (editable only while stopped, without a plan and outside Pré), play/pause,
 /// sound toggle, reset and the remaining time. Pré is a fixed 5-minute preparation before studying; it is started alone,
-/// never as part of a plan. The Angry pill selects a locked focus plan of the chosen pomodoros. Play starts it: each
-/// focus is locked and each break is free. While locked the other controls dim, the timer ignores changes, and clicking
-/// Angry opens the unlock dialog instead. A plan (Play with N pomodoros) owns the phase, so the Focus and Break pills and the ruler dim
-/// until it ends or is reset. The forecast clock refreshes every 15 s while the timer is stopped.
+/// never as part of a plan. The Angry pill selects a protected plan of the chosen pomodoros. Play starts it: distractions
+/// are blocked in focus, and the lock lifts in breaks so social sites on the PC work. The timer cannot be paused, reset,
+/// shortened or edited during the Angry session; Start remains available for manual phases. The unlock dialog opens only
+/// during a locked focus. A plan owns its phase, so the Focus and Break pills and the ruler dim until it ends. The forecast
+/// clock refreshes every 15 s while the timer is stopped.
 /// The clock button schedules a start (a clock time, Focus or Angry, and a count) through <see cref="ScheduleWindow"/>;
 /// while a start is pending and nothing runs, the forecast shows its time instead ("às 14:30 · Focus ×4"). The clock
 /// button dims while locked and then ignores clicks.
@@ -168,8 +169,8 @@ public partial class PomodoroWidget : UserControl
         int cycles = planActive ? timer.TotalCycles : settings.PomodoroCycles;
         Stepper.Accent = planActive;
         Stepper.ReduceMotion = reduce;
-        Stepper.CanDecrease = planActive ? timer.TotalCycles > timer.Cycle : cycles > PomodoroTimer.MinCycles;
-        Stepper.CanIncrease = cycles < PomodoroTimer.MaxCycles;
+        Stepper.CanDecrease = !sessionActive && (planActive ? timer.TotalCycles > timer.Cycle : cycles > PomodoroTimer.MinCycles);
+        Stepper.CanIncrease = !sessionActive && cycles < PomodoroTimer.MaxCycles;
         Track.Accent = planActive;
         Track.Angry = sessionActive;
         Track.ReduceMotion = reduce;
@@ -189,15 +190,17 @@ public partial class PomodoroWidget : UserControl
         ApplyPill(BreakPill, phase == PomodoroPhase.Break && !locked);
         ApplyAngryPill(locked, sessionActive, _angrySelected);
 
-        // Locked: the controls are dimmed. The timer itself ignores pause, reset, phase and duration changes.
-        // A plan owns the phase, so the phase pills dim as well. The stepper stays enabled: the count can change while locked.
+        // Angry keeps its timer and cycle count intact through breaks too. Start remains available for a manually
+        // advanced phase, while Pause, Reset and plan edits stay disabled until the session ends.
         bool phaseLocked = locked || planActive;
         PrepPill.Opacity = phaseLocked ? 0.4 : 1.0;
         FocusPill.Opacity = phaseLocked ? 0.4 : 1.0;
         BreakPill.Opacity = phaseLocked ? 0.4 : 1.0;
-        double dim = locked ? 0.4 : 1.0;
+        double dim = locked || (sessionActive && running) ? 0.4 : 1.0;
         PlayButton.Opacity = dim;
-        ResetButton.Opacity = dim;
+        PlayButton.IsEnabled = !(sessionActive && running);
+        ResetButton.Opacity = sessionActive ? 0.4 : 1.0;
+        ResetButton.IsEnabled = !sessionActive;
         // Schedule settings remain available during Angry so the user can pause or change future blocks.
         ScheduleButton.Opacity = 1.0;
 
@@ -211,10 +214,10 @@ public partial class PomodoroWidget : UserControl
         }
 
         PlayButton.IsAltShown = running;
-        // Reset cancels whatever was started (a running or paused phase, a plan, a phase waiting to start) and says so.
+        // Outside Angry, Reset cancels a running or paused phase, plan, or phase waiting to start.
         bool canCancel = running || planActive || timer.IsAwaitingNextPhase || timer.Remaining < timer.PhaseDuration;
         ResetButton.IsAltShown = canCancel;
-        ResetButton.ToolTip = canCancel ? "Cancelar pomodoro" : "Redefinir";
+        ResetButton.ToolTip = sessionActive ? "O Angry não pode ser cancelado" : canCancel ? "Cancelar pomodoro" : "Redefinir";
         SoundButton.IsAltShown = !settings.PomodoroSound;
 
         int minutes = (int)Math.Round(timer.PhaseDuration.TotalMinutes);
@@ -368,12 +371,15 @@ public partial class PomodoroWidget : UserControl
     }
 
     /// <summary>
-    /// Session active (locked or on a free break): opens the unlock dialog that leaves the whole session.
+    /// A locked focus can open the early-exit dialog. During a free break, clicking Angry keeps the session active.
     /// Otherwise selects Angry; the Play button starts the locked plan.
     /// </summary>
     private void OnAngryClicked()
     {
-        if (_ctx.Angry.IsSessionActive) UnlockWindow.ShowFor(_ctx.Angry);
+        if (_ctx.Angry.IsSessionActive)
+        {
+            if (_ctx.Angry.IsLocked) UnlockWindow.ShowFor(_ctx.Angry);
+        }
         else
         {
             _angrySelected = true;

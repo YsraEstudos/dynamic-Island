@@ -9,9 +9,9 @@ using Brush = System.Windows.Media.Brush;
 namespace Island.App.Shell;
 
 /// <summary>
-/// "Desistir do foco?" screen of the Angry Pomodoro. The lock is released only by typing the shown phrase: paste,
-/// drag, undo and bulk insertion are refused, while normal typing (accents and dead keys included) works.
-/// Esc or "Voltar ao foco" keeps the session. Open it with <see cref="ShowFor"/>.
+/// "Desistir do foco?" screen of the Angry Pomodoro. The session can be ended only during a locked focus by typing
+/// the shown phrase: paste, drag, undo and bulk insertion are refused, while normal typing (accents and dead keys
+/// included) works. Esc or "Voltar ao foco" keeps the session. Open it with <see cref="ShowFor"/>.
 /// </summary>
 public partial class UnlockWindow : Window
 {
@@ -87,9 +87,9 @@ public partial class UnlockWindow : Window
     }
 
     /// <summary>
-    /// Shows the dialog modally. It is for leaving the whole angry session, so it also covers a free break between
-    /// focus locks. Returns true when the session is over (phrase typed, or the plan ended meanwhile), false when the
-    /// user keeps the session. Returns true at once when no session is active. When the dialog is already open it is
+    /// Shows the dialog modally only during a locked focus. A free break keeps Angry active and cannot be used to exit
+    /// early. Returns true when the session is over (phrase typed, or the plan ended meanwhile), false when the user
+    /// keeps the session. Returns true at once when no session is active. When the dialog is already open it is
     /// activated and false is returned.
     /// </summary>
     public static bool ShowFor(AngryPomodoro angry)
@@ -99,6 +99,11 @@ public partial class UnlockWindow : Window
         if (!angry.IsSessionActive)
         {
             return true;
+        }
+
+        if (!angry.IsLocked)
+        {
+            return false;
         }
 
         if (_open is not null)
@@ -148,20 +153,20 @@ public partial class UnlockWindow : Window
     }
 
     // Raised on an arbitrary thread when the lock or the session changes; the close happens on the UI thread.
-    // Only the end of the session closes the dialog: a free break between focus locks keeps it open.
+    // Close on a free break too, so the modal dialog does not get in the way of using the desktop during the break.
     private void OnLockChanged()
     {
-        if (!_angry.IsSessionActive)
+        if (!_angry.IsSessionActive || !_angry.IsLocked)
         {
-            Dispatcher.BeginInvoke(new Action(CloseWhenUnlocked));
+            Dispatcher.BeginInvoke(new Action(CloseWhenNoLockedFocus));
         }
     }
 
-    private void CloseWhenUnlocked()
+    private void CloseWhenNoLockedFocus()
     {
-        if (!_closed && !_angry.IsSessionActive)
+        if (!_closed && (!_angry.IsSessionActive || !_angry.IsLocked))
         {
-            DialogResult = true;
+            DialogResult = !_angry.IsSessionActive;
         }
     }
 
