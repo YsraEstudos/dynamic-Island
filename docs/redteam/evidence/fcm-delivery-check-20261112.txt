@@ -1,0 +1,15 @@
+token: len=142
+access token OK
+FCM aceito em 09:07:21 (endMs=1794485361295): projects/pomodoro-brave/messages/0:1794485261876030%67ee231af9fd7ecd
+estado antes: blockEndMs= protectionActive=True
+[09:07:41] blockEndMs= protectionActive=True a11y=True admin=True
+[09:07:48] blockEndMs= protectionActive=True a11y=True admin=True
+[09:07:55] blockEndMs= protectionActive=True a11y=True admin=True
+[09:08:04] blockEndMs= protectionActive=True a11y=True admin=True
+[09:08:18] blockEndMs= protectionActive=True a11y=True admin=True
+[09:08:32] blockEndMs= protectionActive=True a11y=True admin=True
+[09:08:45] blockEndMs= protectionActive=True a11y=True admin=True
+[09:08:58] blockEndMs= protectionActive=True a11y=True admin=True
+[09:09:07] blockEndMs= protectionActive=True a11y=True admin=True
+[09:09:19] blockEndMs= protectionActive=True a11y=True admin=True
+NÃO confirmou a aplicação dentro de 100 s.

@@ -1,0 +1,729 @@
+--------- beginning of system
+11-11 13:56:47.810 I/ActivityManager(  965): Killing 19178:com.example.focusapp/u0a271 (adj 100): change com.example.focusapp
+11-11 13:56:47.811 V/ActivityManager(  965): Clean up application record for ProcessRecord{421b005 19178:com.example.focusapp/u0a271} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:56:47.813 D/NotificationService(  965): SetMustHandleTheNotification for: NotificationRecord(0x0e6ca5c3: pkg=com.example.focusapp user=UserHandle{0} id=1001 tag=null importance=3 key=0|com.example.focusapp|1001|null|10271: Notification(channel=channel_live_updates_v3 shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x6a color=0xff6060e6 category=progress groupKey=silent vis=PRIVATE)) mReason:8
+11-11 13:56:47.816 I/WindowManager(  965):   Force finishing activity ActivityRecord{a3444d u0 com.example.focusapp/.MainActivity t599}
+11-11 13:56:47.828 I/ActivityManager(  965):   Force stopping service ServiceRecord{327f581 u0 com.example.focusapp/.service.ScreenTimeTrackerService}
+11-11 13:56:47.828 I/ActivityManager(  965):   Force stopping service ServiceRecord{2aad443 u0 com.example.focusapp/.service.FocusAccessibilityService}
+11-11 13:56:47.829 W/WindowManager(  965): removeWindowToken: Attempted to remove non-existing token: android.os.Binder@69c719f
+11-11 13:56:47.832 D/SSense  (  965): windowsChanged
+--------- beginning of main
+11-11 13:56:47.833 D/AS.AudioService(  965): Accessibility volume enabled = false
+11-11 13:56:47.848 D/CompatibilityChangeReporter(  965): Compat change id reported: 135634846; UID 10195; state: DISABLED
+11-11 13:56:47.848 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10195; state: ENABLED
+11-11 13:56:47.849 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10195; state: ENABLED
+11-11 13:56:47.864 I/RoleManagerService(  965): Granting default roles...
+11-11 13:56:47.867 D/CompatibilityChangeReporter(  965): Compat change id reported: 135634846; UID 10242; state: DISABLED
+11-11 13:56:47.868 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10242; state: ENABLED
+11-11 13:56:47.883 D/Zygote  (  527): Forked child process 20063
+11-11 13:56:47.883 I/Zygote  (  527): Process 19178 exited due to signal 9 (Killed)
+11-11 13:56:47.886 I/ActivityManager(  965): Start proc 20063:com.android.vending/u0a195 for broadcast {com.android.vending/com.google.android.finsky.packagemonitor.impl.PackageMonitorReceiverImpl$RegisteredReceiver}
+11-11 13:56:47.887 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10242; state: ENABLED
+11-11 13:56:47.895 D/MediaProvider( 2533): Removing disabled package: com.example.focusapp from providers list if required.
+11-11 13:56:47.896 E/android.vendin(20063): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:56:47.899 I/adbd    (29576): Remote process closed the socket (on MSG_PEEK)
+11-11 13:56:47.899 I/libprocessgroup(  965): Successfully killed process cgroup uid 10271 pid 19178 in 87ms
+11-11 13:56:47.900 D/Zygote  (  527): Forked child process 20083
+11-11 13:56:47.902 D/PickerSyncLockManager( 2533): Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@42c1897[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+11-11 13:56:47.902 D/CloseableReentrantLock( 2533): Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@42c1897[Locked by thread main]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+11-11 13:56:47.902 D/CloseableReentrantLock( 2533): Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@42c1897[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+11-11 13:56:47.905 I/ActivityManager(  965): Start proc 20083:com.google.android.permissioncontroller/u0a242 for service {com.google.android.permissioncontroller/com.android.role.controller.service.RoleControllerServiceImpl}
+11-11 13:56:47.905 E/PhoneInterfaceManager( 1320): [PhoneIntfMgr] getCarrierPackageNamesForIntentAndPhone: No UICC
+11-11 13:56:47.905 D/CarrierSvcBindHelper( 1320): No carrier app for: 0
+11-11 13:56:47.905 E/PhoneInterfaceManager( 1320): [PhoneIntfMgr] getCarrierPackageNamesForIntentAndPhone: No UICC
+11-11 13:56:47.905 D/CarrierSvcBindHelper( 1320): No carrier app for: 1
+11-11 13:56:47.908 D/ImsResolver( 1320): maybeAddedImsService, packageName: com.example.focusapp
+11-11 13:56:47.912 E/ssioncontrolle(20083): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:56:47.918 I/Fitness (18507): (REDACTED) OnPackageChangedOperation got intent: %s
+11-11 13:56:47.933 I/android.vendin(20063): The ClassLoaderContext is a special shared library.
+11-11 13:56:47.936 I/Fitness (18507): (REDACTED) FitCleanupIntentOperation received Intent %s
+11-11 13:56:47.939 I/ssioncontrolle(20083): The ClassLoaderContext is a special shared library.
+11-11 13:56:47.946 D/BoundBrokerSvc(18507): onRebind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:56:47.973 D/CompatibilityChangeReporter(18507): Compat change id reported: 150939131; UID 10194; state: ENABLED
+11-11 13:56:48.002 I/Icing   (18507): IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=ContactsIndexer serviceId=33
+11-11 13:56:48.038 I/GmscoreIpa(18507): (REDACTED) Using %s flags by method %d
+11-11 13:56:48.063 I/Icing   (18507): Storage manager: low false usage 10.12MB avail 9.33GB capacity 52.17GB
+11-11 13:56:48.095 D/SQLiteOpenHelper(18825): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:48.219 E/native  (18507): E0000 00:00:1794416208.216658   19970 model-utils.cc:41] Not a valid Model flatbuffer
+11-11 13:56:48.219 E/native  (18507): E0000 00:00:1794416208.219843   19970 model-provider-from-fb.cc:105] Unable to initialize ModelProviderFromFlatbuffer
+11-11 13:56:48.220 I/native  (18507): I0000 00:00:1794416208.220069   19970 model-api.cc:46] Registered model under key tmp-segmentation-model
+11-11 13:56:48.244 D/NetworkSecurityConfig(20083): No Network Security Config specified, using platform default
+11-11 13:56:48.245 D/NetworkSecurityConfig(20083): No Network Security Config specified, using platform default
+11-11 13:56:48.282 I/native  (18507): I0000 00:00:1794416208.282234   19970 permission-checker.cc:82] Creating PermissionChecker based on ACL with config_version 1 having 9 permissions defined.
+11-11 13:56:48.312 D/BoundBrokerSvc(18507): onBind: Intent { act=com.google.android.gms.icing.LIGHTWEIGHT_INDEX_SERVICE dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:56:48.312 D/BoundBrokerSvc(18507): Loading bound service for intent: Intent { act=com.google.android.gms.icing.LIGHTWEIGHT_INDEX_SERVICE dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:56:48.352 W/android.vendin(20063): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:56:48.352 I/chatty  (20063): uid=10195(com.android.vending) identical 2 lines
+11-11 13:56:48.352 W/android.vendin(20063): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:56:48.359 D/BoundBrokerSvc(18507): onBind: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:56:48.360 D/BoundBrokerSvc(18507): Loading bound service for intent: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:56:48.390 W/FeatureFlagsImplExport(20083): java.lang.NoClassDefFoundError: Failed resolution of: Landroid/os/flagging/AconfigPackage;
+11-11 13:56:48.414 I/chatty  (20083): uid=10242(com.google.android.permissioncontroller) identical 3 lines
+11-11 13:56:48.425 W/FeatureFlagsImplExport(20083): java.lang.NoClassDefFoundError: Failed resolution of: Landroid/os/flagging/AconfigPackage;
+11-11 13:56:48.440 D/NetworkSecurityConfig(20063): No Network Security Config specified, using platform default
+11-11 13:56:48.441 D/NetworkSecurityConfig(20063): No Network Security Config specified, using platform default
+11-11 13:56:48.507 W/Role    (20083): Cannot find resource for default holder: config_systemActivityRecognizer
+11-11 13:56:48.511 W/ActivityManager(  965): setHasOverlayUi called on unknown pid: 19178
+11-11 13:56:48.514 I/InputReader(  965): Reconfiguring input devices, changes=KEYBOARD_LAYOUTS | 
+11-11 13:56:48.574 I/Icing   (18507): updateResources: need to parse cqnm{com.google.android.gms}
+11-11 13:56:48.658 W/FeatureFlagsImplExport(20083): java.lang.NoClassDefFoundError: Failed resolution of: Landroid/os/flagging/AconfigPackage;
+11-11 13:56:48.661 I/Finsky  (20063): [2] Process created at version: 54.0.09-29 [0] [PR] 1014031620
+11-11 13:56:48.702 W/WindowManager(  965): Cannot find window which accessibility connection is added to
+11-11 13:56:48.759 I/Icing   (18507): Internal init done: storage state 0
+11-11 13:56:48.765 I/Icing   (18507): IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=null serviceId=30
+11-11 13:56:48.770 I/Icing   (18507): Post-init done
+11-11 13:56:48.770 I/Icing   (18507): doRemovePackageData com.example.focusapp
+11-11 13:56:48.821 I/Icing   (18507): IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=null serviceId=36
+11-11 13:56:48.825 W/Finsky  (20063): [4683] Failed to get the task info for cold start.
+11-11 13:56:48.825 I/Finsky  (20063): [4683] Process started for unknown session.
+11-11 13:56:48.829 I/Icing   (18507): Using regular flags by method 2
+11-11 13:56:48.830 I/Icing   (18507): Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+11-11 13:56:48.831 D/SQLiteOpenHelper(18507): SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:56:48.850 I/Icing   (18507): Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+11-11 13:56:48.864 I/Finsky  (20063): [4682] Finished reading experiment flags from file [0tGUNCGIkbk4o6-fQ335kUYSKwVj4lusnHT-A5Dsy08] numFlags=2803.
+11-11 13:56:48.865 I/Finsky  (20063): [4680] Finished reading experiment flags from file [Se-xCc4LzNyh3UrKMIU2sUf-PUKz4oQEbpKZDMuaFno] numFlags=2153.
+11-11 13:56:48.865 I/Finsky  (20063): [4683] Finished reading experiment flags from file [BbohOu0Ve5UitwhMd0TLc6hkrmQx1wdNRzODqSJN38E] numFlags=2169.
+11-11 13:56:48.867 W/Looper  (  965): Slow dispatch took 1018ms main h=android.app.ActivityThread$H c=android.app.-$$Lambda$LoadedApk$ReceiverDispatcher$Args$_BumDX2UKsnxLVrE6UJsJZkotuA@ce05a34 m=0
+11-11 13:56:48.868 W/Looper  (  965): Slow delivery took 1024ms main h=android.app.ActivityThread$H c=android.app.-$$Lambda$LoadedApk$ReceiverDispatcher$Args$_BumDX2UKsnxLVrE6UJsJZkotuA@f3a705d m=0
+11-11 13:56:48.881 I/Icing   (18507): Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+11-11 13:56:48.902 I/PermissionControllerServiceImpl(20083): Updating user sensitive for uid 10271
+11-11 13:56:48.910 D/WifiService(  965): Remove settings for package:com.example.focusapp
+11-11 13:56:48.944 D/WifiConfigManager(  965): Remove all networks for app ApplicationInfo{368b864 com.example.focusapp}
+11-11 13:56:49.006 D/WifiConfigStore(  965): Writing to stores completed in 12 ms.
+11-11 13:56:49.006 I/PasspointManager(  965): No app ops listener found for com.example.focusapp
+11-11 13:56:49.042 W/FeatureFlagsImplExport(20083): java.lang.NoClassDefFoundError: Failed resolution of: Landroid/os/flagging/AconfigPackage;
+11-11 13:56:49.073 I/Finsky  (20063): [4682] aodw - Registering in memory receiver for android.intent.action.PACKAGE_ADDED and android.intent.action.PACKAGE_REMOVED
+11-11 13:56:49.091 I/Finsky  (20063): [2] Profiling: Starting up (1)
+11-11 13:56:49.122 W/CheckTime(20063): App running slow: Executing handleBindApplication : callApplicationOnCreate took 548ms
+11-11 13:56:49.176 I/Finsky  (20063): [2] This process start was not selected for Play memory metrics collection.
+11-11 13:56:49.188 I/Finsky  (20063): [2] aodw - Received: android.intent.action.PACKAGE_CHANGED, [CkmBu7OMwm0v-AIQt1lrFVWxGAG2amYj0Ah68uUKM9U]
+11-11 13:56:49.221 I/GetConfigSnapshotOp(18507): (REDACTED) Succeeded but not registered: %s
+11-11 13:56:49.297 I/TetheringManager(20063): registerTetheringEventCallback:com.android.vending
+11-11 13:56:49.298 W/Settings(20063): Setting download_manager_max_bytes_over_mobile has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+11-11 13:56:49.299 I/Finsky  (20063): [2] SettingNotFoundException for download_manager_max_bytes_over_mobile
+11-11 13:56:49.299 W/Settings(20063): Setting download_manager_recommended_max_bytes_over_mobile has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+11-11 13:56:49.300 I/Finsky  (20063): [2] SettingNotFoundException for download_manager_recommended_max_bytes_over_mobile
+11-11 13:56:49.326 D/BoundBrokerSvc(18507): onBind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+11-11 13:56:49.327 D/BoundBrokerSvc(18507): Loading bound service for intent: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+11-11 13:56:49.334 I/Finsky  (20063): [2] VerifyApps: Setup app restrictions monitor
+11-11 13:56:49.337 I/Finsky  (20063): [2] VerifyApps: Device wide unknown source restriction updated
+11-11 13:56:49.348 I/Finsky  (20063): [2] VerifyApps: Updating ADI Warn Mode activity enabled state
+11-11 13:56:49.350 I/Finsky  (20063): [4695] VerifyApps: Resolving target for ADI Warn Mode activity
+11-11 13:56:49.353 W/DynamiteModule(20063): Local module descriptor class for com.google.android.gms.googlecertificates not found.
+11-11 13:56:49.369 W/android.vendin(20063): ClassLoaderContext classpath size mismatch. expected=15, found=0 (DLC[];PCL[base.apk*3262283054:base.apk!classes2.dex*1009986317:base.apk!classes3.dex*4162999191:base.apk!classes4.dex*771355152:base.apk!classes5.dex*2060349089:base.apk!classes6.dex*3118469109:base.apk!classes7.dex*2326816997:base.apk!classes8.dex*561136266:base.apk!classes9.dex*3167056466:base.apk!classes10.dex*4186298605:base.apk!classes11.dex*4137081084:base.apk!classes12.dex*695690036:base.apk!classes13.dex*1167048985:base.apk!classes14.dex*3903986318:base.apk!classes15.dex*2239599384]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]#PCL[/system/framework/com.android.location.provider.jar*1664931834]#PCL[/system/framework/com.android.media.remotedisplay.jar*1573936315]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]} | DLC[];PCL[])
+11-11 13:56:49.372 I/DynamiteModule(20063): Considering local module com.google.android.gms.googlecertificates:0 and remote module com.google.android.gms.googlecertificates:7
+11-11 13:56:49.372 I/DynamiteModule(20063): Selected remote version of com.google.android.gms.googlecertificates, version >= 7
+11-11 13:56:49.388 W/System  (20063): ClassLoader referenced unknown path: 
+11-11 13:56:49.390 W/Looper  (  965): Slow dispatch took 452ms main h=android.app.ActivityThread$H c=android.app.-$$Lambda$LoadedApk$ReceiverDispatcher$Args$_BumDX2UKsnxLVrE6UJsJZkotuA@e2b1a44 m=0
+11-11 13:56:49.391 I/Telecom (  965): DefaultDialerCache: Refreshing default dialer for user 0: now com.google.android.dialer: DDC.oR@CPw
+11-11 13:56:49.392 I/Finsky  (20063): [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.example.focusapp]
+11-11 13:56:49.393 I/Finsky  (20063): [2] AIM: AppInfoManager-Perf > Creating AppInfoManager ...
+11-11 13:56:49.403 D/KeyguardViewMediator( 1349): setKeyguardEnabled(true)
+11-11 13:56:49.426 W/Looper  (  965): Drained
+11-11 13:56:49.427 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:49.431 I/Finsky  (20063): [2] AIM: AppInfoManager-Perf > getApps > called for 1 apps
+11-11 13:56:49.444 I/Finsky  (20063): [4693] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=0, cacheMissCount=1. Missed  in cache (limit 10) : [com.example.focusapp]
+11-11 13:56:49.444 I/Finsky  (20063): [4693] Enqueuing libraries load for -1711004559
+11-11 13:56:49.444 I/Finsky  (20063): [4696] Starting libraries load for -1711004559
+11-11 13:56:49.444 W/android.vendin(20063): ClassLoaderContext classpath size mismatch. expected=15, found=8 (DLC[];PCL[base.apk*3262283054:base.apk!classes2.dex*1009986317:base.apk!classes3.dex*4162999191:base.apk!classes4.dex*771355152:base.apk!classes5.dex*2060349089:base.apk!classes6.dex*3118469109:base.apk!classes7.dex*2326816997:base.apk!classes8.dex*561136266:base.apk!classes9.dex*3167056466:base.apk!classes10.dex*4186298605:base.apk!classes11.dex*4137081084:base.apk!classes12.dex*695690036:base.apk!classes13.dex*1167048985:base.apk!classes14.dex*3903986318:base.apk!classes15.dex*2239599384]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]#PCL[/system/framework/com.android.location.provider.jar*1664931834]#PCL[/system/framework/com.android.media.remotedisplay.jar*1573936315]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]} | DLC[];PCL[/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk*2428083921:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes2.dex*2471563402:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes3.dex*4182070238:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes4.dex*3981835065:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes5.dex*797201911:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes6.dex*3862907552:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes7.dex*402561270:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes8.dex*1588336611]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]})
+11-11 13:56:49.454 W/android.vendin(20063): Found duplicate classes, falling back to extracting from APK : /data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_GoogleCertificates_installtime.apk
+11-11 13:56:49.455 W/android.vendin(20063): NOTE: This wastes RAM and hurts startup performance.
+11-11 13:56:49.455 W/android.vendin(20063): Found duplicated class when checking oat files: 'Landroid/app/AppComponentFactory;' in /data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes2.dex and /data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_GoogleCertificates_installtime.apk!classes2.dex
+11-11 13:56:49.465 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =18 mNewVersion =18
+11-11 13:56:49.472 D/ModelWriter( 1730): 1 removing items from db: 
+11-11 13:56:49.472 D/ModelWriter( 1730): java.lang.Exception
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at com.android.launcher3.model.ModelWriter.deleteItemsFromDatabase(ModelWriter.java:334)
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at com.android.launcher3.model.ModelWriter.deleteItemsFromDatabase(ModelWriter.java:324)
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at com.android.launcher3.model.BaseModelUpdateTask.deleteAndBindComponentsRemoved(BaseModelUpdateTask.java:111)
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at com.android.launcher3.model.PackageUpdatedTask.execute(PackageUpdatedTask.java:344)
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at com.android.launcher3.model.BaseModelUpdateTask.run(BaseModelUpdateTask.java:67)
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at android.os.Handler.handleCallback(Handler.java:938)
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at android.os.Handler.dispatchMessage(Handler.java:99)
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at android.os.Looper.loop(Looper.java:240)
+11-11 13:56:49.472 D/ModelWriter( 1730): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+11-11 13:56:49.476 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =42 mNewVersion =42
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 241
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 247
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 252
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 305
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 306
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 309
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 329
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 332
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 333
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 344
+11-11 13:56:49.478 E/IntervalStats(  965): Unable to parse usage stats package 347
+11-11 13:56:49.486 I/Finsky  (20063): [4697] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=1, cacheMissCount=0. Missed  in cache (limit 10) : []
+11-11 13:56:49.495 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e9ce269
+11-11 13:56:49.505 W/CheckTime(20063): App running slow: Executing com.google.android.finsky.packagemonitor.impl.PackageMonitorReceiverImpl$RegisteredReceiver onReceive took 377ms
+11-11 13:56:49.505 W/ActivityThread(20063): com.google.android.finsky.packagemonitor.impl.PackageMonitorReceiverImpl$RegisteredReceiver running onReceive took long time
+11-11 13:56:49.505 I/Finsky  (20063): [4683] RECEIVER_PACKAGE_MONITOR#logWorkEndAndFinishGoAsync: SUCCESS
+11-11 13:56:49.505 W/CheckTime(20063): App running slow: Executing com.google.android.finsky.packagemonitor.impl.PackageMonitorReceiverImpl$RegisteredReceiver scheduleReceive took 1591ms
+11-11 13:56:49.505 W/ActivityThread(20063): Main thread can not be idle for a long time.
+11-11 13:56:49.507 D/CompatibilityChangeReporter(  965): Compat change id reported: 135634846; UID 10195; state: DISABLED
+11-11 13:56:49.507 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10195; state: ENABLED
+11-11 13:56:49.508 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10195; state: ENABLED
+11-11 13:56:49.520 D/Zygote  (  527): Forked child process 20165
+11-11 13:56:49.522 I/ActivityManager(  965): Start proc 20165:com.android.vending:background/u0a195 for broadcast {com.android.vending/com.google.android.finsky.packagemonitor.backgroundimpl.BackgroundPackageMonitorReceiverImpl$RegisteredReceiver}
+11-11 13:56:49.524 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@82c7b83
+11-11 13:56:49.531 E/ding:backgroun(20165): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:56:49.556 I/ding:backgroun(20165): The ClassLoaderContext is a special shared library.
+11-11 13:56:49.584 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@2daa51a
+11-11 13:56:49.598 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@bd0e03e
+11-11 13:56:49.603 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@f4d8d39
+11-11 13:56:49.610 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@f23d179
+11-11 13:56:49.616 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@a8bfb41
+11-11 13:56:49.633 I/Finsky  (20063): [4695] VerifyApps: Successfully updated the ADI Warn Mode activity to enabled
+11-11 13:56:49.634 I/Finsky  (20063): [4681] Finished reading experiment flags from file [zosHnz_abzUGyBF_c9yGcLKdRbctgiU3WbuaIzajt-g] numFlags=2168.
+11-11 13:56:49.634 I/Finsky  (20063): [4695] VerifyApps: Successfully updated Oppo ADI Warn Mode aliases to default
+11-11 13:56:49.634 I/Finsky  (20063): [4693] Set UnhibernateActivity enabled state to 1
+11-11 13:56:49.638 W/CursorWindow(20063): Window is full: requested allocation 41 bytes, free space 18 bytes, window size 2097152 bytes
+11-11 13:56:49.639 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@822af7e
+11-11 13:56:49.643 I/Finsky  (20063): [4693] SysUA: Set SystemUpdateActivity alias enabled states: v1=1, v2=2
+11-11 13:56:49.644 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@1b14cdf
+11-11 13:56:49.646 I/Finsky  (20063): [4681] Finished reading experiment flags from file [NW-kwZKDBzwQwoMqRoFzhvMbY1u80K-KgbqFPk79jpA] numFlags=2168.
+11-11 13:56:49.656 W/ding:backgroun(20165): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:56:49.656 I/chatty  (20165): uid=10195 com.android.vending:background identical 2 lines
+11-11 13:56:49.656 W/ding:backgroun(20165): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:56:49.658 I/Finsky  (20063): [4681] Finished reading experiment flags from file [RjQ_QIOmKY3ggwWQARJP2mgiM9yfAq9Ta3iK0SRRvGY] numFlags=2168.
+11-11 13:56:49.670 D/NetworkSecurityConfig(20165): No Network Security Config specified, using platform default
+11-11 13:56:49.671 D/NetworkSecurityConfig(20165): No Network Security Config specified, using platform default
+11-11 13:56:49.673 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@163dd2c
+11-11 13:56:49.675 I/Finsky  (20063): [4681] Finished reading experiment flags from file [oBWVA4IumtZKDPK4ApK4xvRpdj72AikxSfes3VpINR8] numFlags=2168.
+11-11 13:56:49.680 I/Finsky:background(20165): [2] Process created at version: 54.0.09-29 [0] [PR] 1014031620
+11-11 13:56:49.683 I/Finsky  (20063): [4681] Finished reading experiment flags from file [u95ArId42uVq31seY84i7Npmhsm8JXt21o1a1eBkwhE] numFlags=2168.
+11-11 13:56:49.688 I/Finsky  (20063): [4693] SysCUA: Set {com.android.vending/com.google.android.finsky.systemcomponentupdateui.common.SystemComponentUpdateActivity} enabled state to 0
+11-11 13:56:49.699 I/Finsky:background(20165): [2] [BGP] Initializing early flags...
+11-11 13:56:49.700 I/Finsky:background(20165): [2] [BGP] Initializing Gservices...
+11-11 13:56:49.702 I/Finsky:background(20165): [2] [BGP] Initializing flags...
+11-11 13:56:49.722 I/Finsky:background(20165): [2] Finished reading experiment flags from file [0tGUNCGIkbk4o6-fQ335kUYSKwVj4lusnHT-A5Dsy08] numFlags=2803.
+11-11 13:56:49.738 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@f0c3f5
+11-11 13:56:49.767 I/Finsky:background(20165): [2] Finished reading experiment flags from file [BbohOu0Ve5UitwhMd0TLc6hkrmQx1wdNRzODqSJN38E] numFlags=2169.
+11-11 13:56:49.769 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@8a93ebe
+11-11 13:56:49.775 I/Finsky:background(20165): [2] Finished reading experiment flags from file [zosHnz_abzUGyBF_c9yGcLKdRbctgiU3WbuaIzajt-g] numFlags=2168.
+11-11 13:56:49.784 I/Finsky:background(20165): [2] Finished reading experiment flags from file [NW-kwZKDBzwQwoMqRoFzhvMbY1u80K-KgbqFPk79jpA] numFlags=2168.
+11-11 13:56:49.792 I/Finsky:background(20165): [2] Finished reading experiment flags from file [RjQ_QIOmKY3ggwWQARJP2mgiM9yfAq9Ta3iK0SRRvGY] numFlags=2168.
+11-11 13:56:49.799 I/Finsky:background(20165): [2] Finished reading experiment flags from file [oBWVA4IumtZKDPK4ApK4xvRpdj72AikxSfes3VpINR8] numFlags=2168.
+11-11 13:56:49.806 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@96df8e6
+11-11 13:56:49.807 I/Finsky:background(20165): [2] Finished reading experiment flags from file [u95ArId42uVq31seY84i7Npmhsm8JXt21o1a1eBkwhE] numFlags=2168.
+11-11 13:56:49.811 I/Finsky:background(20165): [2] [BGP] Initializing crash detector...
+11-11 13:56:49.814 I/Finsky:background(20165): [2] aodl - Registering in memory receiver for android.intent.action.PACKAGE_ADDED and android.intent.action.PACKAGE_REMOVED
+11-11 13:56:49.828 I/Finsky:background(20165): [2] This process start was not selected for Play memory metrics collection.
+11-11 13:56:49.834 I/Finsky:background(20165): [2] aodl - Received: android.intent.action.PACKAGE_CHANGED, [CkmBu7OMwm0v-AIQt1lrFVWxGAG2amYj0Ah68uUKM9U]
+11-11 13:56:49.840 I/Finsky  (20063): [4696] Loaded library for account: [OSkyDwimIGxV4cF3rS_S_kIbgWeMimOa9r9ddhlVEsU]
+11-11 13:56:49.841 I/Finsky  (20063): [4696] Loaded library for account: [TXkxcwQbvv04dShiWcXXcrCCzTiMpXWrNGBLqcV4lYw]
+11-11 13:56:49.841 I/Finsky  (20063): [4696] Loaded library for account: [QBgFKDB0dufn045wMJx7GtbECOcDEe87UYF_f_5UO3g]
+11-11 13:56:49.841 I/Finsky  (20063): [4696] Loaded library for account: [vW9nz23H9hlV9J3t16ruHQQxJW0SDS7uwFhUPTTEhpM]
+11-11 13:56:49.841 I/Finsky  (20063): [4696] Loaded library for account: [e6TtaLQAmyR8Kh8FfFn3s1ZtQHjdDAPEXzTJQYPuBEM]
+11-11 13:56:49.841 I/Finsky  (20063): [4696] Loaded library for account: [SG__FDwIle1a2R_OS--VoxQ1r7mgtQp_u-_VLcmvi3c]
+11-11 13:56:49.841 I/Finsky  (20063): [4696] Finished loading 6 libraries.
+11-11 13:56:49.845 I/Finsky  (20063): [4696] AIM: Got app ownership map. App counts: . Unique apps: 0
+11-11 13:56:49.845 E/Finsky  (20063): [4696] [Counters] attempted to use a non-positive increment for: 4752
+11-11 13:56:49.847 E/Finsky  (20063): [4696] [Counters] attempted to use a non-positive increment for: 4753
+11-11 13:56:49.851 I/Finsky  (20063): [4693] AIM: Got app ownership map. App counts: . Unique apps: 0
+11-11 13:56:49.851 E/Finsky  (20063): [4693] [Counters] attempted to use a non-positive increment for: 4752
+11-11 13:56:49.851 E/Finsky  (20063): [4693] [Counters] attempted to use a non-positive increment for: 4753
+11-11 13:56:49.855 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:56:49.862 I/TetheringManager(20165): registerTetheringEventCallback:com.android.vending
+11-11 13:56:49.862 W/Settings(20165): Setting download_manager_max_bytes_over_mobile has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+11-11 13:56:49.864 I/Finsky:background(20165): [4704] SettingNotFoundException for download_manager_max_bytes_over_mobile
+11-11 13:56:49.864 W/Settings(20165): Setting download_manager_recommended_max_bytes_over_mobile has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+11-11 13:56:49.864 I/Finsky:background(20165): [4704] SettingNotFoundException for download_manager_recommended_max_bytes_over_mobile
+11-11 13:56:49.866 I/Finsky:background(20165): [4704] registerListener
+11-11 13:56:49.874 I/Finsky:background(20165): [4704] DFS: Listener added for uyd@bc46c22
+11-11 13:56:49.874 I/Finsky:background(20165): [4704] registerListener
+11-11 13:56:49.883 I/Finsky:background(20165): [4704] registerListener
+11-11 13:56:49.883 I/Finsky:background(20165): [4704] DFS: Listener added for asyw@19c85a5
+11-11 13:56:49.909 D/SQLiteOpenHelper(20165): SPRD SQLiteOpenHelper getDatabaseLocked version =2 mNewVersion =2
+11-11 13:56:49.915 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@8736fe0
+11-11 13:56:49.916 I/Finsky  (20063): [4695] AIM: AppInfoManager-Perf > ItemModel > CacheSize=72, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=0. Missed  in cache (limit 10) : []
+11-11 13:56:49.923 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@43d3a1d
+11-11 13:56:49.925 I/Finsky:background(20165): [4704] IV2: IQv2 is disabled. Recovering all active installs: []
+11-11 13:56:49.928 I/Finsky  (20063): [4695] AIM: AppInfoManager-Perf > ItemModel > CacheSize=72, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=0. Missed  in cache (limit 10) : []
+11-11 13:56:49.930 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@89ad409
+11-11 13:56:49.934 I/Finsky  (20063): [4695] AIM: AppInfoManager-Perf > getApps > data collection finished
+11-11 13:56:49.934 I/Finsky  (20063): [4695] AIM: AppInfoManager-Perf > maybeDestroyAppInfoManager is called. actives = 0
+11-11 13:56:49.956 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@787d7fb
+11-11 13:56:49.968 D/SQLiteOpenHelper(20165): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:49.971 I/Finsky:background(20165): [4712] RECEIVER_PACKAGE_MONITOR_BACKGROUND#logWorkEndAndFinishGoAsync: SUCCESS
+11-11 13:56:49.985 I/Finsky:background(20165): [4703] Device is ineligible for platform Cronet and will use embedded Cronet instead.
+11-11 13:56:49.985 I/Finsky:background(20165): [4709] Wrote row to frosting DB: 32305
+11-11 13:56:49.988 D/ConnectivityService(  965): requestNetwork for uid/pid:10195/20165 NetworkRequest [ TRACK_DEFAULT id=1018, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:56:49.989 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:56:49.989 D/ConnectivityService(  965):   1018 : null → 100
+11-11 13:56:49.989 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:56:49.989 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1018, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:56:49.989 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1018, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:49.990 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1018, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:49.990 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1018, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:49.990 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1018, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:49.995 I/Finsky:background(20165): [4698] IQ: start evaluating install requests.
+11-11 13:56:49.995 I/Finsky:background(20165): [4698] IQ: no jobs active. Skipping
+11-11 13:56:49.997 D/SQLiteOpenHelper(20165): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:49.998 I/Finsky:background(20165): [4709] Wrote row to frosting DB: 32306
+11-11 13:56:50.016 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@ab29110
+11-11 13:56:50.022 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@1857bd1
+11-11 13:56:50.023 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@3ff6a7b
+11-11 13:56:50.023 D/ConnectivityService(  965): requestNetwork for uid/pid:10195/20165 NetworkRequest [ TRACK_DEFAULT id=1019, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:56:50.024 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:56:50.024 D/ConnectivityService(  965):   1019 : null → 100
+11-11 13:56:50.024 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:56:50.024 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1019, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:56:50.024 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1019, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:50.024 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1019, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:50.024 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1019, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:50.024 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1019, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:50.026 D/SQLiteOpenHelper(20165): SPRD SQLiteOpenHelper getDatabaseLocked version =5 mNewVersion =5
+11-11 13:56:50.027 W/linker  (20165): Warning: "/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libcronet.157.0.8103.38.so" unused DT entry: unknown processor-specific (type 0x70000001 arg 0x0) (ignoring)
+11-11 13:56:50.028 D/ConnectivityService(  965): NetworkReassignment : no changes
+11-11 13:56:50.046 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@a4b85bd
+11-11 13:56:50.046 I/Finsky:background(20165): [4712] RECEIVER_ENGAGE_PACKAGE_CHANGED#logWorkEndAndFinishGoAsync: SUCCESS
+11-11 13:56:50.048 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10184; state: ENABLED
+11-11 13:56:50.048 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10184; state: ENABLED
+11-11 13:56:50.052 I/ActivityManager(  965): Killing 18902:com.google.android.contacts/u0a219 (adj 985): empty #17
+11-11 13:56:50.056 I/Finsky:background(20165): [4714] IQ: Pruning inactive install requests
+11-11 13:56:50.058 D/Zygote  (  527): Forked child process 20219
+11-11 13:56:50.060 I/ActivityManager(  965): Start proc 20219:com.google.android.apps.nbu.files/u0a184 for broadcast {com.google.android.apps.nbu.files/com.google.android.apps.nbu.files.documentbrowser.browselanding.rootcontainerlist.receiver.PackageChangeReceiver_Receiver}
+11-11 13:56:50.071 E/.apps.nbu.file(20219): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:56:50.076 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@621cb1f
+11-11 13:56:50.077 I/Finsky:background(20165): [4698] IQ: 0 scheduled install statuses found to proceed. 
+11-11 13:56:50.090 I/cn_CronetLibraryLoader(20165): Cronet version: 157.0.8103.38, arch: aarch64, source: Statically Linked
+11-11 13:56:50.106 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@d95040d
+11-11 13:56:50.108 V/ActivityManager(  965): Clean up application record for ProcessRecord{77da1ef 18902:com.google.android.contacts/u0a219} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:56:50.109 I/Zygote  (  527): Process 18902 exited due to signal 9 (Killed)
+11-11 13:56:50.109 I/Finsky:background(20165): [4703] CronetEngine is present. Using Cronet for the networking stack.
+11-11 13:56:50.127 I/Finsky:background(20165): [4703] Finished reading experiment flags from file [Se-xCc4LzNyh3UrKMIU2sUf-PUKz4oQEbpKZDMuaFno] numFlags=2153.
+11-11 13:56:50.139 I/libprocessgroup(  965): Successfully killed process cgroup uid 10219 pid 18902 in 86ms
+11-11 13:56:50.141 I/Finsky:background(20165): [4703] Subscription detail: N/A
+11-11 13:56:50.142 D/TelephonyRegistryManager(20165): onSubscriptionsChangedListener callback received.
+11-11 13:56:50.143 I/Finsky:background(20165): [2] onSubscriptionsChanged
+11-11 13:56:50.149 I/Finsky:background(20165): [4703] PlayInstallAPI: Registering Play install service listener.
+11-11 13:56:50.155 I/Finsky:background(20165): [4714] Resetting scheduler db
+11-11 13:56:50.164 D/SQLiteOpenHelper(20165): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:50.170 I/Finsky:background(20165): [4701] SCH: Scheduling phonesky job Id: 3-11951, CT: 1794415747413, Constraints: [{ L: 40252595, D: 51052595, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.170 I/Finsky:background(20165): [4701] SCH: Scheduling phonesky job Id: 3-11952, CT: 1794415747414, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:56:50.170 I/Finsky:background(20165): [4701] SCH: Scheduling phonesky job Id: 3-11953, CT: 1794415747414, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.170 I/Finsky:background(20165): [4701] SCH: Scheduling phonesky job Id: 3-11954, CT: 1794415747415, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.171 I/Finsky:background(20165): [4701] SCH: Scheduling phonesky job Id: 3-11955, CT: 1794415747415, Constraints: [{ L: 40252592, D: 51052592, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.171 I/Finsky:background(20165): [4701] SCH: Scheduling phonesky job Id: 3-11956, CT: 1794415747415, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.171 I/Finsky:background(20165): [4701] SCH: Scheduling phonesky job Id: 47-15, CT: 1794411279483, Constraints: [{ L: 0, D: 21464024, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_NONE, B: BATTERY_ANY }]
+11-11 13:56:50.178 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@556aa71
+11-11 13:56:50.200 I/Finsky:background(20165): [4703] SCH: Scheduling 0 system job(s)
+11-11 13:56:50.208 I/Finsky:background(20165): [4728] SCH: Canceling job 3-11951
+11-11 13:56:50.208 I/Finsky:background(20165): [4728] WM::SCH: Logging work end for 3-11951
+11-11 13:56:50.213 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@23b3056
+11-11 13:56:50.214 I/Finsky:background(20165): [4698] SCH: Scheduling phonesky job Id: 3-11953, CT: 1794415747414, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.214 I/Finsky:background(20165): [4698] SCH: Scheduling phonesky job Id: 3-11955, CT: 1794415747415, Constraints: [{ L: 40252592, D: 51052592, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.222 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@c3688ca
+11-11 13:56:50.224 W/.apps.nbu.file(20219): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:56:50.224 I/chatty  (20219): uid=10184(com.google.android.apps.nbu.files) identical 1 line
+11-11 13:56:50.224 W/.apps.nbu.file(20219): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:56:50.240 D/NetworkSecurityConfig(20219): Using Network Security Config from resource network_security_config debugBuild: false
+11-11 13:56:50.244 D/NetworkSecurityConfig(20219): Using Network Security Config from resource network_security_config debugBuild: false
+11-11 13:56:50.246 I/Finsky:background(20165): [4701] SCH: Scheduling 1 system job(s)
+11-11 13:56:50.247 I/Finsky:background(20165): [4701] SCH: Scheduling system job Id: 10689, L: 0, D: 50589761, C: false, I: true, N: 2
+11-11 13:56:50.263 I/Finsky:background(20165): [4728] SCH: Canceling job 3-11952
+11-11 13:56:50.263 I/Finsky:background(20165): [4728] WM::SCH: Logging work end for 3-11952
+11-11 13:56:50.266 I/Finsky:background(20165): [4698] SCH: no pending jobs to schedule.
+11-11 13:56:50.269 I/Finsky:background(20165): [4728] SCH: Canceling job 3-11953
+11-11 13:56:50.269 I/Finsky:background(20165): [4728] WM::SCH: Logging work end for 3-11953
+11-11 13:56:50.272 I/Finsky:background(20165): [4699] SCH: Scheduling phonesky job Id: 3-11955, CT: 1794415747415, Constraints: [{ L: 40252592, D: 51052592, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.292 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@ba2a5c4
+11-11 13:56:50.298 I/Finsky:background(20165): [4703] SCH: Scheduling 1 system job(s)
+11-11 13:56:50.298 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e7d360e
+11-11 13:56:50.298 I/Finsky:background(20165): [4703] SCH: Scheduling system job Id: 10691, L: 39789709, D: 50589709, C: false, I: true, N: 2
+11-11 13:56:50.310 I/Finsky:background(20165): [4728] SCH: Canceling job 3-11954
+11-11 13:56:50.310 I/Finsky:background(20165): [4728] WM::SCH: Logging work end for 3-11954
+11-11 13:56:50.313 I/Finsky:background(20165): [4699] SCH: Scheduling phonesky job Id: 3-11956, CT: 1794415747415, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.321 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@c5a7cad
+11-11 13:56:50.334 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@4d2517e
+11-11 13:56:50.365 I/Finsky:background(20165): [4703] SCH: Scheduling 1 system job(s)
+11-11 13:56:50.366 I/Finsky:background(20165): [4703] SCH: Scheduling system job Id: 10692, L: 0, D: 85937049, C: true, I: true, N: 2
+11-11 13:56:50.380 I/Finsky:background(20165): [4728] SCH: Canceling job 3-11955
+11-11 13:56:50.380 I/Finsky:background(20165): [4728] WM::SCH: Logging work end for 3-11955
+11-11 13:56:50.382 I/Finsky:background(20165): [4699] SCH: no pending jobs to schedule.
+11-11 13:56:50.385 I/Finsky:background(20165): [4728] SCH: Canceling job 3-11956
+11-11 13:56:50.386 I/Finsky:background(20165): [4728] WM::SCH: Logging work end for 3-11956
+11-11 13:56:50.387 I/Finsky:background(20165): [4701] SCH: no pending jobs to schedule.
+11-11 13:56:50.388 W/ComponentDiscovery(20219): Class com.google.firebase.installations.FirebaseInstallationsKtxRegistrar was not found.
+11-11 13:56:50.417 I/Finsky:background(20165): [4714] IQ: Creating job 11957, for (REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, MIN_BATTERY=20, SHOULD_APPLY_BUDGET=true, IGNORE_HOLDOFF=true, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, TIME=[2026-11-12T04:00:00Z-2026-11-12T07:00:00Z], AUTHENTICATION_REQUIRED)
+11-11 13:56:50.421 I/Finsky:background(20165): [4714] IQ: Creating job 11958, for (REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, NETWORK=ANY, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, AUTHENTICATION_REQUIRED)
+11-11 13:56:50.422 I/Finsky:background(20165): [4714] IQ: Creating job 11959, for (REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, MIN_BATTERY=20, SHOULD_APPLY_BUDGET=true, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, AUTHENTICATION_REQUIRED)
+11-11 13:56:50.422 I/Finsky:background(20165): [4714] IQ: Creating job 11960, for (REQ_CHARGING, REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, AUTHENTICATION_REQUIRED)
+11-11 13:56:50.423 I/Finsky:background(20165): [4714] IQ: Creating job 11961, for (REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, MIN_BATTERY=20, SHOULD_APPLY_BUDGET=true, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, TIME=[2026-11-12T04:00:00Z-2026-11-12T07:00:00Z], AUTHENTICATION_REQUIRED)
+11-11 13:56:50.424 I/Finsky:background(20165): [4714] IQ: Creating job 11962, for (REQ_CHARGING, REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, IGNORE_HOLDOFF=true, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, AUTHENTICATION_REQUIRED)
+11-11 13:56:50.424 I/Finsky:background(20165): [4714] IQ: Bulk scheduling created jobs
+11-11 13:56:50.427 I/Finsky:background(20165): [4714] SCH: Received scheduling request: Id: 3-11957, Constraints: [{ L: 39789581, D: 50589581, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.428 I/Finsky:background(20165): [4714] SCH: Received scheduling request: Id: 3-11958, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:56:50.428 I/Finsky:background(20165): [4714] SCH: Received scheduling request: Id: 3-11959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.429 I/Finsky:background(20165): [4714] SCH: Received scheduling request: Id: 3-11960, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.429 I/Finsky:background(20165): [4714] SCH: Received scheduling request: Id: 3-11961, Constraints: [{ L: 39789577, D: 50589577, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.429 I/Finsky:background(20165): [4714] SCH: Received scheduling request: Id: 3-11962, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.440 I/Finsky:background(20165): [4703] SSM: Start staged session task with 0 tracked staged sessions
+11-11 13:56:50.464 W/.apps.nbu.file(20219): ClassLoaderContext classpath size mismatch. expected=15, found=0 (DLC[];PCL[base.apk*3262283054:base.apk!classes2.dex*1009986317:base.apk!classes3.dex*4162999191:base.apk!classes4.dex*771355152:base.apk!classes5.dex*2060349089:base.apk!classes6.dex*3118469109:base.apk!classes7.dex*2326816997:base.apk!classes8.dex*561136266:base.apk!classes9.dex*3167056466:base.apk!classes10.dex*4186298605:base.apk!classes11.dex*4137081084:base.apk!classes12.dex*695690036:base.apk!classes13.dex*1167048985:base.apk!classes14.dex*3903986318:base.apk!classes15.dex*2239599384]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]#PCL[/system/framework/com.android.location.provider.jar*1664931834]#PCL[/system/framework/com.android.media.remotedisplay.jar*1573936315]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]} | DLC[];PCL[])
+11-11 13:56:50.466 D/BoundBrokerSvc(18507): onRebind: Intent { act=com.google.android.gms.cloudmessaging.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:56:50.481 W/System  (20219): ClassLoader referenced unknown path: 
+11-11 13:56:50.508 W/.apps.nbu.file(20219): ClassLoaderContext classpath size mismatch. expected=15, found=4 (DLC[];PCL[base.apk*3262283054:base.apk!classes2.dex*1009986317:base.apk!classes3.dex*4162999191:base.apk!classes4.dex*771355152:base.apk!classes5.dex*2060349089:base.apk!classes6.dex*3118469109:base.apk!classes7.dex*2326816997:base.apk!classes8.dex*561136266:base.apk!classes9.dex*3167056466:base.apk!classes10.dex*4186298605:base.apk!classes11.dex*4137081084:base.apk!classes12.dex*695690036:base.apk!classes13.dex*1167048985:base.apk!classes14.dex*3903986318:base.apk!classes15.dex*2239599384]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]#PCL[/system/framework/com.android.location.provider.jar*1664931834]#PCL[/system/framework/com.android.media.remotedisplay.jar*1573936315]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]} | DLC[];PCL[/data/app/~~pPxyNzMUWcVmvRP9ovh8NQ==/com.google.android.apps.nbu.files-RMj43gBtARHT6F2mBXsEoQ==/base.apk*1764233033:/data/app/~~pPxyNzMUWcVmvRP9ovh8NQ==/com.google.android.apps.nbu.files-RMj43gBtARHT6F2mBXsEoQ==/base.apk!classes2.dex*2657044874:/data/app/~~pPxyNzMUWcVmvRP9ovh8NQ==/com.google.android.apps.nbu.files-RMj43gBtARHT6F2mBXsEoQ==/base.apk!classes3.dex*2322410928:/data/app/~~pPxyNzMUWcVmvRP9ovh8NQ==/com.google.android.apps.nbu.files-RMj43gBtARHT6F2mBXsEoQ==/base.apk!classes4.dex*2916413453]{PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]})
+11-11 13:56:50.514 W/.apps.nbu.file(20219): Found duplicate classes, falling back to extracting from APK : /data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_MeasurementDynamite_installtime.apk
+11-11 13:56:50.514 W/.apps.nbu.file(20219): NOTE: This wastes RAM and hurts startup performance.
+11-11 13:56:50.514 W/.apps.nbu.file(20219): Found duplicated class when checking oat files: 'Landroid/app/AppComponentFactory;' in /data/app/~~pPxyNzMUWcVmvRP9ovh8NQ==/com.google.android.apps.nbu.files-RMj43gBtARHT6F2mBXsEoQ==/base.apk!classes2.dex and /data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_MeasurementDynamite_installtime.apk!classes2.dex
+11-11 13:56:50.575 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@f51fbe2
+11-11 13:56:50.604 W/CheckTime(20219): App running slow: Executing com.google.android.apps.nbu.files.documentbrowser.browselanding.rootcontainerlist.receiver.PackageChangeReceiver_Receiver scheduleReceive took 517ms
+11-11 13:56:50.604 W/ActivityThread(20219): Main thread can not be idle for a long time.
+11-11 13:56:50.611 I/ActivityManager(  965): Killing 18966:com.google.android.projection.gearhead:shared/u0a182 (adj 985): empty #17
+11-11 13:56:50.619 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@3734b73
+11-11 13:56:50.625 I/Finsky  (20063): [4682] RECEIVER_SINGLE_USER_SETTINGS#logWorkEndAndFinishGoAsync: SUCCESS
+11-11 13:56:50.633 I/Fitness (18507): (REDACTED) OnPackageChangedOperation got intent: %s
+11-11 13:56:50.653 I/Fitness (18507): (REDACTED) FitCleanupIntentOperation received Intent %s
+11-11 13:56:50.656 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@7065a30
+11-11 13:56:50.666 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e4f36a9
+11-11 13:56:50.668 I/Icing   (18507): doRemovePackageData com.example.focusapp
+11-11 13:56:50.669 I/Zygote  (  527): Process 18966 exited due to signal 9 (Killed)
+11-11 13:56:50.669 V/ActivityManager(  965): Clean up application record for ProcessRecord{7992172 18966:com.google.android.projection.gearhead:shared/u0a182} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:56:50.673 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@a17f42e
+11-11 13:56:50.674 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@22d2bcf
+11-11 13:56:50.674 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@1aee95c
+11-11 13:56:50.699 I/libprocessgroup(  965): Successfully killed process cgroup uid 10182 pid 18966 in 87ms
+11-11 13:56:50.699 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e13a7c5
+11-11 13:56:50.716 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@d8d3e27
+11-11 13:56:50.762 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@53caf60
+11-11 13:56:50.776 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@182684b
+11-11 13:56:50.787 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@5f3054c
+11-11 13:56:50.812 I/Finsky:background(20165): [4693] WM::SCH: Logging work initialize for 3-11957
+11-11 13:56:50.813 I/Finsky:background(20165): [4693] WM::SCH: Logging work initialize for 3-11958
+11-11 13:56:50.813 I/Finsky:background(20165): [4693] WM::SCH: Logging work initialize for 3-11959
+11-11 13:56:50.813 I/Finsky:background(20165): [4693] WM::SCH: Logging work initialize for 3-11960
+11-11 13:56:50.813 I/Finsky:background(20165): [4693] WM::SCH: Logging work initialize for 3-11961
+11-11 13:56:50.813 I/Finsky:background(20165): [4693] WM::SCH: Logging work initialize for 3-11962
+11-11 13:56:50.815 E/.apps.nbu.file(20219): No package ID 6b found for ID 0x6b0b0013.
+11-11 13:56:50.818 I/FA      (20219): App measurement initialized, version: 194006
+11-11 13:56:50.818 I/FA      (20219): To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+11-11 13:56:50.818 I/FA      (20219): To enable faster debug mode event logging run:
+11-11 13:56:50.818 I/FA      (20219):   adb shell setprop debug.firebase.analytics.app com.google.android.apps.nbu.files
+11-11 13:56:50.819 I/Finsky:background(20165): [4699] SCH: Scheduling phonesky job Id: 3-11957, CT: 1794416210427, Constraints: [{ L: 39789581, D: 50589581, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.819 I/Finsky:background(20165): [4699] SCH: Scheduling phonesky job Id: 3-11958, CT: 1794416210428, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:56:50.819 I/Finsky:background(20165): [4699] SCH: Scheduling phonesky job Id: 3-11959, CT: 1794416210428, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.819 I/Finsky:background(20165): [4699] SCH: Scheduling phonesky job Id: 3-11960, CT: 1794416210429, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.819 I/Finsky:background(20165): [4699] SCH: Scheduling phonesky job Id: 3-11961, CT: 1794416210429, Constraints: [{ L: 39789577, D: 50589577, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.819 I/Finsky:background(20165): [4699] SCH: Scheduling phonesky job Id: 3-11962, CT: 1794416210429, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:56:50.824 I/Finsky:background(20165): [4703] SCH: Scheduling 1 system job(s)
+11-11 13:56:50.824 I/Finsky:background(20165): [4703] SCH: Scheduling system job Id: 10691, L: 0, D: 50589182, C: false, I: true, N: 2
+11-11 13:56:50.831 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@5ffc4de
+11-11 13:56:50.856 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@54f7228
+11-11 13:56:50.867 D/SQLiteOpenHelper(20219): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:50.877 D/BoundBrokerSvc(18507): onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+11-11 13:56:50.877 D/BoundBrokerSvc(18507): Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+11-11 13:56:50.885 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@73d88d4
+11-11 13:56:50.886 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@d96a6bf
+11-11 13:56:50.892 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@897ae3c
+11-11 13:56:50.905 D/SQLiteOpenHelper(20219): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:50.910 D/SQLiteOpenHelper(20219): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:50.915 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e9c782f
+11-11 13:56:50.920 D/AdvertisingIdClient(18507): AdvertisingIdClient already created.
+11-11 13:56:50.920 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@3870c35
+11-11 13:56:50.920 D/AdvertisingIdClient(18507): AdvertisingIdClient is not bounded. Starting to bind it...
+11-11 13:56:50.934 D/AdvertisingIdClient(18507): AdvertisingIdClient is bounded
+11-11 13:56:50.937 W/AdvertisingIdSettings(18507): Package com.google.android.apps.nbu.files failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+11-11 13:56:50.938 I/AdvertisingIdClient(18507): shouldSendLog 103664226
+11-11 13:56:50.938 I/AdvertisingIdClient(18507): GetInfoInternal elapse 18ms
+11-11 13:56:50.958 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@1411e6c
+11-11 13:56:50.966 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@c09cf45
+11-11 13:56:50.973 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@5ff0b42
+11-11 13:56:50.988 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@9d360d5
+11-11 13:56:51.007 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@876d5d3
+11-11 13:56:51.069 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@cca2f94
+11-11 13:56:51.087 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@58595c3
+11-11 13:56:51.191 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@3f50ea
+11-11 13:56:51.217 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@cf86f0f
+11-11 13:56:51.414 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@6712a36
+11-11 13:56:51.459 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e90bd72
+11-11 13:56:51.503 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@5c0f03d
+11-11 13:56:51.570 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@4a491d3
+11-11 13:56:53.433 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:56:53.433 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:56:54.697 I/ding:backgroun(20165): Waiting for a blocking GC ProfileSaver
+11-11 13:56:55.685 D/ip_monitor-649(20333): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 PROBE
+11-11 13:56:55.712 D/ip_monitor-649(20334): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 REACHABLE
+11-11 13:56:55.859 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.nearby.presence.service.LifeCycleService :false Us:false
+11-11 13:56:56.018 I/Finsky  (20063): [4712] Subscription detail: N/A
+11-11 13:56:56.020 D/TelephonyRegistryManager(20063): onSubscriptionsChangedListener callback received.
+11-11 13:56:56.020 I/Finsky  (20063): [4712] playLoggingServerUrl: https://play.googleapis.com/play/log
+11-11 13:56:56.020 I/Finsky  (20063): [4712] playLoggingServerTimestampUrl: https://play.googleapis.com/play/log/timestamp
+11-11 13:56:56.020 I/Finsky  (20063): [2] onSubscriptionsChanged
+11-11 13:56:56.892 I/Finsky:background(20165): [4697] playLoggingServerUrl: https://play.googleapis.com/play/log
+11-11 13:56:56.892 I/Finsky:background(20165): [4697] playLoggingServerTimestampUrl: https://play.googleapis.com/play/log/timestamp
+11-11 13:56:59.068 I/Finsky  (20063): [4681] Device is ineligible for platform Cronet and will use embedded Cronet instead.
+11-11 13:56:59.073 D/CompatibilityChangeReporter(  965): Compat change id reported: 135634846; UID 10194; state: DISABLED
+11-11 13:56:59.074 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10194; state: ENABLED
+11-11 13:56:59.074 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10194; state: ENABLED
+11-11 13:56:59.078 I/Finsky  (20063): [4707] Initializing pausers from value store.
+11-11 13:56:59.080 W/linker  (20063): Warning: "/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libcronet.157.0.8103.38.so" unused DT entry: unknown processor-specific (type 0x70000001 arg 0x0) (ignoring)
+11-11 13:56:59.083 I/Finsky  (20063): [4707] IQ::HLD: Callers (Pausers) in PauseUpdatesCallersValueStore: []
+11-11 13:56:59.084 D/Zygote  (  527): Forked child process 20368
+11-11 13:56:59.086 I/cn_CronetLibraryLoader(20063): Cronet version: 157.0.8103.38, arch: aarch64, source: Statically Linked
+11-11 13:56:59.086 I/ActivityManager(  965): Start proc 20368:com.google.process.gapps/u0a194 for content provider {com.google.android.gsf/com.google.android.gsf.settings.GoogleSettingsProvider}
+11-11 13:56:59.087 D/ConnectivityService(  965): requestNetwork for uid/pid:10195/20063 NetworkRequest [ TRACK_DEFAULT id=1021, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:56:59.088 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:56:59.088 D/ConnectivityService(  965):   1021 : null → 100
+11-11 13:56:59.088 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:56:59.088 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1021, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:56:59.088 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1021, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:59.088 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1021, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:59.088 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1021, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:59.089 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1021, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:56:59.091 I/Finsky  (20063): [4695] CronetEngine is present. Using Cronet for the networking stack.
+11-11 13:56:59.092 D/ConnectivityService(  965): NetworkReassignment : no changes
+11-11 13:56:59.097 E/e.process.gapp(20368): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:56:59.131 I/ActivityManager(  965): Killing 19022:com.google.android.safetycore/u0a275 (adj 945): empty #17
+11-11 13:56:59.136 I/e.process.gapp(20368): The ClassLoaderContext is a special shared library.
+11-11 13:56:59.153 I/Finsky  (20063): [4681] registerListener
+11-11 13:56:59.156 I/Finsky  (20063): [4681] DFS: Listener added for uyd@93bf73b
+11-11 13:56:59.158 I/Finsky  (20063): [4681] registerListener
+11-11 13:56:59.176 D/BoundBrokerSvc(18507): onBind: Intent { act=com.google.android.gms.potokens.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:56:59.176 D/BoundBrokerSvc(18507): Loading bound service for intent: Intent { act=com.google.android.gms.potokens.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:56:59.177 I/Finsky  (20063): [4693] Component class com.google.android.finsky.wearsupport.WearSupportService disabled via PackageManager.
+11-11 13:56:59.177 I/Finsky  (20063): [4693] Component class com.google.android.finsky.wearsupport.WearChangeListenerService disabled via PackageManager.
+11-11 13:56:59.185 D/NetworkSecurityConfig(20368): No Network Security Config specified, using platform default
+11-11 13:56:59.186 D/NetworkSecurityConfig(20368): No Network Security Config specified, using platform default
+11-11 13:56:59.186 I/Finsky  (20063): [4707] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.188 V/ActivityManager(  965): Clean up application record for ProcessRecord{425e5c9 19022:com.google.android.safetycore/u0a275} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:56:59.188 I/Zygote  (  527): Process 19022 exited due to signal 9 (Killed)
+11-11 13:56:59.190 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =2 mNewVersion =2
+11-11 13:56:59.194 I/Finsky  (20063): [4738] SM: There are no stale sessions to be pruned
+11-11 13:56:59.198 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:59.200 D/SQLiteOpenHelper(20368): SPRD SQLiteOpenHelper getDatabaseLocked version =2 mNewVersion =2
+11-11 13:56:59.205 I/Finsky  (20063): [2] Connecting InstallListener to SplitInstallService broadcaster...
+11-11 13:56:59.219 I/libprocessgroup(  965): Successfully killed process cgroup uid 10275 pid 19022 in 87ms
+11-11 13:56:59.223 I/GoogleHttpClient(20368): GMS http client unavailable, use old client
+11-11 13:56:59.263 D/keymaster_worker(  631): start addRngEntropy
+11-11 13:56:59.265 D/SQLiteOpenHelper(20368): SPRD SQLiteOpenHelper getDatabaseLocked version =11 mNewVersion =11
+11-11 13:56:59.266 I/Finsky  (20063): [4716] ApplicationRestrictions: {}
+11-11 13:56:59.272 I/Finsky  (20063): [4693] CronetEngine is present. Using Cronet for the networking stack.
+11-11 13:56:59.280 E/TrustyKeymaster(  363): Succeeded to send cmd (32) to com.android.trusty.keymaster: Success with rc(20) 
+11-11 13:56:59.280 E/TrustyKeymaster(  363): Getting response size (8)
+11-11 13:56:59.284 D/keymaster_worker(  631): finish addRngEntropy
+11-11 13:56:59.284 D/keymaster_worker(  631): start begin
+11-11 13:56:59.287 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(363) 
+11-11 13:56:59.288 E/TrustyKeymaster(  363): Getting response size (52)
+11-11 13:56:59.288 D/keymaster_worker(  631): finish begin
+11-11 13:56:59.290 D/keymaster_worker(  631): start update
+11-11 13:56:59.290 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:10, total:10
+11-11 13:56:59.290 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(119) 
+11-11 13:56:59.290 E/TrustyKeymaster(  363): Getting response size (38)
+11-11 13:56:59.290 D/keymaster_worker(  631): finish update
+11-11 13:56:59.291 D/keymaster_worker(  631): start finish
+11-11 13:56:59.291 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:56:59.291 E/TrustyKeymaster(  363): Getting response size (40)
+11-11 13:56:59.292 D/keymaster_worker(  631): finish finihs
+11-11 13:56:59.293 D/keymaster_worker(  631): start begin
+11-11 13:56:59.294 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(387) 
+11-11 13:56:59.294 E/TrustyKeymaster(  363): Getting response size (28)
+11-11 13:56:59.294 D/keymaster_worker(  631): finish begin
+11-11 13:56:59.295 D/keymaster_worker(  631): start update
+11-11 13:56:59.296 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:26, total:26
+11-11 13:56:59.296 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(135) 
+11-11 13:56:59.296 E/TrustyKeymaster(  363): Getting response size (38)
+11-11 13:56:59.296 D/keymaster_worker(  631): finish update
+11-11 13:56:59.296 D/keymaster_worker(  631): start finish
+11-11 13:56:59.297 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:56:59.297 E/TrustyKeymaster(  363): Getting response size (24)
+11-11 13:56:59.297 D/keymaster_worker(  631): finish finihs
+11-11 13:56:59.299 D/keymaster_worker(  631): start begin
+11-11 13:56:59.299 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(387) 
+11-11 13:56:59.300 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:56:59.300 E/TrustyKeymaster(  363): Getting response size (28)
+11-11 13:56:59.300 D/keymaster_worker(  631): finish begin
+11-11 13:56:59.301 D/keymaster_worker(  631): start update
+11-11 13:56:59.301 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:130, total:130
+11-11 13:56:59.301 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(239) 
+11-11 13:56:59.301 E/TrustyKeymaster(  363): Getting response size (142)
+11-11 13:56:59.301 D/keymaster_worker(  631): finish update
+11-11 13:56:59.302 D/keymaster_worker(  631): start finish
+11-11 13:56:59.302 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:56:59.302 E/TrustyKeymaster(  363): Getting response size (24)
+11-11 13:56:59.303 D/keymaster_worker(  631): finish finihs
+11-11 13:56:59.305 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:56:59.316 I/Finsky  (20063): [4707] Already at the latest configurations for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.316 I/Finsky  (20063): [4737] Triggered update for experiment package com.google.android.finsky.stable_new.
+11-11 13:56:59.433 I/Finsky  (20063): [4737] Already at the latest configurations for experiment package com.google.android.finsky.stable_new.
+11-11 13:56:59.434 I/Finsky  (20063): [4707] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.482 I/Finsky  (20063): [4707] Already at the latest configurations for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.482 I/Finsky  (20063): [4707] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.553 I/Finsky  (20063): [4707] Regular flags synced
+11-11 13:56:59.554 I/Finsky  (20063): [4707] Writing flags config, size 1.
+11-11 13:56:59.554 I/Finsky  (20063): [4707] Started writing experiment flags into file [02lmRld71YjuahQls3W9w14yDH8nObeG5Z-UEBnDdEw].
+11-11 13:56:59.575 I/Finsky  (20063): [4707] Finished writing experiment flags into file [02lmRld71YjuahQls3W9w14yDH8nObeG5Z-UEBnDdEw], numFlags=2168.
+11-11 13:56:59.577 I/Finsky  (20063): [4707] Successfully applied new configurations for package com.google.android.finsky.regular.
+11-11 13:56:59.577 I/Finsky  (20063): [4707] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.617 I/Finsky  (20063): [4707] Already at the latest configurations for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.617 I/Finsky  (20063): [4707] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.653 I/Finsky  (20063): [4707] Already at the latest configurations for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.653 I/Finsky  (20063): [4707] Triggered update for experiment package com.google.android.finsky.stable.
+11-11 13:56:59.704 I/Finsky  (20063): [4707] Already at the latest configurations for experiment package com.google.android.finsky.stable.
+11-11 13:56:59.704 I/Finsky  (20063): [4707] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.746 I/Finsky  (20063): [4707] Already at the latest configurations for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.747 I/Finsky  (20063): [4707] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:56:59.792 I/Finsky  (20063): [4707] Regular flags synced
+11-11 13:56:59.794 I/Finsky  (20063): [4707] Writing flags config, size 1.
+11-11 13:56:59.794 I/Finsky  (20063): [4707] Started writing experiment flags into file [4dEVOh7DlClE42ly_19Hs7FqnnFOj9O0dm-zzWqGxeo].
+11-11 13:56:59.802 I/Finsky  (20063): [4707] Finished writing experiment flags into file [4dEVOh7DlClE42ly_19Hs7FqnnFOj9O0dm-zzWqGxeo], numFlags=2153.
+11-11 13:56:59.804 I/Finsky  (20063): [4707] Successfully applied new configurations for package com.google.android.finsky.regular.
+11-11 13:57:00.288 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:57:00.288 I/chatty  ( 1349): uid=10234(com.android.systemui) identical 1 line
+11-11 13:57:00.288 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:57:01.023 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+11-11 13:57:03.380 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:57:03.810 I/ActivityManager(  965): Killing 19059:com.google.android.apps.fitness/u0a253 (adj 985): empty #17
+11-11 13:57:03.871 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.icing.LIGHTWEIGHT_INDEX_SERVICE dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:57:03.885 V/ActivityManager(  965): Clean up application record for ProcessRecord{42f3af 19059:com.google.android.apps.fitness/u0a253} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:57:03.885 I/Zygote  (  527): Process 19059 exited due to signal 9 (Killed)
+11-11 13:57:03.899 I/libprocessgroup(  965): Successfully killed process cgroup uid 10253 pid 19059 in 87ms
+11-11 13:57:04.168 I/e.process.gapp(20368): Waiting for a blocking GC ProfileSaver
+11-11 13:57:04.180 I/e.process.gapp(20368): WaitForGcToComplete blocked RunEmptyCheckpoint on ProfileSaver for 9.599ms
+11-11 13:57:04.425 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+11-11 13:57:05.508 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.cloudmessaging.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:57:05.855 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.thunderbird.EmergencyPersistentService :false Us:false
+11-11 13:57:09.163 I/Finsky  (20063): [2] setup::RES: shouldRecoverRestoredPackages: versionCodeSystem 82542010
+11-11 13:57:09.192 I/Finsky  (20063): [2] Detected restoreservicev2://recovery not needed, will not run
+11-11 13:57:09.213 I/Finsky  (20063): [4749] registerListener
+11-11 13:57:09.214 I/Finsky  (20063): [4749] DSC: queryDownloads()
+11-11 13:57:09.217 I/Finsky  (20063): [4749] Initialized AssetModuleDownloader.
+11-11 13:57:09.218 W/android.vendin(20063): Accessing hidden method Landroid/view/ScrollCaptureTarget;-><init>(Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;Landroid/view/ScrollCaptureCallback;)V (blacklist, linking, denied)
+11-11 13:57:09.220 I/Finsky:background(20165): [4710] DS: queryDownloads()
+11-11 13:57:09.222 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:57:09.224 D/SQLiteOpenHelper(20063): SPRD SQLiteOpenHelper getDatabaseLocked version =7 mNewVersion =7
+11-11 13:57:09.226 D/SQLiteOpenHelper(20165): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:57:09.272 W/Finsky  (20063): [4696] PreloadClasses: Unable to load [androidx.compose.ui.platform.ViewCompositionStrategy$DisposeOnViewTreeLifecycleDestroyed$installFor$1, androidx.compose.ui.platform.AndroidUiDispatcher$Companion$Main$2, androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$LocalConfiguration$1, androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$LocalContext$1, androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$LocalView$1, androidx.compose.ui.platform.DisposableSaveableStateRegistry_androidKt$DisposableSaveableStateRegistry$saveableStateRegistry$1, androidx.compose.ui.platform.DisposableSaveableStateRegistry_androidKt$DisposableSaveableStateRegistry$1, androidx.compose.ui.platform.InspectableValueKt$NoInspectorInfo$1, androidx.compose.ui.node.ComposeUiNode$Companion$SetModifier$1, androidx.compose.ui.node.ComposeUiNode$Companion$SetLayoutDirection$1, androidx.compose.ui.semantics.SemanticsProperties$ContentDescription$1, androidx.compose.ui.semantics.SemanticsPropertyKey$1, androidx.compose.ui.semantics.SemanticsProperties$PaneTitle$1, androidx.compose.ui.semantics.SemanticsProperties$InvisibleToUser$1, androidx.compose.ui.semantics.SemanticsProperties$IsPopup$1, androidx.compose.ui.semantics.SemanticsProperties$IsDialog$1, androidx.compose.ui.semantics.SemanticsProperties$Role$1, androidx.compose.ui.semantics.SemanticsProperties$TestTag$1, androidx.compose.ui.semantics.SemanticsProperties$Text$1, androidx.compose.ui.platform.ComposeView$Content$1, androidx.compose.ui.platform.CompositionLocalsKt$ProvideCommonCompositionLocals$1, androidx.compose.ui.layout.RootMeasurePolicy$measure$2, androidx.compose.ui.input.pointer.PointerInteropFilter_androidKt$pointerInteropFilter$2, androidx.compose.ui.graphics.painter.Painter$drawLambda$1, androidx.compose.ui.graphics.SimpleGraphicsLayerModifier$layerBlock$1, androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher$calculateNestedScrollScope$1, androidx.compose.animation.TransitionData, androidx.compose.animation.Fade, androidx.compose.ui.layout.SubcomposeLayoutState$setRoot$1, androidx.compose.ui.layout.SubcomposeLayoutState$setMeasurePolicy$1, androidx.compose.runtime.saveable.SaveableStateRegistryImpl$registerProvider$3, androidx.compose.ui.graphics.BlockGraphicsLayerModifier$measure$1, androidx.compose.ui.text.platform.AndroidParagraphIntrinsics, androidx.compose.ui.graphics.SimpleGraphicsLayerModifier$measure$1, androidx.compose.ui.layout.SubcomposeLayoutKt$SubcomposeLayout$2, androidx.compose.ui.platform.ViewCompositionStrategy$DisposeOnDetachedFromWindowOrReleasedFromPool$installFor$1, androidx.navigation.NavControllerViewModel, androidx.navigation.NavControllerViewModel$Companion]
+11-11 13:57:11.361 I/cmd     (20536): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:57:11.364 I/ActivityManager(  965): Killing 18586:com.google.android.projection.gearhead:provider/u0a182 (adj 985): empty #17
+11-11 13:57:11.382 I/RoleManagerService(  965): Granting default roles...
+11-11 13:57:11.392 I/Finsky  (20063): [2] aodw - Received: android.intent.action.PACKAGE_CHANGED, [CkmBu7OMwm0v-AIQt1lrFVWxGAG2amYj0Ah68uUKM9U]
+11-11 13:57:11.412 I/Finsky  (20063): [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.example.focusapp]
+11-11 13:57:11.412 E/PhoneInterfaceManager( 1320): [PhoneIntfMgr] getCarrierPackageNamesForIntentAndPhone: No UICC
+11-11 13:57:11.412 D/CarrierSvcBindHelper( 1320): No carrier app for: 0
+11-11 13:57:11.412 E/PhoneInterfaceManager( 1320): [PhoneIntfMgr] getCarrierPackageNamesForIntentAndPhone: No UICC
+11-11 13:57:11.412 D/CarrierSvcBindHelper( 1320): No carrier app for: 1
+11-11 13:57:11.413 D/ImsResolver( 1320): maybeAddedImsService, packageName: com.example.focusapp
+11-11 13:57:11.413 I/Finsky  (20063): [2] AIM: AppInfoManager-Perf > getApps > called for 1 apps
+11-11 13:57:11.415 I/Finsky  (20063): [4693] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=0, cacheMissCount=1. Missed  in cache (limit 10) : [com.example.focusapp]
+11-11 13:57:11.415 I/Fitness (18507): (REDACTED) OnPackageChangedOperation got intent: %s
+11-11 13:57:11.416 I/Finsky  (20063): [4693] AIM: Got app ownership map. App counts: . Unique apps: 0
+11-11 13:57:11.416 E/Finsky  (20063): [4693] [Counters] attempted to use a non-positive increment for: 4752
+11-11 13:57:11.417 I/InputReader(  965): Reconfiguring input devices, changes=KEYBOARD_LAYOUTS | 
+11-11 13:57:11.418 E/Finsky  (20063): [4693] [Counters] attempted to use a non-positive increment for: 4753
+11-11 13:57:11.420 I/Fitness (18507): (REDACTED) FitCleanupIntentOperation received Intent %s
+11-11 13:57:11.420 E/IntervalStats(  965): Unable to parse usage stats package 241
+11-11 13:57:11.420 E/IntervalStats(  965): Unable to parse usage stats package 247
+11-11 13:57:11.420 E/IntervalStats(  965): Unable to parse usage stats package 252
+11-11 13:57:11.420 E/IntervalStats(  965): Unable to parse usage stats package 305
+11-11 13:57:11.420 E/IntervalStats(  965): Unable to parse usage stats package 306
+11-11 13:57:11.420 E/IntervalStats(  965): Unable to parse usage stats package 309
+11-11 13:57:11.421 E/IntervalStats(  965): Unable to parse usage stats package 329
+11-11 13:57:11.421 E/IntervalStats(  965): Unable to parse usage stats package 332
+11-11 13:57:11.421 E/IntervalStats(  965): Unable to parse usage stats package 333
+11-11 13:57:11.421 E/IntervalStats(  965): Unable to parse usage stats package 344
+11-11 13:57:11.421 E/IntervalStats(  965): Unable to parse usage stats package 347
+11-11 13:57:11.421 I/Finsky  (20063): [4680] RECEIVER_PACKAGE_MONITOR#logWorkEndAndFinishGoAsync: SUCCESS
+11-11 13:57:11.423 I/Finsky  (20063): [4695] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=1, cacheMissCount=0. Missed  in cache (limit 10) : []
+11-11 13:57:11.423 I/Finsky:background(20165): [2] aodl - Received: android.intent.action.PACKAGE_CHANGED, [CkmBu7OMwm0v-AIQt1lrFVWxGAG2amYj0Ah68uUKM9U]
+11-11 13:57:11.424 I/Finsky  (20063): [4697] AIM: Got app ownership map. App counts: . Unique apps: 0
+11-11 13:57:11.424 E/Finsky  (20063): [4697] [Counters] attempted to use a non-positive increment for: 4752
+11-11 13:57:11.424 E/Finsky  (20063): [4697] [Counters] attempted to use a non-positive increment for: 4753
+11-11 13:57:11.432 I/Zygote  (  527): Process 18586 exited due to signal 9 (Killed)
+11-11 13:57:11.444 I/Finsky:background(20165): [4709] Wrote row to frosting DB: 32307
+11-11 13:57:11.451 V/ActivityManager(  965): Clean up application record for ProcessRecord{ae79e43 18586:com.google.android.projection.gearhead:provider/u0a182} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:57:11.451 I/libprocessgroup(  965): Successfully killed process cgroup uid 10182 pid 18586 in 86ms
+11-11 13:57:11.461 I/Finsky  (20063): [4696] AIM: AppInfoManager-Perf > ItemModel > CacheSize=72, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=0. Missed  in cache (limit 10) : []
+11-11 13:57:11.463 I/Finsky:background(20165): [4700] RECEIVER_PACKAGE_MONITOR_BACKGROUND#logWorkEndAndFinishGoAsync: SUCCESS
+11-11 13:57:11.463 I/Finsky:background(20165): [4709] Wrote row to frosting DB: 32308
+11-11 13:57:11.466 I/Finsky:background(20165): [4712] RECEIVER_ENGAGE_PACKAGE_CHANGED#logWorkEndAndFinishGoAsync: SKIPPED_PRECONDITIONS_UNMET
+11-11 13:57:11.467 I/Finsky  (20063): [4697] AIM: AppInfoManager-Perf > ItemModel > CacheSize=72, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=0. Missed  in cache (limit 10) : []
+11-11 13:57:11.467 I/Finsky  (20063): [4696] AIM: AppInfoManager-Perf > getApps > data collection finished
+11-11 13:57:11.467 I/Finsky  (20063): [4696] AIM: AppInfoManager-Perf > maybeDestroyAppInfoManager is called. actives = 0
+11-11 13:57:11.475 W/Role    (20083): Cannot find resource for default holder: config_systemActivityRecognizer
+11-11 13:57:11.484 I/Fitness (18507): (REDACTED) OnPackageChangedOperation got intent: %s
+11-11 13:57:11.490 I/Fitness (18507): (REDACTED) FitCleanupIntentOperation received Intent %s
+11-11 13:57:11.591 W/Looper  (  965): Slow delivery took 206ms main h=com.android.server.media.MediaRouterService$UserHandler c=android.app.-$$Lambda$LoadedApk$ReceiverDispatcher$Args$_BumDX2UKsnxLVrE6UJsJZkotuA@93f3e24 m=0
+11-11 13:57:11.591 I/Telecom (  965): DefaultDialerCache: Refreshing default dialer for user 0: now com.google.android.dialer: DDC.oR@CP0
+11-11 13:57:11.592 W/Looper  (  965): Drained
+11-11 13:57:11.592 D/CustomAppIcons( 1730): Get custom app icon: android.app.Application@3965431 | com.example.focusapp | com.example.focusapp.mainactivity
+11-11 13:57:11.593 D/CustomAppIcons( 1730): Icon from CustomAppIcons: com.example.focusapp | com.example.focusapp.mainactivity | null
+11-11 13:57:11.594 D/CustomAppIcons( 1730): Get custom app icon: android.app.Application@3965431 | com.example.focusapp | com.example.focusapp.mainactivity
+11-11 13:57:11.594 D/CustomAppIcons( 1730): Icon from CustomAppIcons: com.example.focusapp | com.example.focusapp.mainactivity | null
+11-11 13:57:11.615 E/CustomAppIcons( 1730): Load icon from drawable: android.graphics.drawable.AdaptiveIconDrawable@389f45e
+11-11 13:57:11.621 W/Looper  (  965): Slow delivery took 208ms android.fg h=android.os.Handler c=<recycled PooledLambda@4f63b42> m=0
+11-11 13:57:11.656 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@8e5e03f
+11-11 13:57:11.661 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e9ce269
+11-11 13:57:11.662 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@82c7b83
+11-11 13:57:11.662 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@2daa51a
+11-11 13:57:11.663 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@bd0e03e
+11-11 13:57:11.663 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@f4d8d39
+11-11 13:57:11.664 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@f23d179
+11-11 13:57:11.665 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@a8bfb41
+11-11 13:57:11.665 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@822af7e
+11-11 13:57:11.666 W/Looper  (  965): Drained
+11-11 13:57:11.666 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@1b14cdf
+11-11 13:57:11.666 I/PermissionControllerServiceImpl(20083): Updating user sensitive for uid 10271
+11-11 13:57:11.666 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@163dd2c
+11-11 13:57:11.667 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@f0c3f5
+11-11 13:57:11.668 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@8a93ebe
+11-11 13:57:11.668 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@96df8e6
+11-11 13:57:11.669 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@8736fe0
+11-11 13:57:11.670 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@43d3a1d
+11-11 13:57:11.671 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@89ad409
+11-11 13:57:11.672 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@787d7fb
+11-11 13:57:11.672 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@ab29110
+11-11 13:57:11.673 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@1857bd1
+11-11 13:57:11.673 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@3ff6a7b
+11-11 13:57:11.674 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@a4b85bd
+11-11 13:57:11.674 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@621cb1f
+11-11 13:57:11.675 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@d95040d
+11-11 13:57:11.676 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@556aa71
+11-11 13:57:11.676 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@23b3056
+11-11 13:57:11.677 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@c3688ca
+11-11 13:57:11.678 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@8e5e03f
+11-11 13:57:11.678 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@ba2a5c4
+11-11 13:57:11.679 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e7d360e
+11-11 13:57:11.680 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@c5a7cad
+11-11 13:57:11.680 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@4d2517e
+11-11 13:57:11.681 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@f51fbe2
+11-11 13:57:11.682 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@3734b73
+11-11 13:57:11.683 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@7065a30
+11-11 13:57:11.684 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e4f36a9
+11-11 13:57:11.684 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@a17f42e
+11-11 13:57:11.685 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@22d2bcf
+11-11 13:57:11.686 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@1aee95c
+11-11 13:57:11.686 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e13a7c5
+11-11 13:57:11.687 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@d8d3e27
+11-11 13:57:11.688 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@53caf60
+11-11 13:57:11.689 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@182684b
+11-11 13:57:11.689 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@5f3054c
+11-11 13:57:11.690 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@5ffc4de
+11-11 13:57:11.690 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@54f7228
+11-11 13:57:11.691 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@73d88d4
+11-11 13:57:11.692 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@d96a6bf
+11-11 13:57:11.693 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@897ae3c
+11-11 13:57:11.693 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e9c782f
+11-11 13:57:11.694 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@3870c35
+11-11 13:57:11.695 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@1411e6c
+11-11 13:57:11.695 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@c09cf45
+11-11 13:57:11.696 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@5ff0b42
+11-11 13:57:11.697 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@9d360d5
+11-11 13:57:11.698 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@876d5d3
+11-11 13:57:11.698 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@cca2f94
+11-11 13:57:11.699 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@58595c3
+11-11 13:57:11.700 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@3f50ea
+11-11 13:57:11.700 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@cf86f0f
+11-11 13:57:11.701 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@6712a36
+11-11 13:57:11.701 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@e90bd72
+11-11 13:57:11.702 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@5c0f03d
+11-11 13:57:11.703 I/sasa    ( 1730): entry = com.android.launcher3.icons.cache.BaseIconCache$CacheEntry@4a491d3
+11-11 13:57:14.252 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:57:14.288 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.potokens.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:57:15.858 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.common.stats.GmsCoreStatsService :false Us:false
+11-11 13:57:23.434 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:57:23.435 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:57:24.617 D/ip_monitor-649(20591): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:57:25.866 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.auth.setup.devicesignals.LockScreenService :false Us:false
+11-11 13:57:27.433 D/ip_monitor-649(20605): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 STALE
+11-11 13:57:30.897 D/DeviceStorageMonitorService(  965): updateStateEx oldLevel = 0, newLevel = 0

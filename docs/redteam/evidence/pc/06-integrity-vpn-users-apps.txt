@@ -1,0 +1,259 @@
+=== integrity level of this shell (sandbox caveat) ===
+Rótulo Obrigatório\Nível Obrigatório Baixo                     Label            S-1-16-4096                                                                                                                                                   
+
+=== SysGuard.exe exit codes (direct invocation) ===
+selftest exit=0
+pipetest exit=1
+status exit=4
+
+=== Tailscale / Cloudflare services and processes (explicit) ===
+
+SERVICE_NAME: CloudflareWARP
+SERVICE_NAME: CloudflareWARPUpdater
+SERVICE_NAME: RetailDemo
+SERVICE_NAME: Tailscale
+SERVICE_NAME: WarpJITSvc
+SERVICE_NAME: WiaRpc
+
+--- sc query CloudflareWARP / cloudflared ---
+CloudflareWARP => STATE              : 4  RUNNING
+cloudflared => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:
+warp-svc => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:
+WireGuard => STATE              : 1  STOPPED
+--- tailscale state (read-only) ---
+failed to connect to local tailscaled process; is the Tailscale service running?
+
+--- Cloudflare WARP config dir ---
+
+Name                                    Length
+----                                    ------
+data                                    
+app_links_plugin.dll                    151176
+auto_updater_windows_plugin.dll         108680
+aws_lc_fips_0_14_2_crypto.dll           2396808
+Cloudflare WARP.exe                     412296
+concrt140.dll                           324208
+crashpad_wer.dll                        25736
+dartjni.dll                             234632
+desktop_webview_window_plugin.dll       197256
+flutter_inappwebview_windows_plugin.dll 982152
+flutter_local_notifications_windows.dll 103560
+flutter_windows.dll                     18524296
+msvcp140_1.dll                          35952
+msvcp140_2.dll                          280200
+msvcp140_atomic_wait.dll                50304
+msvcp140_codecvt_ids.dll                31872
+msvcp140.dll                            557728
+rust_bridge.dll                         10469000
+screen_retriever_windows_plugin.dll     131208
+sentry.dll                              383112
+share_plus_plugin.dll                   147080
+system_recovery_plugin.dll              124040
+tray_manager_plugin.dll                 119944
+url_launcher_windows_plugin.dll         110216
+vccorlib140.dll                         352384
+vcruntime140_1.dll                      49792
+vcruntime140_threads.dll                38528
+vcruntime140.dll                        124544
+warp-cli.exe                            13136008
+warp-dex.exe                            21953672
+warp-diag.exe                           21688968
+warp-svc.exe                            66927240
+warp-updater.exe                        9300616
+Webview2Loader.dll                      140424
+window_manager_plugin.dll               142472
+window_to_front_plugin.dll              92296
+WinSparkle.dll                          2879112
+wintun.dll                              427144
+
+
+
+=== local user profiles / accounts ===
+
+Name       LastWriteTime
+----       -------------
+israe      11/9/2026 9:46:38 AM
+Public     4/24/2026 9:54:54 AM
+WsiAccount 8/17/2026 4:05:46 PM
+
+
+current user SID: S-1-5-21-459384763-2067620428-2413676701-1001
+
+User accounts for \\YSR-PC
+
+-------------------------------------------------------------------------------
+Administrador            CodexSandboxOffline      CodexSandboxOnline       
+Convidado                DefaultAccount           israe                    
+WDAGUtilityAccount       WsiAccount               
+The command completed successfully.
+
+
+
+=== apps that embed browsers (checked paths) ===
+C:\Users\israe\AppData\Local\Discord exists=False
+C:\Users\israe\AppData\Local\Programs\Telegram Desktop exists=False
+C:\Program Files (x86)\Steam exists=True
+C:\Users\israe\AppData\Local\Programs\Microsoft VS Code exists=True
+C:\Program Files\WindowsApps exists=True
+C:\Users\israe\AppData\Local\Microsoft\EdgeWebView exists=False
+--- App Paths all ---
+7zFM.exe
+chrome.exe
+cmmgr32.exe
+dfshim.dll
+firefox.exe
+fsquirt.exe
+HandBrake.exe
+IEDIAG.EXE
+IEDIAGCMD.EXE
+IEXPLORE.EXE
+install.exe
+licensemanagershellext.exe
+mplayer2.exe
+msedge.exe
+PowerShell.exe
+setup.exe
+ShellMcpServers.Packaging.exe
+table30.exe
+TabTip.exe
+vlc.exe
+wab.exe
+wabmig.exe
+WinRAR.exe
+wmplayer.exe
+
+--- Start Menu programs ---
+
+7-Zip File Manager.lnk                   7-Zip Help.lnk                          Character Map.lnk
+Remote Desktop Connection.lnk            Steps Recorder.lnk                      Windows Media Player Legacy.lnk
+Component Services.lnk                   Computer Management.lnk                 dfrgui.lnk
+Disk Cleanup.lnk                         Event Viewer.lnk                        iSCSI Initiator.lnk
+Memory Diagnostics Tool.lnk              ODBC Data Sources (32-bit).lnk          ODBC Data Sources (64-bit).lnk
+Performance Monitor.lnk                  RecoveryDrive.lnk                       Registry Editor.lnk
+Resource Monitor.lnk                     services.lnk                            System Configuration.lnk
+System Information.lnk                   Task Scheduler.lnk                      Windows Defender Firewall with Advance…
+AMD Bug Report Tool.lnk                  AMD Software꞉ Adrenalin Edition.lnk     AMD Install Manager.lnk
+Baldur's Gate 3.lnk                      Uninstall Baldur's Gate 3.lnk           BleachBit (No UAC)..lnk
+BleachBit Debugging Terminal.lnk         BleachBit.lnk                           Cloudflare One Client.lnk
+CMake (cmake-gui).lnk                    CMake Documentation.lnk                 Uninstall CMake.lnk
+HWMonitor.lnk                            Uninstall HWMonitor.lnk                 Cryptomator.lnk
+Launch APP Center.lnk                    Uninstall APP Center.lnk                Git Bash.lnk
+Git CMD.lnk                              Git GUI.lnk                             Git Release Notes.lnk
+Uninstall Go.lnk                         GOG GALAXY.lnk                          HandBrake.lnk
+Uninstall.lnk                            Sunshine.lnk                            Logi Download Assistant.lnk
+Uninstall.lnk                            Install Additional Tools for Node.js.l… Node.js command prompt.lnk
+Node.js.lnk                              Uninstall Node.js.lnk                   Nuvio.lnk
+Application Stack Builder.lnk            pgAdmin 4.lnk                           Reload Configuration.lnk
+SQL Shell (psql).lnk                     IDLE (Python 3.13 64-bit).lnk           Python 3.13 (64-bit).lnk
+Python 3.13 Manuals (64-bit).lnk         Python 3.13 Module Docs (64-bit).lnk    Razer Synapse.lnk
+Desinstalar o Revo Uninstaller.lnk       Revo Uninstaller Help.lnk               Revo Uninstaller.lnk
+Tailscale.lnk                            Steam.lnk                               Sunshine.lnk
+Uninstall.lnk                            Task Manager.lnk                        Documentation.lnk
+Release Notes.lnk                        VideoLAN Website.lnk                    VLC media player - reset preferences a…
+VLC media player skinned.lnk             VLC media player.lnk                    Maintenance Tool.lnk
+Read Me.lnk                              Vulkan Caps Viewer.lnk                  Vulkan Configurator.lnk
+Vulkan Cube.lnk                          webOS Dev Manager.lnk                   WiFi6 Wireless Network Adapter.lnk
+Application Verifier (X64).lnk           Application Verifier (WOW).lnk          Global Flags (ARM64).lnk
+WinDbg (ARM64).lnk                       Global Flags (X64).lnk                  WinDbg (X64).lnk
+Global Flags (X86).lnk                   WinDbg (X86).lnk                        Windows App Cert Kit.lnk
+GPUView.lnk                              Windows Performance Analyzer.lnk        Windows Performance Recorder.lnk
+Documentation for Desktop Apps.lnk       Documentation for UWP Apps.lnk          Sample Desktop Apps.lnk
+Sample UWP Apps.lnk                      Tools for Desktop Apps.lnk              Tools for UWP Apps.lnk
+Windows Software Development Kit.lnk     Windows PowerShell ISE (x86).lnk        Windows PowerShell ISE.lnk
+Ajuda do WinRAR.lnk                      Manual do Console RAR.lnk               O que há de novo na última versão.lnk
+WinRAR.lnk                               Audacity.lnk                            DeepCool.lnk
+Epic Games Launcher.lnk                  Firefox.lnk                             Flydigi Space Station 4.0.lnk
+FlydigiSpaceStation.lnk                  Google Chrome.lnk                       Google Drive.lnk
+Kaspersky VPN.lnk                        Kaspersky.lnk                           Microsoft Edge.lnk
+Navegação privativa do Firefox.lnk       OBS Studio.lnk                          Sunshine.lnk
+Tailscale.lnk                            Visual Studio Installer.lnk             WSL Settings.lnk
+WSL.lnk                                  LiveCaptions.lnk                        Magnify.lnk
+Narrator.lnk                             On-Screen Keyboard.lnk                  VoiceAccess.lnk
+Anki.lnk                                 Antigravity.lnk                         Blender 5.2.lnk
+JDownloader 2 Uninstaller.lnk            JDownloader 2.lnk                       MSI Afterburner localization reference…
+MSI Afterburner skin format reference.l… Samples.lnk                             MSI Afterburner.lnk
+ReadMe.lnk                               Uninstall.lnk                           MSYS2 CLANG64.lnk
+MSYS2 CLANGARM64.lnk                     MSYS2 MINGW64.lnk                       MSYS2 MSYS.lnk
+MSYS2 UCRT64.lnk                         Ollama.lnk                              XPPenTablet.lnk
+Unistall XPPenTablet.lnk                 PowerToys (Preview).lnk                 IDLE (Python 3.13 64-bit).lnk
+Python 3.13 (64-bit).lnk                 Python 3.13 Manuals (64-bit).lnk        Python 3.13 Module Docs (64-bit).lnk
+RivaTuner Statistics Server localizatio… RivaTuner Statistics Server skin forma… Samples.lnk
+Desktop Overlay Host.lnk                 ReadMe.lnk                              RivaTuner Statistics Server.lnk
+Uninstall.lnk                            Ollama.lnk                              Steam.lnk
+Command Prompt.lnk                       Control Panel.lnk                       Run.lnk
+Desinstalar o Telegram.lnk               Telegram.lnk                            Ubisoft Connect.lnk
+Uninstall.lnk                            Visual Studio Code.lnk                  Windows PowerShell (x86).lnk
+Windows PowerShell.lnk                   Ajuda do WinRAR.lnk                     Manual do Console RAR.lnk
+O que há de novo na última versão.lnk    WinRAR.lnk                              Administrative Tools.lnk
+Antigravity.lnk                          Audiobookshelf.lnk                      Baldurs Gate 3.lnk
+Bodycam.lnk                              Cockpit Tools.lnk                       Cuphead.lnk
+DeepSeek Harness.lnk                     Dispatch.lnk                            Docker Desktop.lnk
+Dynamic Island.lnk                       File Explorer.lnk                       Firefox Private Browsing.lnk
+focus_desktop.lnk                        GenOffice.lnk                           Hydra.lnk
+It Takes Two.lnk                         ItTakesTwo.lnk                          Keep Talking and Nobody Explodes.lnk
+Lies of P.lnk                            LocalSend.lnk                           Marvels SpiderMan Remastered.lnk
+MOUSE - P.I. For Hire.lnk                MOUSE.lnk                               Mullvad Browser.lnk
+Ollama.lnk                               OpenCluely.lnk                          OpenCode.lnk
+Probably Stolen.lnk                      SotC.lnk                                Stremio.lnk
+vibe.lnk                                 Xenonauts 2.lnk                         
+
+
+--- Program Files (full list, 2 levels) ---
+
+C:\Program Files\7-Zip                                       C:\Program Files\AMD
+C:\Program Files\Android                                     C:\Program Files\Application Verifier
+C:\Program Files\Audacity                                    C:\Program Files\Blender Foundation
+C:\Program Files\Cloudflare                                  C:\Program Files\CMake
+C:\Program Files\Common Files                                C:\Program Files\CPUID
+C:\Program Files\Cryptomator                                 C:\Program Files\Docker
+C:\Program Files\dotnet                                      C:\Program Files\EA
+C:\Program Files\EA Games                                    C:\Program Files\ENE
+C:\Program Files\Epic Games                                  C:\Program Files\Flydigi Space Station
+C:\Program Files\FlydigiSpaceStation                         C:\Program Files\Git
+C:\Program Files\GitHub CLI                                  C:\Program Files\Go
+C:\Program Files\Google                                      C:\Program Files\HandBrake
+C:\Program Files\IIS                                         C:\Program Files\Internet Explorer
+C:\Program Files\Java                                        C:\Program Files\LogiDownloadAssistant
+C:\Program Files\Microsoft GameInput                         C:\Program Files\Microsoft Office
+C:\Program Files\Microsoft SQL Server                        C:\Program Files\Microsoft Visual Studio
+C:\Program Files\ModifiableWindowsApps                       C:\Program Files\Mozilla Firefox
+C:\Program Files\MSBuild                                     C:\Program Files\Nefarius Software Solutions
+C:\Program Files\nodejs                                      C:\Program Files\Nuvio
+C:\Program Files\obs-studio                                  C:\Program Files\Oracle
+C:\Program Files\Parsec Virtual Display Driver               C:\Program Files\Parsec Virtual USB Adapter Driver
+C:\Program Files\Patriot                                     C:\Program Files\PostgreSQL
+C:\Program Files\Razer                                       C:\Program Files\Reference Assemblies
+C:\Program Files\Sandboxie-Plus                              C:\Program Files\Sunshine
+C:\Program Files\Tailscale                                   C:\Program Files\Ugreen
+C:\Program Files\Unity                                       C:\Program Files\Verbatim
+C:\Program Files\VideoLAN                                    C:\Program Files\VS Revo Group
+C:\Program Files\VulkanRT                                    C:\Program Files\WD
+C:\Program Files\webOS Dev Manager                           C:\Program Files\WiFi6 Wireless Network Adapter
+C:\Program Files\Windows Defender                            C:\Program Files\Windows Mail
+C:\Program Files\Windows Media Player                        C:\Program Files\Windows NT
+C:\Program Files\Windows Photo Viewer                        C:\Program Files\WindowsPowerShell
+C:\Program Files\WinRAR                                      C:\Program Files\wkhtmltopdf
+C:\Program Files\WSL                                         C:\Program Files\XboxService
+C:\Program Files\XPPen                                       C:\Program Files (x86)\AMD
+C:\Program Files (x86)\Application Verifier                  C:\Program Files (x86)\Battle.net
+C:\Program Files (x86)\BleachBit                             C:\Program Files (x86)\by Decepticon
+C:\Program Files (x86)\Common Files                          C:\Program Files (x86)\dotnet
+C:\Program Files (x86)\EasyAntiCheat_EOS                     C:\Program Files (x86)\Epic Games
+C:\Program Files (x86)\ffmpeg-7.1.1-full_build               C:\Program Files (x86)\Gigabyte
+C:\Program Files (x86)\GOG Galaxy                            C:\Program Files (x86)\Google
+C:\Program Files (x86)\IIS                                   C:\Program Files (x86)\Internet Explorer
+C:\Program Files (x86)\Kaspersky Lab                         C:\Program Files (x86)\Microsoft
+C:\Program Files (x86)\Microsoft SDKs                        C:\Program Files (x86)\Microsoft SQL Server
+C:\Program Files (x86)\Microsoft Visual Studio               C:\Program Files (x86)\Microsoft XNA
+C:\Program Files (x86)\Microsoft.NET                         C:\Program Files (x86)\MSBuild
+C:\Program Files (x86)\MSI Afterburner                       C:\Program Files (x86)\Nuget
+C:\Program Files (x86)\OpenAL                                C:\Program Files (x86)\Razer
+C:\Program Files (x86)\REALTEK                               C:\Program Files (x86)\Reference Assemblies
+C:\Program Files (x86)\RivaTuner Statistics Server           C:\Program Files (x86)\Steam
+C:\Program Files (x86)\Ubisoft                               C:\Program Files (x86)\webOS Dev Manager
+C:\Program Files (x86)\Windows Defender                      C:\Program Files (x86)\Windows Kits
+C:\Program Files (x86)\Windows Mail                          C:\Program Files (x86)\Windows Media Player
+C:\Program Files (x86)\Windows NT                            C:\Program Files (x86)\Windows Photo Viewer
+C:\Program Files (x86)\WindowsPowerShell                     C:\Program Files (x86)\WinFsp
+
+

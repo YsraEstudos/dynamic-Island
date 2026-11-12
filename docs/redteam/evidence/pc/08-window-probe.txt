@@ -1,0 +1,16 @@
+=== window enumeration from a LOW-integrity sandbox process (self-test of title readability) ===
+visible titled windows: 17
+distinct owning processes: pwsh
+--- per process (count only; titles intentionally NOT recorded: user privacy) ---
+
+Name Count
+---- -----
+pwsh    17
+
+
+foreground hwnd: 2885362
+--- browser-like processes with visible titled windows (guard eligibility) ---
+
+--- processes NOT in the guard allowlist but hosting web content (visible windows) ---
+
+--- title readability: all visible titled windows had non-empty text = True

@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <boolean name="selective_block" value="false" />
+    <string name="pomodoro">{&quot;id&quot;:&quot;559a1e8bb1d140a4adac9917c19da63a&quot;,&quot;start&quot;:1794412810235,&quot;end&quot;:1794414530134,&quot;released&quot;:false}</string>
+    <string name="adult_end_ms">1794414590134</string>
+    <string name="push_token">[REDACTED-FCM-TOKEN]</string>
+</map>
+

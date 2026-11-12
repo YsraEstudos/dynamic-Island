@@ -53,6 +53,6 @@ public class RingBufferTests
         Assert.Equal(PerformanceHistory.Capacity, cpu.Length);
         Assert.Equal<double?>(total - 1, cpu[^1]);
         Assert.Null(cpu[^2]);
-        Assert.Empty(history.Gpu().Where(v => v is not null));
+        Assert.DoesNotContain(history.Gpu(), value => value is not null);
     }
 }

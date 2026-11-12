@@ -2,6 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <!-- Same as Island.Core.Tests: skip the testhost parent-process watchdog, which fails with "Access is denied"
+         when the host runs at a lower integrity level than its parent (microsoft/vstest#16457). -->
+    <_MSTestEnableParentProcessQuery>false</_MSTestEnableParentProcessQuery>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />

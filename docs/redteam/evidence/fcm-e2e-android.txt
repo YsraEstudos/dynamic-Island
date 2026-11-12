@@ -1,0 +1,6 @@
+token do celular lido (len=142, prefixo d1etNe...)
+chave privada do FCM desprotegida via DPAPI.
+access token do FCM obtido.
+warm-up: bound=True enabled=1 list=com.x8bit.bitwarden/com.x8bit.bitwarden.Accessibility.AccessibilityService:com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService
+tópico de ack: di-ack-4751066f18802e642b52872d578374c9
+ERRO: Response status code does not indicate success: 404 (Not Found).

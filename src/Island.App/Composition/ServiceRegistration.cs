@@ -53,11 +53,15 @@ public sealed class SettingsApplier(SettingsHolder holder, ISettingsStore store,
 {
     public Action? Applied { get; set; }
 
+    /// <summary>Raised right after a save this process made, so the settings tamper watch can tell it from a hand edit.</summary>
+    public Action? Saved { get; set; }
+
     public void Apply(IslandSettings s)
     {
         bool startupChanged = holder.Current.StartWithWindows != s.StartWithWindows;
         holder.Current = s;
         try { store.Save(s); } catch (Exception ex) { log.LogError(ex, "Saving settings failed"); }
+        try { Saved?.Invoke(); } catch (Exception ex) { log.LogDebug(ex, "Settings saved handler failed"); }
         if (startupChanged)
         {
             try { Island.Windows.Shell.StartupRegistration.Set(s.StartWithWindows); }
@@ -138,8 +142,14 @@ public static class ServiceRegistration
         }
 
         if (demo) s.AddSingleton<IPhoneBlockNotifier, FakePhoneBlockNotifier>();
-        else s.AddSingleton<IPhoneBlockNotifier>(sp => new FcmPhoneBlockNotifier(
-            FcmPhoneBlockNotifier.CreateHttpClient(), log: sp.GetService<ILogger<FcmPhoneBlockNotifier>>()));
+        else
+        {
+            s.AddSingleton<IPhoneBlockNotifier>(sp => new FcmPhoneBlockNotifier(
+                FcmPhoneBlockNotifier.CreateHttpClient(), log: sp.GetService<ILogger<FcmPhoneBlockNotifier>>()));
+            // Ack stream of the phone (ntfy topic derived from the FCM token). Only the real app confirms blocks with it.
+            s.AddSingleton(sp => new PhoneBlockAckListener(PhoneBlockAckListener.CreateHttpClient(),
+                log: sp.GetService<ILogger<PhoneBlockAckListener>>()));
+        }
 
         s.AddSingleton<SettingsApplier>();
         s.AddSingleton<PomodoroTimer>();
@@ -157,6 +167,10 @@ public static class ServiceRegistration
             sp.GetRequiredService<PomodoroTimer>(), sp.GetRequiredService<AngryPomodoro>(), sp.GetRequiredService<IIslandScheduler>(),
             store: new Island.Windows.Pomodoro.JsonPomodoroWeeklyScheduleStore(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "pomodoro-weekly-schedule.json"))));
         s.AddSingleton(_ => new Island.Windows.Pomodoro.JsonAngryResumeStore(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland", "angry-resume.json")));
+        // Live Angry state: %LocalAppData%\DynamicIsland\angry-live.json, written every 5 s while a session runs and read
+        // by the startup resume and by SysGuard (format documented in Island.Windows.Pomodoro.AngryLiveState).
+        s.AddSingleton(sp => new Island.Windows.Pomodoro.AngryLiveStateStore(
+            log: sp.GetService<ILogger<Island.Windows.Pomodoro.AngryLiveStateStore>>()));
         s.AddSingleton(sp => new ForegroundSiteGuard(sp.GetService<ILogger<ForegroundSiteGuard>>()));
         s.AddSingleton<ClipboardHistory>();
         s.AddSingleton<FileTray>();

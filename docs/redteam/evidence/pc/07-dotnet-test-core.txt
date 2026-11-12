@@ -1,0 +1,11 @@
+=== dotnet test: Island.Core.Tests (BlockedSites + AngryPomodoro + AngryResume) ===
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Island.Core -> C:\Users\israe\OneDrive\Desktop\Projetos\Dynamic Island\src\Island.Core\bin\Debug\net10.0\Island.Core.dll
+  Island.Core.Tests -> C:\Users\israe\OneDrive\Desktop\Projetos\Dynamic Island\tests\Island.Core.Tests\bin\Debug\net10.0\Island.Core.Tests.dll
+Test run for C:\Users\israe\OneDrive\Desktop\Projetos\Dynamic Island\tests\Island.Core.Tests\bin\Debug\net10.0\Island.Core.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 148 ms - Island.Core.Tests.dll (net10.0)
+
+dotnet test exit=0 elapsed=37s

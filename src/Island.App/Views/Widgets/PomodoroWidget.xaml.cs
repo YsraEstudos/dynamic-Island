@@ -23,7 +23,8 @@ namespace Island.App.Views.Widgets;
 /// ("até 15:30 · 1h30"). Then a minute ruler (editable only while stopped, without a plan and outside Pré), play/pause,
 /// sound toggle, reset and the remaining time. Pré is a fixed 5-minute preparation before studying; it is started alone,
 /// never as part of a plan. The Angry pill selects a protected plan of the chosen pomodoros. Play starts it: distractions
-/// are blocked in focus, and the lock lifts in breaks so social sites on the PC work. The timer cannot be paused, reset,
+/// are blocked in focus and through the break, except that Twitter/X and Instagram open in the final minute of a running
+/// break. The timer cannot be paused, reset,
 /// shortened or edited during the Angry session; Start remains available for manual phases. The unlock dialog opens only
 /// during a locked focus. A plan owns its phase, so the Focus and Break pills and the ruler dim until it ends. The forecast
 /// clock refreshes every 15 s while the timer is stopped.

@@ -1,0 +1,8 @@
+# APK instalado (removido do workspace por sincronizar no OneDrive)
+coletado_em: 2026-11-11T14:0x-03:00 (sessao android-code)
+caminho_no_aparelho: /data/app/~~tv8sCXaRNXP91TtW18BIqQ==/com.example.focusapp-xngVHR-QlHC5G5Y4pZDXQw==/base.apk
+sha256: D7188B6A82E059D1C5EFAD18CA29B7FEDA6336096ECD8D7659F751A232C7E571
+bytes: 69501540
+flags_do_pacote (dumpsys package): DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP
+backup ausente
+obs: copia local do APK foi apagada apos a coleta; usar %TEMP%\dsh-redteam\focusapp-v1.6-base.apk se necessario.

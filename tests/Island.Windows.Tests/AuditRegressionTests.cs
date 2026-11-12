@@ -29,7 +29,8 @@ public sealed class AuditRegressionTests : IDisposable
         Assert.Equal(6, saved.PomodoroCycles);
         Assert.Equal(original.UpdateRepository, saved.UpdateRepository);
         Assert.Equal("credential", saved.PhoneFcmToken);
-        Assert.False(saved.PhoneBlockEnabled);
+        // PC-02: the phone link is a protection, not a preference; "Reset to defaults" must not weaken it.
+        Assert.True(saved.PhoneBlockEnabled);
         Assert.True(saved.ShowVolume);
     }
 

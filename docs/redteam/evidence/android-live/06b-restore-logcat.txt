@@ -1,0 +1,549 @@
+--------- beginning of main
+11-11 13:54:52.627 D/SessionsDependencies(19099): Subscriber CRASHLYTICS registered.
+11-11 13:54:52.694 D/SQLiteOpenHelper(19099): SPRD SQLiteOpenHelper getDatabaseLocked version =9 mNewVersion =9
+11-11 13:54:52.698 D/libcrashlytics(19099): Initializing libcrashlytics version 3.2.0
+--------- beginning of system
+11-11 13:54:52.712 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:52.736 D/libcrashlytics(19099): Initializing native crash handling successful.
+11-11 13:54:52.772 D/FirebaseSessions(19099): Initializing Firebase Sessions SDK.
+11-11 13:54:52.791 I/TetheringManager(19099): registerTetheringEventCallback:com.waze
+11-11 13:54:52.817 I/ActivityTaskManager(  965): START u0 {flg=0x10000000 cmp=com.example.focusapp/.MainActivity} from uid 2000, pid 19163
+11-11 13:54:52.875 D/SessionConfigFetcher(19099): Fetching settings from server.
+11-11 13:54:52.880 D/JourneyPerformanceService(  965): com.example.focusapp change to NOT stopped from 965:1000
+11-11 13:54:52.884 I/ActivityTaskManager(  965): ->startActivity for ActivityRecord{a3444d u0 com.example.focusapp/.MainActivity t599} result:START_SUCCESS
+11-11 13:54:52.894 I/cmd     (19163): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:52.907 D/CompatibilityChangeReporter(  965): Compat change id reported: 135634846; UID 10271; state: DISABLED
+11-11 13:54:52.910 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10271; state: ENABLED
+11-11 13:54:52.911 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10271; state: ENABLED
+11-11 13:54:52.911 D/SSense  (  965): windowsChanged
+11-11 13:54:52.915 I/FirebaseInitProvider(19099): FirebaseApp initialization successful
+11-11 13:54:52.921 D/Zygote  (  527): Forked child process 19178
+11-11 13:54:52.923 D/WM-WrkMgrInitializer(19099): Initializing WorkManager with default configuration.
+11-11 13:54:52.923 I/ActivityManager(  965): Start proc 19178:com.example.focusapp/u0a271 for top-activity {com.example.focusapp/com.example.focusapp.MainActivity}
+11-11 13:54:52.932 D/WM-Schedulers(19099): Created SystemJobScheduler and enabled SystemJobService
+11-11 13:54:52.935 D/WM-ForceStopRunnable(19099): The default process name was not specified.
+11-11 13:54:52.936 D/WM-ForceStopRunnable(19099): Performing cleanup operations.
+11-11 13:54:52.936 I/xample.focusap(19178): Late-enabling -Xcheck:jni
+11-11 13:54:52.942 W/CheckTime(19099): App running slow: Executing handleBindApplication : installContentProviders took 664ms
+11-11 13:54:52.966 I/xample.focusap(19178): Unquickening 15 vdex files!
+11-11 13:54:52.971 D/SQLiteOpenHelper(19099): SPRD SQLiteOpenHelper getDatabaseLocked version =24 mNewVersion =24
+11-11 13:54:52.996 I/adbd    (29576): jdwp connection from 19178
+11-11 13:54:53.014 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:53.023 D/vendor.unisoc.hardware.power-service(  554): Enter getSceneIdByName: sceneName:com.example.focusapp
+11-11 13:54:53.066 V/ClearcutMetricXmitter(18586): Transmission is done.
+11-11 13:54:53.079 W/SQLiteLog(18998): (28) double-quoted string literal: "sprd.com.android.account.phone"
+11-11 13:54:53.083 E/ContactsProvider(18998): Default account is empty, we should add the phone account
+11-11 13:54:53.084 E/ContactsProvider(18998): Default account is empty, we should add the phone account
+11-11 13:54:53.085 E/ContactsProvider(18998): Cannot determine the default account for contacts compatibility
+11-11 13:54:53.085 E/ContactsProvider(18998): java.lang.SecurityException: uid 10133 cannot explicitly add accounts of type: sprd.com.android.account.phone
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:2374)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Parcel.createException(Parcel.java:2358)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Parcel.readException(Parcel.java:2341)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Parcel.readException(Parcel.java:2283)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.accounts.IAccountManager$Stub$Proxy.addAccountExplicitly(IAccountManager.java:1523)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.accounts.AccountManager.addAccountExplicitly(AccountManager.java:911)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.providers.contacts.ContactsProvider2.getDefaultAccount(ContactsProvider2.java:10290)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.providers.contacts.ContactsProvider2.performBackgroundTask(ContactsProvider2.java:1980)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.providers.contacts.ContactsProvider2$1.onPerformTask(ContactsProvider2.java:1677)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.providers.contacts.ContactsTaskScheduler$MyHandler.handleMessage(ContactsTaskScheduler.java:77)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Handler.dispatchMessage(Handler.java:106)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Looper.loop(Looper.java:240)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+11-11 13:54:53.085 E/ContactsProvider(18998): Cannot determine the default account for contacts compatibility
+11-11 13:54:53.085 E/ContactsProvider(18998): java.lang.SecurityException: uid 10133 cannot explicitly add accounts of type: sprd.com.android.account.phone
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:2374)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Parcel.createException(Parcel.java:2358)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Parcel.readException(Parcel.java:2341)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Parcel.readException(Parcel.java:2283)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.accounts.IAccountManager$Stub$Proxy.addAccountExplicitly(IAccountManager.java:1523)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.accounts.AccountManager.addAccountExplicitly(AccountManager.java:911)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.providers.contacts.ContactsProvider2.getDefaultAccount(ContactsProvider2.java:10290)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.providers.contacts.ContactsProvider2.performBackgroundTask(ContactsProvider2.java:1980)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.providers.contacts.ContactsProvider2$1.onPerformTask(ContactsProvider2.java:1677)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.providers.contacts.ContactsTaskScheduler$MyHandler.handleMessage(ContactsTaskScheduler.java:77)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Handler.dispatchMessage(Handler.java:106)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Looper.loop(Looper.java:240)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+11-11 13:54:53.085 E/ContactsProvider(18998): Caused by: android.os.RemoteException: Remote stack trace:
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.server.accounts.AccountManagerService.addAccountExplicitlyWithVisibility(AccountManagerService.java:474)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.server.accounts.AccountManagerService.addAccountExplicitly(AccountManagerService.java:1651)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.accounts.IAccountManager$Stub.onTransact(IAccountManager.java:579)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at com.android.server.accounts.AccountManagerService.onTransact(AccountManagerService.java:1076)
+11-11 13:54:53.085 E/ContactsProvider(18998): 	at android.os.Binder.execTransactInternal(Binder.java:1159)
+11-11 13:54:53.085 E/ContactsProvider(18998): 
+11-11 13:54:53.159 D/WazePerf(19099): boot event logged: event=EntryPoint, elapsedMs=947
+11-11 13:54:53.163 I/FirebaseCrashlytics(19099): No version control information found
+11-11 13:54:53.217 V/GH.ProjStateSvc(18586): No binder to the car, notifying not projecting
+11-11 13:54:53.280 D/CompatibilityChangeReporter(19099): Compat change id reported: 147600208; UID 10266; state: ENABLED
+11-11 13:54:53.290 D/SessionConfigFetcher(19099): Fetched settings: {"settings_version":3,"cache_duration":158423,"features":{"collect_logged_exceptions":true,"collect_reports":true,"collect_analytics":false,"prompt_enabled":false,"push_enabled":false,"firebase_crashlytics_enabled":false,"collect_anrs":true,"collect_metric_kit":false,"collect_build_ids":true},"app":{"status":"activated","update_required":false,"report_upload_variant":2,"native_report_upload_variant":2},"fabric":{"org_id":"5d1229db5c36ff2b3a000004","bundle_id":"com.waze"},"on_demand_upload_rate_per_minute":10,"on_demand_backoff_base":1.2,"on_demand_backoff_step_duration_seconds":60,"app_quality":{"sessions_enabled":true,"sampling_rate":1,"session_timeout_seconds":1800},"on_demand_thread_recording_suspension_enabled":true}
+11-11 13:54:53.312 D/performance(  965): handleVmpressure, swap:82 pressure:1 thrashing:-1
+11-11 13:54:53.338 D/LifecycleServiceBinder(19099): Binding service to application.
+11-11 13:54:53.399 D/keymaster_worker(  631): start addRngEntropy
+11-11 13:54:53.400 E/TrustyKeymaster(  363): Succeeded to send cmd (32) to com.android.trusty.keymaster: Success with rc(20) 
+11-11 13:54:53.400 E/TrustyKeymaster(  363): Getting response size (8)
+11-11 13:54:53.400 D/keymaster_worker(  631): finish addRngEntropy
+11-11 13:54:53.400 D/keymaster_worker(  631): start begin
+11-11 13:54:53.400 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(363) 
+11-11 13:54:53.401 E/TrustyKeymaster(  363): Getting response size (52)
+11-11 13:54:53.401 D/keymaster_worker(  631): finish begin
+11-11 13:54:53.402 D/keymaster_worker(  631): start update
+11-11 13:54:53.402 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:10, total:10
+11-11 13:54:53.402 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(119) 
+11-11 13:54:53.402 E/TrustyKeymaster(  363): Getting response size (38)
+11-11 13:54:53.403 D/keymaster_worker(  631): finish update
+11-11 13:54:53.405 D/keymaster_worker(  631): start finish
+11-11 13:54:53.405 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:54:53.408 W/Glide   (19099): Failed to find GeneratedAppGlideModule. You should include an annotationProcessor compile dependency on com.github.bumptech.glide:compiler in your application and a @GlideModule annotated AppGlideModule implementation or LibraryGlideModules will be silently ignored
+11-11 13:54:53.408 E/TrustyKeymaster(  363): Getting response size (40)
+11-11 13:54:53.410 D/keymaster_worker(  631): finish finihs
+11-11 13:54:53.413 D/keymaster_worker(  631): start begin
+11-11 13:54:53.413 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(387) 
+11-11 13:54:53.415 E/TrustyKeymaster(  363): Getting response size (28)
+11-11 13:54:53.415 D/keymaster_worker(  631): finish begin
+11-11 13:54:53.416 D/keymaster_worker(  631): start update
+11-11 13:54:53.417 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:26, total:26
+11-11 13:54:53.417 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(135) 
+11-11 13:54:53.417 E/TrustyKeymaster(  363): Getting response size (38)
+11-11 13:54:53.417 D/keymaster_worker(  631): finish update
+11-11 13:54:53.418 D/keymaster_worker(  631): start finish
+11-11 13:54:53.419 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:54:53.419 D/ConnectivityService(  965): requestNetwork for uid/pid:10266/19099 NetworkRequest [ TRACK_DEFAULT id=1010, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ]
+11-11 13:54:53.419 E/TrustyKeymaster(  363): Getting response size (24)
+11-11 13:54:53.419 D/keymaster_worker(  631): finish finihs
+11-11 13:54:53.420 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:54:53.420 D/ConnectivityService(  965):   1010 : null → 100
+11-11 13:54:53.420 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:54:53.420 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1010, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ]
+11-11 13:54:53.420 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1010, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:54:53.420 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1010, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:54:53.420 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1010, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:54:53.420 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1010, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:54:53.422 D/AdvertisingIdClient(19099): Creating AdvertisingIdClient
+11-11 13:54:53.422 D/AdvertisingIdClient(19099): AdvertisingIdClient already created.
+11-11 13:54:53.422 D/AdvertisingIdClient(19099): AdvertisingIdClient is not bounded. Starting to bind it...
+11-11 13:54:53.424 D/keymaster_worker(  631): start begin
+11-11 13:54:53.424 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(387) 
+11-11 13:54:53.425 E/TrustyKeymaster(  363): Getting response size (28)
+11-11 13:54:53.425 D/keymaster_worker(  631): finish begin
+11-11 13:54:53.426 D/keymaster_worker(  631): start update
+11-11 13:54:53.426 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:157, total:157
+11-11 13:54:53.426 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:54:53.426 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(266) 
+11-11 13:54:53.426 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:54:53.426 E/TrustyKeymaster(  363): Getting response size (169)
+11-11 13:54:53.427 D/keymaster_worker(  631): finish update
+11-11 13:54:53.428 D/keymaster_worker(  631): start finish
+11-11 13:54:53.428 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:54:53.428 E/TrustyKeymaster(  363): Getting response size (24)
+11-11 13:54:53.429 D/keymaster_worker(  631): finish finihs
+11-11 13:54:53.434 D/keymaster_worker(  631): start addRngEntropy
+11-11 13:54:53.434 E/TrustyKeymaster(  363): Succeeded to send cmd (32) to com.android.trusty.keymaster: Success with rc(20) 
+11-11 13:54:53.434 E/TrustyKeymaster(  363): Getting response size (8)
+11-11 13:54:53.434 D/keymaster_worker(  631): finish addRngEntropy
+11-11 13:54:53.434 D/keymaster_worker(  631): start begin
+11-11 13:54:53.434 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(363) 
+11-11 13:54:53.435 E/TrustyKeymaster(  363): Getting response size (52)
+11-11 13:54:53.435 D/keymaster_worker(  631): finish begin
+11-11 13:54:53.436 D/keymaster_worker(  631): start update
+11-11 13:54:53.436 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:10, total:10
+11-11 13:54:53.436 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(119) 
+11-11 13:54:53.437 E/TrustyKeymaster(  363): Getting response size (38)
+11-11 13:54:53.437 D/keymaster_worker(  631): finish update
+11-11 13:54:53.437 D/keymaster_worker(  631): start finish
+11-11 13:54:53.438 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:54:53.438 E/TrustyKeymaster(  363): Getting response size (40)
+11-11 13:54:53.438 D/keymaster_worker(  631): finish finihs
+11-11 13:54:53.440 D/keymaster_worker(  631): start begin
+11-11 13:54:53.440 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(387) 
+11-11 13:54:53.440 E/TrustyKeymaster(  363): Getting response size (28)
+11-11 13:54:53.440 D/keymaster_worker(  631): finish begin
+11-11 13:54:53.441 D/keymaster_worker(  631): start update
+11-11 13:54:53.441 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:26, total:26
+11-11 13:54:53.441 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(135) 
+11-11 13:54:53.441 E/TrustyKeymaster(  363): Getting response size (38)
+11-11 13:54:53.442 D/keymaster_worker(  631): finish update
+11-11 13:54:53.442 D/keymaster_worker(  631): start finish
+11-11 13:54:53.442 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:54:53.442 E/TrustyKeymaster(  363): Getting response size (24)
+11-11 13:54:53.443 D/keymaster_worker(  631): finish finihs
+11-11 13:54:53.444 D/keymaster_worker(  631): start begin
+11-11 13:54:53.444 E/TrustyKeymaster(  363): Succeeded to send cmd (4) to com.android.trusty.keymaster: Success with rc(387) 
+11-11 13:54:53.445 D/BoundBrokerSvc(18507): onRebind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:54:53.454 E/TrustyKeymaster(  363): Getting response size (28)
+11-11 13:54:53.454 D/keymaster_worker(  631): finish begin
+11-11 13:54:53.456 D/keymaster_worker(  631): start update
+11-11 13:54:53.456 D/android.hardware.keymaster@4.1-impl.unisoc.trusty(  363): There have 1st rounds to send, left:124, total:124
+11-11 13:54:53.456 E/TrustyKeymaster(  363): Succeeded to send cmd (8) to com.android.trusty.keymaster: Success with rc(233) 
+11-11 13:54:53.456 E/TrustyKeymaster(  363): Getting response size (136)
+11-11 13:54:53.457 D/keymaster_worker(  631): finish update
+11-11 13:54:53.458 D/keymaster_worker(  631): start finish
+11-11 13:54:53.458 E/TrustyKeymaster(  363): Succeeded to send cmd (12) to com.android.trusty.keymaster: Success with rc(113) 
+11-11 13:54:53.458 E/TrustyKeymaster(  363): Getting response size (24)
+11-11 13:54:53.458 D/keymaster_worker(  631): finish finihs
+11-11 13:54:53.477 D/WazePerf(19099): boot event logged: event=AndroidAppCreated, elapsedMs=1265
+11-11 13:54:53.477 W/CheckTime(19099): App running slow: Executing handleBindApplication : callApplicationOnCreate took 535ms
+11-11 13:54:53.494 D/BoundBrokerSvc(18507): onBind: Intent { act=com.google.android.gms.auth.blockstore.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:54:53.494 D/BoundBrokerSvc(18507): Loading bound service for intent: Intent { act=com.google.android.gms.auth.blockstore.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:54:53.495 I/PhenotypeBackgroundRecv(19099): Skipping com.google.android.gms.measurement#com.waze which doesn't use ProcessStable flags.
+11-11 13:54:53.495 W/CheckTime(19099): App running slow: Executing com.google.android.libraries.phenotype.client.stable.PhenotypeUpdateBackgroundBroadcastReceiver scheduleReceive took 1613ms
+11-11 13:54:53.495 W/ActivityThread(19099): Main thread can not be idle for a long time.
+11-11 13:54:53.496 D/WazePerf(19099): boot event logged: event=NativeLibraryLoaded, elapsedMs=1283
+11-11 13:54:53.501 D/SessionLifecycleService(19099): Service bound to new client on process 19099
+11-11 13:54:53.505 D/AdvertisingIdClient(19099): AdvertisingIdClient is bounded
+11-11 13:54:53.507 D/SessionLifecycleClient(19099): Connected to SessionLifecycleService. Queue size 0
+11-11 13:54:53.514 I/PhenotypeBackgroundRecv(13471): Skipping com.google.android.libraries.internal.growth.growthkit#com.google.android.dialer which doesn't use ProcessStable flags.
+11-11 13:54:53.515 D/SessionLifecycleService(19099): App has not yet foregrounded. Using previously stored session: null
+11-11 13:54:53.515 D/SessionLifecycleService(19099): Client android.os.Messenger@7d19aac bound at 32936365. Clients: 1
+11-11 13:54:53.515 D/ConnectivityService(  965): requestNetwork for uid/pid:10266/19099 NetworkRequest [ TRACK_DEFAULT id=1011, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ]
+11-11 13:54:53.516 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:54:53.516 D/ConnectivityService(  965):   1011 : null → 100
+11-11 13:54:53.516 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:54:53.516 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1011, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ]
+11-11 13:54:53.516 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1011, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:54:53.516 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1011, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:54:53.516 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1011, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:54:53.517 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1011, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:54:53.524 I/AdvertisingIdClient(19099): shouldSendLog -1
+11-11 13:54:53.524 I/AdvertisingIdClient(19099): GetInfoInternal elapse 101ms
+11-11 13:54:53.525 W/ActivityTaskManager(  965): Activity top resumed state loss timeout for ActivityRecord{a3444d u0 com.example.focusapp/.MainActivity t599}
+11-11 13:54:53.525 W/ActivityTaskManager(  965): Activity pause timeout for ActivityRecord{a3444d u0 com.example.focusapp/.MainActivity t599}
+11-11 13:54:53.566 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10216; state: ENABLED
+11-11 13:54:53.567 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10216; state: ENABLED
+11-11 13:54:53.578 D/Zygote  (  527): Forked child process 19237
+11-11 13:54:53.584 I/ActivityManager(  965): Start proc 19237:com.google.android.gm/u0a216 for broadcast {com.google.android.gm/com.google.android.libraries.phenotype.client.stable.PhenotypeUpdateBackgroundBroadcastReceiver}
+11-11 13:54:53.593 E/ogle.android.g(19237): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:54:53.624 D/performance(  965): handleVmpressure, swap:82 pressure:1 thrashing:-1
+11-11 13:54:53.631 I/ogle.android.g(19237): The ClassLoaderContext is a special shared library.
+11-11 13:54:53.647 I/AdvertisingIdClient(19099): getting error as 17: API: ClientTelemetry.API is not available on this device. Connection failed with: e{statusCode=API_DISABLED_FOR_CONNECTION, resolution=null, message=null, clientMethodKey=null, errorResolutionInfo=null}
+11-11 13:54:53.652 D/performance(  965): LRU skip force stop: {com.example.focusapp=focus, com.garageapp.alarmchallenges=favorite, com.google.android.apps.labs.language.tailwind=whitelist}, swapKill: -1
+11-11 13:54:53.735 I/system_server(  965): Background young concurrent copying GC freed 872869(45MB) AllocSpace objects, 24(608KB) LOS objects, 53% free, 39MB/85MB, paused 365us total 153.712ms
+11-11 13:54:53.776 D/SQLiteOpenHelper(19099): SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:54:53.921 W/ogle.android.g(19237): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:54:53.921 I/chatty  (19237): uid=10216(com.google.android.gm) identical 1 line
+11-11 13:54:53.921 W/ogle.android.g(19237): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:54:53.925 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:54.015 W/System  (19099): A resource failed to call close. 
+11-11 13:54:54.028 D/NetworkSecurityConfig(19237): Using Network Security Config from resource network_security_config debugBuild: false
+11-11 13:54:54.034 D/NetworkSecurityConfig(19237): Using Network Security Config from resource network_security_config debugBuild: false
+11-11 13:54:54.061 I/servicemanager(  316): Since 'apexservice' could not be found, trying to start it as a lazy AIDL service
+11-11 13:54:54.068 I/ActivityManager(  965): Killing 18420:com.google.android.deskclock/u0a202 (adj 965): empty #17
+11-11 13:54:54.096 D/ConnectivityService(  965): releasing NetworkRequest [ TRACK_DEFAULT id=1007, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10213 AdministratorUids: [] RequestorUid: 10213 RequestorPackageName: com.google.android.apps.tachyon] ] (release request)
+11-11 13:54:54.096 D/ConnectivityService(  965):  Removing from current network [100 WIFI], leaving 58 requests.
+11-11 13:54:54.128 I/Zygote  (  527): Process 18420 exited due to signal 9 (Killed)
+11-11 13:54:54.129 V/ActivityManager(  965): Clean up application record for ProcessRecord{40762a 18420:com.google.android.deskclock/u0a202} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:54:54.155 I/libprocessgroup(  965): Successfully killed process cgroup uid 10202 pid 18420 in 86ms
+11-11 13:54:54.232 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:54.278 W/AndroidLoggerBackend(19237): AndroidLoggerBackend configured with enableAndroidLogger:false; no logs will be emitted.
+11-11 13:54:54.321 I/BpBinder(  316): onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+11-11 13:54:54.322 I/servicemanager(  316): Tried to unregister apexservice, but there is about to be a client.
+11-11 13:54:54.334 W/CheckTime(19237): App running slow: Executing handleBindApplication : makeApplication took 310ms
+11-11 13:54:54.473 V/ClearcutMetricXmitter(18718): Transmission is done.
+11-11 13:54:54.532 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:54.843 D/performance(  965): handleVmpressure, swap:82 pressure:1 thrashing:-1
+11-11 13:54:54.852 I/TetheringManager(19237): registerTetheringEventCallback:com.google.android.gm
+11-11 13:54:54.857 D/performance(  965): LRU skip force stop: {com.example.focusapp=focus, com.garageapp.alarmchallenges=favorite, com.google.android.apps.labs.language.tailwind=whitelist}, swapKill: -1
+11-11 13:54:54.865 W/CheckTime(19237): App running slow: Executing handleBindApplication : callApplicationOnCreate took 361ms
+11-11 13:54:54.887 W/CheckTime(19237): App running slow: Executing com.google.android.libraries.phenotype.client.stable.PhenotypeUpdateBackgroundBroadcastReceiver scheduleReceive took 1274ms
+11-11 13:54:54.888 W/ActivityThread(19237): Main thread can not be idle for a long time.
+11-11 13:54:54.965 W/ogle.android.g(19237): ClassLoaderContext classpath size mismatch. expected=15, found=0 (DLC[];PCL[base.apk*3262283054:base.apk!classes2.dex*1009986317:base.apk!classes3.dex*4162999191:base.apk!classes4.dex*771355152:base.apk!classes5.dex*2060349089:base.apk!classes6.dex*3118469109:base.apk!classes7.dex*2326816997:base.apk!classes8.dex*561136266:base.apk!classes9.dex*3167056466:base.apk!classes10.dex*4186298605:base.apk!classes11.dex*4137081084:base.apk!classes12.dex*695690036:base.apk!classes13.dex*1167048985:base.apk!classes14.dex*3903986318:base.apk!classes15.dex*2239599384]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]#PCL[/system/framework/com.android.location.provider.jar*1664931834]#PCL[/system/framework/com.android.media.remotedisplay.jar*1573936315]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]} | DLC[];PCL[])
+11-11 13:54:55.052 W/System  (19237): ClassLoader referenced unknown path: 
+11-11 13:54:55.114 D/SQLiteOpenHelper(19237): SPRD SQLiteOpenHelper getDatabaseLocked version =2 mNewVersion =2
+11-11 13:54:55.146 D/SQLiteOpenHelper(19237): SPRD SQLiteOpenHelper getDatabaseLocked version =24 mNewVersion =24
+11-11 13:54:55.217 D/BoundBrokerSvc(18507): onBind: Intent { act=com.google.android.gms.pseudonymous.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:54:55.218 D/BoundBrokerSvc(18507): Loading bound service for intent: Intent { act=com.google.android.gms.pseudonymous.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:54:55.246 W/ogle.android.g(19237): ClassLoaderContext classpath size mismatch. expected=15, found=10 (DLC[];PCL[base.apk*3262283054:base.apk!classes2.dex*1009986317:base.apk!classes3.dex*4162999191:base.apk!classes4.dex*771355152:base.apk!classes5.dex*2060349089:base.apk!classes6.dex*3118469109:base.apk!classes7.dex*2326816997:base.apk!classes8.dex*561136266:base.apk!classes9.dex*3167056466:base.apk!classes10.dex*4186298605:base.apk!classes11.dex*4137081084:base.apk!classes12.dex*695690036:base.apk!classes13.dex*1167048985:base.apk!classes14.dex*3903986318:base.apk!classes15.dex*2239599384]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]#PCL[/system/framework/com.android.location.provider.jar*1664931834]#PCL[/system/framework/com.android.media.remotedisplay.jar*1573936315]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]} | DLC[];PCL[/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk*941870185:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes2.dex*1265397652:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes3.dex*243132625:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes4.dex*199574610:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes5.dex*2635237495:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes6.dex*267164617:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes7.dex*2715185171:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes8.dex*1653318638:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes9.dex*3252195877:/data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes10.dex*4150127474]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]})
+11-11 13:54:55.248 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10210; state: ENABLED
+11-11 13:54:55.249 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10210; state: ENABLED
+11-11 13:54:55.250 I/ActivityManager(  965): Killing 17125:com.google.android.apps.nbu.files/u0a184 (adj 985): empty #17
+11-11 13:54:55.261 D/Zygote  (  527): Forked child process 19343
+11-11 13:54:55.263 I/ActivityManager(  965): Start proc 19343:com.google.android.calendar/u0a210 for broadcast {com.google.android.calendar/com.google.android.libraries.phenotype.client.stable.PhenotypeUpdateBackgroundBroadcastReceiver}
+11-11 13:54:55.299 W/ogle.android.g(19237): Found duplicate classes, falling back to extracting from APK : /data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_CronetDynamite_installtime.apk
+11-11 13:54:55.299 W/ogle.android.g(19237): NOTE: This wastes RAM and hurts startup performance.
+11-11 13:54:55.300 W/ogle.android.g(19237): Found duplicated class when checking oat files: 'Landroid/app/AppComponentFactory;' in /data/app/~~KpiBRL0Z79pxfMHl4sV7GA==/com.google.android.gm-GTaxoOGothYsN79-DQMjtg==/base.apk!classes4.dex and /data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_CronetDynamite_installtime.apk!classes2.dex
+11-11 13:54:55.302 E/ndroid.calenda(19343): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:54:55.308 I/MdiSyncModule(18507): (REDACTED) Receiving API connection from package '%s'...
+11-11 13:54:55.310 I/MdiSyncModule(18507): API connection successful!
+11-11 13:54:55.312 I/MdiSyncModule(18507): (REDACTED) Receiving API connection from package '%s'...
+11-11 13:54:55.313 I/MdiSyncModule(18507): API connection successful!
+11-11 13:54:55.328 I/MdiSyncModule(18507): (REDACTED) Receiving API connection from package '%s'...
+11-11 13:54:55.329 I/MdiSyncModule(18507): API connection successful!
+11-11 13:54:55.331 I/MdiSyncModule(18507): (REDACTED) Receiving API connection from package '%s'...
+11-11 13:54:55.332 I/MdiSyncModule(18507): API connection successful!
+11-11 13:54:55.337 I/ndroid.calenda(19343): The ClassLoaderContext is a special shared library.
+11-11 13:54:55.341 I/Zygote  (  527): Process 17125 exited due to signal 9 (Killed)
+11-11 13:54:55.341 V/ActivityManager(  965): Clean up application record for ProcessRecord{adc5d07 17125:com.google.android.apps.nbu.files/u0a184} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:54:55.357 I/MdiSyncModule(18507): (REDACTED) Receiving API connection from package '%s'...
+11-11 13:54:55.364 I/MdiSyncModule(18507): API connection successful!
+11-11 13:54:55.371 I/MdiSyncModule(18507): (REDACTED) Receiving API connection from package '%s'...
+11-11 13:54:55.374 I/MdiSyncModule(18507): API connection successful!
+11-11 13:54:55.383 I/libprocessgroup(  965): Successfully killed process cgroup uid 10184 pid 17125 in 132ms
+11-11 13:54:55.453 I/servicemanager(  316): Notifying apexservice they have clients: 1
+11-11 13:54:55.528 W/ndroid.calenda(19343): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:54:55.528 I/chatty  (19343): uid=10210(com.google.android.calendar) identical 1 line
+11-11 13:54:55.528 W/ndroid.calenda(19343): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:54:55.573 D/NetworkSecurityConfig(19343): Using Network Security Config from resource network_security_config debugBuild: false
+11-11 13:54:55.576 D/NetworkSecurityConfig(19343): Using Network Security Config from resource network_security_config debugBuild: false
+11-11 13:54:55.596 D/ConnectivityService(  965): requestNetwork for uid/pid:10216/19237 NetworkRequest [ TRACK_DEFAULT id=1012, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ]
+11-11 13:54:55.597 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:54:55.597 D/ConnectivityService(  965):   1012 : null → 100
+11-11 13:54:55.597 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:54:55.597 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1012, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ]
+11-11 13:54:55.597 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1012, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ] with score 60 and providerId 5
+11-11 13:54:55.598 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1012, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ] with score 60 and providerId 5
+11-11 13:54:55.598 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1012, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ] with score 60 and providerId 5
+11-11 13:54:55.598 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1012, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ] with score 60 and providerId 5
+11-11 13:54:55.759 I/GraphicsJNI(19237): GraphicsJNI::isHardwareConfig qemu gles is 1.
+11-11 13:54:55.813 I/ogle.android.g(19237): Waiting for a blocking GC ClassLinker
+11-11 13:54:55.819 D/performance(  965): handleVmpressure, swap:82 pressure:0 thrashing:-1
+11-11 13:54:55.839 I/ogle.android.g(19237): WaitForGcToComplete blocked ClassLinker on ClassLinker for 25.655ms
+11-11 13:54:55.855 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.nearby.sharing.ReceiveSurfaceService :false Us:false
+11-11 13:54:55.867 I/gearhead:share(18966): Waiting for a blocking GC ProfileSaver
+11-11 13:54:55.901 I/gearhead:share(18966): WaitForGcToComplete blocked ProfileSaver on AddRemoveAppImageSpace for 33.686ms
+11-11 13:54:55.915 I/gearhead:share(18966): WaitForGcToComplete blocked RunEmptyCheckpoint on ProfileSaver for 13.961ms
+11-11 13:54:55.935 W/linker  (19237): Warning: "/data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_CronetDynamite_installtime.apk!/lib/arm64-v8a/libcronet.157.0.8103.14.so" unused DT entry: unknown processor-specific (type 0x70000001 arg 0x0) (ignoring)
+11-11 13:54:55.961 I/cn_HttpFlagsLoader(19237): HTTP flags log line (Impl): Using live production flag values from Google
+11-11 13:54:55.986 D/ConnectivityService(  965): requestNetwork for uid/pid:10216/19237 NetworkRequest [ TRACK_DEFAULT id=1013, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ]
+11-11 13:54:55.986 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:54:55.986 D/ConnectivityService(  965):   1013 : null → 100
+11-11 13:54:55.986 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:54:55.986 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1013, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ]
+11-11 13:54:55.987 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1013, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ] with score 60 and providerId 5
+11-11 13:54:55.987 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1013, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ] with score 60 and providerId 5
+11-11 13:54:55.988 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1013, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ] with score 60 and providerId 5
+11-11 13:54:55.991 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1013, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10216 AdministratorUids: [] RequestorUid: 10216 RequestorPackageName: com.google.android.gm] ] with score 60 and providerId 5
+11-11 13:54:55.994 I/cn_CronetLibraryLoader(19237): Cronet version: 157.0.8103.14, arch: aarch64, source: Play Services
+11-11 13:54:55.997 I/ActivityManager(  965): Killing 18304:com.google.android.partnersetup/u0a193 (adj 965): empty #17
+11-11 13:54:56.000 D/ConnectivityService(  965): NetworkReassignment : no changes
+11-11 13:54:56.069 I/Zygote  (  527): Process 18304 exited due to signal 9 (Killed)
+11-11 13:54:56.070 V/ActivityManager(  965): Clean up application record for ProcessRecord{5cbc53 18304:com.google.android.partnersetup/u0a193} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:54:56.087 I/libprocessgroup(  965): Successfully killed process cgroup uid 10193 pid 18304 in 89ms
+11-11 13:54:56.101 W/DynamiteModule(19237): Local module descriptor class for com.google.android.gms.providerinstaller.dynamite not found.
+11-11 13:54:56.103 W/ProviderHelper(18507): Unknown dynamite feature providerinstaller.dynamite
+11-11 13:54:56.110 W/ProviderInstaller(19237): Failed to load providerinstaller module: No acceptable module com.google.android.gms.providerinstaller.dynamite found. Local version is 0 and remote version is 0.
+11-11 13:54:56.117 I/TetheringManager(19343): registerTetheringEventCallback:com.google.android.calendar
+11-11 13:54:56.118 D/CompatibilityChangeReporter(  965): Compat change id reported: 135634846; UID 10233; state: DISABLED
+11-11 13:54:56.118 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10233; state: ENABLED
+11-11 13:54:56.119 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10233; state: ENABLED
+11-11 13:54:56.123 D/ConnectivityService(  965): requestNetwork for uid/pid:10210/19343 NetworkRequest [ TRACK_DEFAULT id=1015, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10210 AdministratorUids: [] RequestorUid: 10210 RequestorPackageName: com.google.android.calendar] ]
+11-11 13:54:56.124 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:54:56.124 D/ConnectivityService(  965):   1015 : null → 100
+11-11 13:54:56.124 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:54:56.124 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1015, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10210 AdministratorUids: [] RequestorUid: 10210 RequestorPackageName: com.google.android.calendar] ]
+11-11 13:54:56.125 D/WearableService(18507): Creating wearable service asynchronously.
+11-11 13:54:56.125 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1015, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10210 AdministratorUids: [] RequestorUid: 10210 RequestorPackageName: com.google.android.calendar] ] with score 60 and providerId 5
+11-11 13:54:56.125 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1015, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10210 AdministratorUids: [] RequestorUid: 10210 RequestorPackageName: com.google.android.calendar] ] with score 60 and providerId 5
+11-11 13:54:56.125 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1015, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10210 AdministratorUids: [] RequestorUid: 10210 RequestorPackageName: com.google.android.calendar] ] with score 60 and providerId 5
+11-11 13:54:56.125 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1015, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10210 AdministratorUids: [] RequestorUid: 10210 RequestorPackageName: com.google.android.calendar] ] with score 60 and providerId 5
+11-11 13:54:56.128 D/performance(  965): handleVmpressure, swap:82 pressure:1 thrashing:-1
+11-11 13:54:56.130 D/Zygote  (  527): Forked child process 19429
+11-11 13:54:56.145 I/ActivityManager(  965): Start proc 19429:com.android.providers.calendar/u0a233 for content provider {com.android.providers.calendar/com.android.providers.calendar.CalendarProvider2}
+11-11 13:54:56.146 D/WearableService(18507): onGetService: waiting for onCreate to be completed.
+11-11 13:54:56.150 E/viders.calenda(19429): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:54:56.157 D/performance(  965): LRU skip force stop: {com.example.focusapp=focus, com.garageapp.alarmchallenges=favorite, com.google.android.apps.labs.language.tailwind=whitelist}, swapKill: -1
+11-11 13:54:56.178 I/ogle.android.g(19237): The ClassLoaderContext is a special shared library.
+11-11 13:54:56.179 I/Wear_Controller(18507): Wearable module requires a companion app to be installed.
+11-11 13:54:56.179 I/WearableService(18507): Wearable Services not starting. Wear is not available on this device: MISSING_COMPANION_APP
+11-11 13:54:56.182 W/WearableService(18507): onGetService: Wear is not available on this device. Calling package: com.google.android.calendar
+11-11 13:54:56.183 W/bmki    (19237): Sync subscriptions not available
+11-11 13:54:56.208 I/viders.calenda(19429): The ClassLoaderContext is a special shared library.
+11-11 13:54:56.229 D/NetworkSecurityConfig(19429): No Network Security Config specified, using platform default
+11-11 13:54:56.230 D/NetworkSecurityConfig(19429): No Network Security Config specified, using platform default
+11-11 13:54:56.248 I/CalendarProvider2(19429): Created com.android.providers.calendar.CalendarAlarmManager@42c1897(com.android.providers.calendar.CalendarProvider2@20eaa84)
+11-11 13:54:56.257 I/SqliteTransaction(19343): Started new WRITEABLE transaction writetx1 [SqliteDatabase.onStart]
+11-11 13:54:56.264 D/SQLiteOpenHelper(19429): SPRD SQLiteOpenHelper getDatabaseLocked version =601 mNewVersion =601
+11-11 13:54:56.303 I/cal.arcn(19343): Obtained writable database SQLiteDatabase/260224550 instance with path /data/user/0/com.google.android.calendar/databases/cal_v2a
+11-11 13:54:56.311 I/cal.arat(19343): The schema version is 24, the database version is 24, and there are 0 migrations
+11-11 13:54:56.312 I/SqliteTransaction(19343): Closing transaction writetx1 [SqliteDatabase.onStart]: Stats[2 Reads (rows: 2)] after 56 ms
+11-11 13:54:56.313 I/SqliteTransaction(19343): Started new READ_ONLY transaction readtx2 [AccountReaderServiceImpl lazy initialization]
+11-11 13:54:56.314 I/SqliteTransaction(19343): Closing transaction readtx2 [AccountReaderServiceImpl lazy initialization]: Stats[1 Reads (rows: 6)] after 1 ms
+11-11 13:54:56.324 W/CheckTime(19178): App running slow: Executing application classloader create took 3249ms
+11-11 13:54:56.330 W/ContentResolver(19429): Failed to get type for: content://com.android.calendar (Unknown URL content://com.android.calendar)
+11-11 13:54:56.337 W/AndroidLoggerBackend(19343): AndroidLoggerBackend configured with enableAndroidLogger:false; no logs will be emitted.
+11-11 13:54:56.363 D/NetworkSecurityConfig(19178): No Network Security Config specified, using platform default
+11-11 13:54:56.364 D/NetworkSecurityConfig(19178): No Network Security Config specified, using platform default
+11-11 13:54:56.370 W/ContentResolver(19429): Failed to get type for: content://com.android.calendar/1794366000000 (Unknown URL content://com.android.calendar/1794366000000)
+11-11 13:54:56.373 W/ContentResolver(19429): Failed to get type for: content://com.android.calendar/1794394800000 (Unknown URL content://com.android.calendar/1794394800000)
+11-11 13:54:56.382 D/SQLiteOpenHelper(19343): SPRD SQLiteOpenHelper getDatabaseLocked version =11 mNewVersion =11
+11-11 13:54:56.428 D/performance(  965): handleVmpressure, swap:82 pressure:1 thrashing:-1
+11-11 13:54:56.444 I/Blockstore(18507): (REDACTED) [BlockstoreImpl] Snapshot enabled. updateAccessPerSnapshotIfEligible for package: %s
+11-11 13:54:56.454 D/SQLiteOpenHelper(19343): SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:54:56.474 W/CheckTime(19343): App running slow: Executing handleBindApplication : callApplicationOnCreate took 659ms
+11-11 13:54:56.477 I/FirebaseApp(19178): Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+11-11 13:54:56.477 W/CheckTime(19343): App running slow: Executing com.google.android.libraries.phenotype.client.stable.PhenotypeUpdateBackgroundBroadcastReceiver scheduleReceive took 1152ms
+11-11 13:54:56.477 W/ActivityThread(19343): Main thread can not be idle for a long time.
+11-11 13:54:56.484 I/ActivityManager(  965): Killing 17519:com.google.android.apps.docs/u0a199 (adj 985): empty #17
+11-11 13:54:56.515 W/BroadcastQueue(  965): Background execution not allowed: receiving Intent { act=com.google.android.gms.tapandpay.QUICK_ACCESS_WALLET_STATE_CHANGED flg=0x10 (has extras) } to com.google.android.apps.walletnfcrel/com.google.android.apps.wallet.quicksettings.QuickAccessWalletChangedReceiver
+11-11 13:54:56.519 I/ActivityManager(  965): Killing 17691:com.google.android.permissioncontroller/u0a242 (adj 985): empty #17
+11-11 13:54:56.533 I/ProviderInstaller(19237): Installed default security provider AndroidOpenSSL (via CompatProvider)
+11-11 13:54:56.603 I/FirebaseInitProvider(19178): FirebaseApp initialization successful
+11-11 13:54:56.608 I/Zygote  (  527): Process 17691 exited due to signal 9 (Killed)
+11-11 13:54:56.610 V/ActivityManager(  965): Clean up application record for ProcessRecord{f8f959b 17691:com.google.android.permissioncontroller/u0a242} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:54:56.635 W/WM-Processor(18825): Didn't find WorkSpec for id WorkGenerationalId(workSpecId=3aba5ee4-773c-4441-8a34-76d9bf51f9a2, generation=0)
+11-11 13:54:56.658 E/PlayMovies(18825): ofd.a:83 No worker key associated with this task with tags: [google_tv_widget_tag, com.google.android.apps.googletv.app.services.workmanager.WorkerWrapper]
+11-11 13:54:56.658 E/PlayMovies(18825): 
+11-11 13:54:56.665 D/ConnectivityService(  965): requestNetwork for uid/pid:10207/18825 NetworkRequest [ TRACK_DEFAULT id=1016, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10207 AdministratorUids: [] RequestorUid: 10207 RequestorPackageName: com.google.android.videos] ]
+11-11 13:54:56.666 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:54:56.666 D/ConnectivityService(  965):   1016 : null → 100
+11-11 13:54:56.666 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:54:56.666 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1016, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10207 AdministratorUids: [] RequestorUid: 10207 RequestorPackageName: com.google.android.videos] ]
+11-11 13:54:56.667 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1016, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10207 AdministratorUids: [] RequestorUid: 10207 RequestorPackageName: com.google.android.videos] ] with score 60 and providerId 5
+11-11 13:54:56.667 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1016, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10207 AdministratorUids: [] RequestorUid: 10207 RequestorPackageName: com.google.android.videos] ] with score 60 and providerId 5
+11-11 13:54:56.667 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1016, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10207 AdministratorUids: [] RequestorUid: 10207 RequestorPackageName: com.google.android.videos] ] with score 60 and providerId 5
+11-11 13:54:56.670 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1016, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10207 AdministratorUids: [] RequestorUid: 10207 RequestorPackageName: com.google.android.videos] ] with score 60 and providerId 5
+11-11 13:54:56.683 W/CheckTime(19178): App running slow: Executing handleBindApplication : installContentProviders took 318ms
+11-11 13:54:56.715 D/ConnectivityService(  965): releasing NetworkRequest [ TRACK_DEFAULT id=1016, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10207 AdministratorUids: [] RequestorUid: 10207 RequestorPackageName: com.google.android.videos] ] (release request)
+11-11 13:54:56.715 D/ConnectivityService(  965):  Removing from current network [100 WIFI], leaving 62 requests.
+11-11 13:54:56.737 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:56.755 D/ConnectivityService(  965): ConnectivityService NetworkRequestInfo binderDied(NetworkRequest [ TRACK_DEFAULT id=995, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10199 AdministratorUids: [] RequestorUid: 10199 RequestorPackageName: com.google.android.apps.docs] ], android.os.BinderProxy@990dafa)
+11-11 13:54:56.755 V/ActivityManager(  965): Clean up application record for ProcessRecord{6efcde2 17519:com.google.android.apps.docs/u0a199} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:54:56.755 D/ConnectivityService(  965): releasing NetworkRequest [ TRACK_DEFAULT id=995, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10199 AdministratorUids: [] RequestorUid: 10199 RequestorPackageName: com.google.android.apps.docs] ] (release request)
+11-11 13:54:56.756 D/ConnectivityService(  965):  Removing from current network [100 WIFI], leaving 61 requests.
+11-11 13:54:56.765 I/Zygote  (  527): Process 17519 exited due to signal 9 (Killed)
+11-11 13:54:56.795 I/libprocessgroup(  965): Successfully killed process cgroup uid 10199 pid 17519 in 308ms
+11-11 13:54:56.796 I/libprocessgroup(  965): Successfully killed process cgroup uid 10242 pid 17691 in 0ms
+11-11 13:54:56.875 I/ThreeFingerSwipe(19178): mSwipeDistanceThreshold:18
+11-11 13:54:56.876 I/ThreeFingerSwipe(19178): mMaxWidth = 720; mMaxHeight = 1522
+11-11 13:54:56.881 I/ThreeFingerSwipe(19178): getPackageName = com.example.focusapp
+11-11 13:54:57.029 I/ActivityThread(19178): smart_link is  not supported!!!
+11-11 13:54:57.037 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:57.070 E/OpenGLRenderer(19178): error : EGL_BAD_DISPLAY, because eglTerminate has been called.
+11-11 13:54:57.076 I/com.waze(19099): Waiting for a blocking GC ProfileSaver
+11-11 13:54:57.078 I/Choreographer(19178): Skipped 35 frames!  The application may be doing too much work on its main thread.
+11-11 13:54:57.095 I/com.waze(19099): WaitForGcToComplete blocked ProfileSaver on AddRemoveAppImageSpace for 19.071ms
+11-11 13:54:57.118 I/com.waze(19099): WaitForGcToComplete blocked RunEmptyCheckpoint on ProfileSaver for 22.712ms
+11-11 13:54:57.345 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:57.356 D/performance(  965): LRU skip force stop: {com.example.focusapp=focus, com.garageapp.alarmchallenges=favorite, com.google.android.apps.labs.language.tailwind=whitelist}, swapKill: -1
+11-11 13:54:57.469 W/xample.focusap(19178): Accessing hidden method Landroid/os/SystemProperties;->addChangeCallback(Ljava/lang/Runnable;)V (greylist, reflection, allowed)
+11-11 13:54:57.657 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:57.771 I/gle.android.gm(18507): Background concurrent copying GC freed 778062(38MB) AllocSpace objects, 74(2440KB) LOS objects, 66% free, 14MB/44MB, paused 74us total 225.427ms
+11-11 13:54:57.794 W/System  (18507): A resource failed to call close. 
+11-11 13:54:57.889 D/SSense  (  965): windowsChanged
+11-11 13:54:57.956 D/performance(  965): handleVmpressure, swap:81 pressure:1 thrashing:-1
+11-11 13:54:57.962 V/ClearcutMetricXmitter(18966): Transmission is done.
+11-11 13:54:57.965 V/ClearcutMetricXmitter(18966): Transmission is done.
+11-11 13:54:58.033 D/SQLiteOpenHelper(19178): SPRD SQLiteOpenHelper getDatabaseLocked version =10 mNewVersion =10
+11-11 13:54:58.050 I/ScreenTimeTrackerService(19178): startForegroundServiceNotification: calling startForeground with id 1001
+11-11 13:54:58.052 W/ActivityManager(  965): Foreground service started from background can not have location/camera/microphone access: service com.example.focusapp/.service.ScreenTimeTrackerService
+11-11 13:54:58.053 I/ScreenTimeTrackerService(19178): startForegroundServiceNotification: startForeground SUCCESS
+11-11 13:54:58.084 I/Choreographer(19178): Skipped 83 frames!  The application may be doing too much work on its main thread.
+11-11 13:54:58.110 I/FontLog (18507): (REDACTED) Received query %s, URI %s
+11-11 13:54:58.110 I/FontLog (18507): (REDACTED) Query [%s] resolved to %s
+11-11 13:54:58.121 I/FontLog (18507): (REDACTED) Fetch %s end status %s
+11-11 13:54:58.125 D/SQLiteOpenHelper(18507): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:54:58.130 I/FontLog (18507): (REDACTED) Pulling font file for id = %d, cache size = %d
+11-11 13:54:58.138 I/FontLog (18507): (REDACTED) Pulling font file for id = %d, cache size = %d
+11-11 13:54:58.265 W/NotificationHistory(  965): Attempted to add notif for locked/gone/disabled user 0
+11-11 13:54:58.373 D/InterruptionStateProvider( 1349): No alerting: suppressed due to group alert behavior
+11-11 13:54:58.379 D/InterruptionStateProvider( 1349): No alerting: suppressed due to group alert behavior
+11-11 13:54:58.379 D/InterruptionStateProvider( 1349): No pulsing: notification shouldn't alert: 0|com.example.focusapp|1001|null|10271
+11-11 13:54:58.524 D/performance(  965): handleVmpressure, swap:81 pressure:0 thrashing:-1
+11-11 13:54:58.534 D/performance(  965): LRU skip force stop: {com.example.focusapp=focus, com.garageapp.alarmchallenges=favorite, com.google.android.apps.labs.language.tailwind=whitelist}, swapKill: -1
+11-11 13:54:58.832 D/performance(  965): handleVmpressure, swap:81 pressure:0 thrashing:-1
+11-11 13:54:59.144 I/chatty  (  965): uid=1000(system) Thread-6 identical 1 line
+11-11 13:54:59.445 D/performance(  965): handleVmpressure, swap:81 pressure:0 thrashing:-1
+11-11 13:55:00.294 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:55:00.294 I/chatty  ( 1349): uid=10234(com.android.systemui) identical 1 line
+11-11 13:55:00.294 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:55:00.333 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.clearcut.bootcount.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentBoundBrokerService }
+11-11 13:55:00.384 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.logaggregation.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:55:00.408 I/AggregationService(18507): (REDACTED) Starting finalization task for expired aggregation windows. Total number of expired files: %s
+11-11 13:55:00.442 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:55:00.619 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+11-11 13:55:01.470 D/KeyguardStatusView( 1349): refeshFormat mClockView.getText() = 1355
+11-11 13:55:01.476 D/KeyguardStatusView( 1349): refreshTime mClockView.getText() = 1355
+11-11 13:55:01.593 I/c.arcn  (19343): Obtained writable database SQLiteDatabase/229100168 instance with path /data/user/0/com.google.android.calendar/files/tasks/2d191db4-136c-3738-81e3-c3b549c021d5/data.db
+11-11 13:55:01.633 I/c.arcn  (19343): Obtained writable database SQLiteDatabase/197802503 instance with path /data/user/0/com.google.android.calendar/files/tasks/d8d2468f-4cb2-3dcf-a5ed-b6eddf047690/data.db
+11-11 13:55:01.636 I/c.arcn  (19343): Obtained writable database SQLiteDatabase/119806301 instance with path /data/user/0/com.google.android.calendar/files/tasks/93dcbcb8-e5ff-39a1-9774-102f5f000566/data.db
+11-11 13:55:01.640 I/c.arat  (19343): The schema version is 10, the database version is 10, and there are 0 migrations
+11-11 13:55:01.643 I/c.arcn  (19343): Obtained writable database SQLiteDatabase/109964889 instance with path /data/user/0/com.google.android.calendar/files/tasks/3ccdb77b-e033-35d0-96e2-67042d161392/data.db
+11-11 13:55:01.648 I/c.arat  (19343): The schema version is 10, the database version is 10, and there are 0 migrations
+11-11 13:55:01.652 I/c.arat  (19343): The schema version is 10, the database version is 10, and there are 0 migrations
+11-11 13:55:01.652 I/c.arat  (19343): The schema version is 10, the database version is 10, and there are 0 migrations
+11-11 13:55:01.655 I/c.arcn  (19343): Obtained writable database SQLiteDatabase/98306252 instance with path /data/user/0/com.google.android.calendar/files/tasks/bbc1a967-7a4c-3e0d-a25d-42aaa1de7672/data.db
+11-11 13:55:01.658 I/c.arcn  (19343): Obtained writable database SQLiteDatabase/31330193 instance with path /data/user/0/com.google.android.calendar/files/tasks/1c3faf50-5b1e-35c0-8db0-3579a312ed41/data.db
+11-11 13:55:01.660 I/c.arat  (19343): The schema version is 10, the database version is 10, and there are 0 migrations
+11-11 13:55:01.663 I/c.arat  (19343): The schema version is 10, the database version is 10, and there are 0 migrations
+11-11 13:55:02.463 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.semanticlocationhistory.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:55:02.682 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.facs.internal.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalApiService }
+11-11 13:55:02.697 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.time.trustedtime.singleuserapi.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentSingleUserInternalApiService }
+11-11 13:55:02.758 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.facs.cache.service.START pkg=com.google.android.gms }
+11-11 13:55:02.852 D/ProfileInstaller(19178): Installing profile for com.example.focusapp
+11-11 13:55:03.023 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.auth.account.data.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentBoundBrokerService }
+11-11 13:55:03.034 D/SSense  (  965): onTouchRateChanged: rate:0.02112676
+11-11 13:55:03.094 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.semanticlocation.service.START_ODLH pkg=com.google.android.gms }
+11-11 13:55:03.232 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.auth.account.workaccount.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:55:03.332 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.auth.account.data.service.START pkg=com.google.android.gms }
+11-11 13:55:03.897 D/ConnectivityService(  965): requestNetwork for uid/pid:10266/19099 NetworkRequest [ TRACK_DEFAULT id=1017, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ]
+11-11 13:55:03.898 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:55:03.898 D/ConnectivityService(  965):   1017 : null → 100
+11-11 13:55:03.898 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:55:03.898 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=1017, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ]
+11-11 13:55:03.899 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1017, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:55:03.899 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=1017, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:55:03.899 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=1017, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:55:03.899 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=1017, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10266 AdministratorUids: [] RequestorUid: 10266 RequestorPackageName: com.waze] ] with score 60 and providerId 5
+11-11 13:55:04.792 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.time.trustedtime.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:55:05.855 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.common.stats.GmsCoreStatsService :false Us:false
+11-11 13:55:05.883 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.tapandpay.service.BIND dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:55:06.026 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.scheduler.ACTION_PROXY_SCHEDULE dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:55:06.113 D/WM-DelayedWorkTracker(13471): Scheduling work 390c63ad-b068-42a0-9b85-5640c36f982f
+11-11 13:55:06.115 D/WM-GreedyScheduler(13471): Ignoring {WorkSpec: 390c63ad-b068-42a0-9b85-5640c36f982f}. Requires device idle.
+11-11 13:55:06.340 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.checkin.START pkg=com.google.android.gms }
+11-11 13:55:06.540 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.clearcut.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:55:06.541 D/WM-DelayedWorkTracker(13471): Scheduling work 1f8305c1-55a0-4184-a860-9a139fc61f84
+11-11 13:55:06.541 D/WM-GreedyScheduler(13471): Ignoring {WorkSpec: 1f8305c1-55a0-4184-a860-9a139fc61f84}. Requires device idle.
+11-11 13:55:06.810 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.people.contactssync.service.START pkg=com.google.android.gms }
+11-11 13:55:06.813 I/ActivityManager(  965): Killing 18475:com.google.android.apps.subscriptions.red/u0a251 (adj 985): empty #17
+11-11 13:55:06.852 V/ActivityManager(  965): Clean up application record for ProcessRecord{2b8030e 18475:com.google.android.apps.subscriptions.red/u0a251} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:55:06.853 I/Zygote  (  527): Process 18475 exited due to signal 9 (Killed)
+11-11 13:55:06.855 I/libprocessgroup(  965): Successfully killed process cgroup uid 10251 pid 18475 in 41ms
+11-11 13:55:08.370 I/ThermalCvtGovernor(  669): board(default) curTemp: 34988 tripTemp: 45000 setPollingDelay: 6000
+11-11 13:55:08.464 W/orola.launcher( 1730): Reducing the number of considered missed Gc histogram windows from 142 to 100
+11-11 13:55:08.562 I/gralloc4( 1730): unregister: id=21f00001374
+11-11 13:55:08.725 I/ActivityManager(  965): Killing 18628:com.google.android.apps.maps/u0a204 (adj 985): empty #17
+11-11 13:55:08.818 D/ConnectivityService(  965): ConnectivityService NetworkRequestInfo binderDied(NetworkRequest [ TRACK_DEFAULT id=999, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10204 AdministratorUids: [] RequestorUid: 10204 RequestorPackageName: com.google.android.apps.maps] ], android.os.BinderProxy@717a06d)
+11-11 13:55:08.818 V/ActivityManager(  965): Clean up application record for ProcessRecord{b1edc6f 18628:com.google.android.apps.maps/u0a204} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:55:08.819 D/ConnectivityService(  965): releasing NetworkRequest [ TRACK_DEFAULT id=999, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10204 AdministratorUids: [] RequestorUid: 10204 RequestorPackageName: com.google.android.apps.maps] ] (release request)
+11-11 13:55:08.819 D/ConnectivityService(  965):  Removing from current network [100 WIFI], leaving 61 requests.
+11-11 13:55:08.819 I/Zygote  (  527): Process 18628 exited due to signal 9 (Killed)
+11-11 13:55:08.837 I/GH.CAR  (18718): onDestroy
+11-11 13:55:08.842 I/GH.CAR  (18718): tearDown()
+11-11 13:55:08.853 I/GH.CarService(18718): tearDown()
+11-11 13:55:08.854 I/GH.DelegateMngCarSvc(18718): tearDown()
+11-11 13:55:08.859 I/libprocessgroup(  965): Successfully killed process cgroup uid 10204 pid 18628 in 133ms
+11-11 13:55:09.233 I/gpqh    (29527): (REDACTED) Created gRPC endpoint for service %s
+11-11 13:55:09.604 V/ClearcutMetricXmitter(21218): Transmission is done.
+11-11 13:55:10.191 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.gmscompliance.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentBoundBrokerService }
+11-11 13:55:10.246 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.pseudonymous.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:55:10.383 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.mobstore.service.START pkg=com.google.android.gms }
+11-11 13:55:10.423 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.mdisync.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:55:11.450 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:55:11.530 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.auth.blockstore.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:55:11.534 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.auth.service.START pkg=com.google.android.gms }
+11-11 13:55:11.543 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.pseudonymous.service.START pkg=com.google.android.gms }
+11-11 13:55:11.655 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.auth.aang.events.services.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:55:13.029 I/ActivityManager(  965): Killing 18718:com.google.android.projection.gearhead:car/u0a182 (adj 985): empty #17
+11-11 13:55:13.042 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.cloudmessaging.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:55:13.093 V/ActivityManager(  965): Clean up application record for ProcessRecord{1d6ed58 18718:com.google.android.projection.gearhead:car/u0a182} restarting=false allowRestart=true index=-1 replacingPid=false
+11-11 13:55:13.094 I/Zygote  (  527): Process 18718 exited due to signal 9 (Killed)
+11-11 13:55:13.119 I/libprocessgroup(  965): Successfully killed process cgroup uid 10182 pid 18718 in 89ms
+11-11 13:55:13.551 D/ip_monitor-649(19695): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 STALE
+11-11 13:55:15.549 I/system_server(  965): Background young concurrent copying GC freed 647221(39MB) AllocSpace objects, 148(6404KB) LOS objects, 53% free, 39MB/85MB, paused 153us total 108.686ms
+11-11 13:55:15.855 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/com.google.android.location.fused.FusedLocationService :false Us:false
+11-11 13:55:19.167 D/ip_monitor-649(19733): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 PROBE
+11-11 13:55:19.183 D/ip_monitor-649(19734): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 REACHABLE
+11-11 13:55:23.429 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:55:23.429 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:55:25.054 D/ip_monitor-649(19780): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:55:25.855 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.home.wifipresence.WifiPresencePersistentService :false Us:false
+11-11 13:55:28.896 D/ip_monitor-649(19799): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 STALE
+11-11 13:55:30.784 D/DeviceStorageMonitorService(  965): updateStateEx oldLevel = 0, newLevel = 0
+11-11 13:55:33.216 D/BoundBrokerSvc(18507): onRebind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:55:35.863 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.chimera.GmsIntentOperationService :false Us:false
+11-11 13:55:38.624 D/ip_monitor-649(19863): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:55:44.522 D/ip_monitor-649(19909): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 PROBE
+11-11 13:55:44.547 D/ip_monitor-649(19911): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 REACHABLE
+11-11 13:55:45.865 D/ActivityManager(  965): Delay scheduling restart of crashed service com.google.android.gms/.nearby.sharing.ReceiveSurfaceService :false Us:false
+11-11 13:55:48.318 D/BoundBrokerSvc(18507): onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:55:48.473 I/cmd     (19941): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:55:48.607 I/cmd     (19946): oneway function results will be dropped but finished with status OK and parcel size 4

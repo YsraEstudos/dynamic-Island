@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Island.Windows.Interop;
 
@@ -71,5 +72,17 @@ internal static partial class NativeMethods
             int copied = GetWindowTextW(hwnd, text, buffer.Length);
             return new string(text, 0, copied);
         }
+    }
+
+    /// <summary>
+    /// Window class name (for example <c>Chrome_WidgetWin_1</c>), or an empty string when it cannot be read. The class
+    /// identifies a Chromium/Gecko browser even when the executable was renamed, which the process name cannot.
+    /// </summary>
+    public static string GetWindowClass(IntPtr hwnd)
+    {
+        if (hwnd == IntPtr.Zero) return string.Empty;
+        var buffer = new StringBuilder(256);
+        int copied = GetClassName(hwnd, buffer, buffer.Capacity);
+        return copied > 0 ? buffer.ToString(0, copied) : string.Empty;
     }
 }

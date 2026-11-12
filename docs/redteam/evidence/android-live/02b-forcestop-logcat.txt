@@ -1,0 +1,40 @@
+--------- beginning of system
+11-11 13:51:06.484 D/JourneyPerformanceService(  965): com.example.focusapp change to stopped from 965:1000
+11-11 13:51:06.485 I/ActivityManager(  965): Force stopping com.example.focusapp appid=10271 user=0: from pid 15398
+11-11 13:51:06.485 I/ActivityManager(  965): Killing 6968:com.example.focusapp/u0a271 (adj 100): stop com.example.focusapp due to from pid 15398
+11-11 13:51:06.485 V/ActivityManager(  965): Clean up application record for ProcessRecord{8399ec7 6968:com.example.focusapp/u0a271} restarting=false allowRestart=false index=-1 replacingPid=false
+11-11 13:51:06.486 W/WindowManager(  965): removeWindowToken: Attempted to remove non-existing token: android.os.Binder@f1d8992
+--------- beginning of main
+11-11 13:51:06.496 E/PhoneInterfaceManager( 1320): [PhoneIntfMgr] getCarrierPackageNamesForIntentAndPhone: No UICC
+11-11 13:51:06.496 D/CarrierSvcBindHelper( 1320): No carrier app for: 0
+11-11 13:51:06.496 E/PhoneInterfaceManager( 1320): [PhoneIntfMgr] getCarrierPackageNamesForIntentAndPhone: No UICC
+11-11 13:51:06.496 D/CarrierSvcBindHelper( 1320): No carrier app for: 1
+11-11 13:51:06.498 D/AS.AudioService(  965): Accessibility volume enabled = false
+11-11 13:51:06.583 W/ActivityManager(  965): setHasOverlayUi called on unknown pid: 6968
+11-11 13:51:06.584 I/Zygote  (  527): Process 6968 exited due to signal 9 (Killed)
+11-11 13:51:06.602 I/adbd    (29576): Remote process closed the socket (on MSG_PEEK)
+11-11 13:51:06.611 I/libprocessgroup(  965): Successfully killed process cgroup uid 10271 pid 6968 in 125ms
+11-11 13:51:23.417 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:51:23.417 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:51:29.469 D/Tile.CellularTile( 1349): handleUpdateState() mobileDataEnabled = false
+11-11 13:51:29.470 I/chatty  ( 1349): uid=10234(com.android.systemui) SysUiBg identical 1 line
+11-11 13:51:29.471 D/Tile.CellularTile( 1349): handleUpdateState() mobileDataEnabled = false
+11-11 13:51:30.421 D/DeviceStorageMonitorService(  965): updateStateEx oldLevel = 0, newLevel = 0
+11-11 13:51:35.176 D/ip_monitor-649(15593): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:51:35.203 D/ip_monitor-649(15594): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 PROBE
+11-11 13:51:35.230 D/ip_monitor-649(15595): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 REACHABLE
+11-11 13:51:43.113 D/ip_monitor-649(15646): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:51:50.025 D/ip_monitor-649(15692): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 STALE
+11-11 13:51:53.419 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:51:53.419 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:52:00.285 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:52:00.285 I/chatty  ( 1349): uid=10234(com.android.systemui) identical 1 line
+11-11 13:52:00.286 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:52:01.365 W/AlarmManager( 1464): Unrecognized alarm listener com.android.networkstack.android.net.ip.IpClientLinkObserver$Dhcp6PdPreferredPrefixAlarmListener@d77b457
+11-11 13:52:01.388 D/ip_monitor-649(15767): 23: wlan0    inet6 2804:47dc:103:83fd:8c3f:e6ff:fe41:c4c3/64 scope global dynamic mngtmpaddr
+11-11 13:52:01.414 D/ip_monitor-649(15768): valid_lft 259200sec preferred_lft 172800sec
+11-11 13:52:01.440 D/ip_monitor-649(15769): 23: wlan0    inet6 2804:47dc:103:83fd:59bb:3565:cac7:75fd/64 scope global temporary dynamic
+11-11 13:52:01.467 D/ip_monitor-649(15770): valid_lft 259200sec preferred_lft 53567sec
+11-11 13:52:01.493 D/ip_monitor-649(15771): prefix 2804:47dc:103:83fd::/64dev wlan0 onlink autoconf valid 259200 preferred 172800
+11-11 13:52:23.420 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:52:23.420 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false

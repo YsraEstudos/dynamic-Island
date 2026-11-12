@@ -1,0 +1,29 @@
+=== SysGuard.exe --selftest (non-admin, release binary) ===
+exe: C:\Users\israe\OneDrive\Desktop\Projetos\Dynamic Island\release-out\SysGuard\SysGuard.exe version 1.0.0.0 size 49176229
+intended evidence dir: C:\Users\israe\OneDrive\Desktop\Projetos\Dynamic Island\docs\redteam\evidence\pc
+exit code: 
+--- %TEMP%\SysGuard-selftest.log ---
+2026-11-11 13:58:18.804 -03:00 [INFO ] OK   Lista de domínios embutida
+2026-11-11 13:58:18.812 -03:00 [INFO ] OK   Normalização de domínio
+2026-11-11 13:58:18.817 -03:00 [INFO ] OK   Hosts: montar e remover
+2026-11-11 13:58:18.818 -03:00 [INFO ] OK   Hosts: idempotente
+2026-11-11 13:58:18.936 -03:00 [INFO ] OK   Senha: hash e verificação
+2026-11-11 13:58:18.937 -03:00 [INFO ] OK   Senha: regras
+2026-11-11 13:58:19.022 -03:00 [INFO ] OK   Senha: gravar e ler arquivo
+2026-11-11 13:58:19.023 -03:00 [INFO ] OK   Limite de tentativas
+2026-11-11 13:58:19.091 -03:00 [INFO ] OK   Títulos adultos
+2026-11-11 13:58:19.093 -03:00 [INFO ] OK   Processos de navegador
+2026-11-11 13:58:19.110 -03:00 [INFO ] OK   DNS: comparação normalizada
+2026-11-11 13:58:19.111 -03:00 [INFO ] OK   Políticas de navegador definidas
+2026-11-11 13:58:19.133 -03:00 [INFO ] OK   Ícone da bandeja
+2026-11-11 13:58:19.136 -03:00 [INFO ] OK   Consulta de serviço
+2026-11-11 13:58:19.139 -03:00 [INFO ] SKIP Pipe de controle: processo em integridade baixa (sandbox); executar o exe publicado fora do ambiente restrito.
+2026-11-11 13:58:19.140 -03:00 [INFO ] OK   Pipe de controle (servidor + cliente)
+2026-11-11 13:58:19.140 -03:00 [INFO ] SELFTEST OK
+
+
+=== SysGuard.exe --pipetest --silent ===
+exit code:  (0 = pipe OK)
+
+=== SysGuard.exe --status --silent (service not installed => expect 4) ===
+exit code:  (0 protegido, 5 degradado, 3 desprotegido, 4 indisponível)

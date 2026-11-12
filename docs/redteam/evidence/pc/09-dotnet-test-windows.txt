@@ -1,0 +1,4 @@
+=== dotnet test: Island.Windows.Tests (ForegroundSiteGuard + AngryResumeStore + BrowserTitleReader) ===
+  Determining projects to restore...
+
+dotnet test exit=1 elapsed=904s

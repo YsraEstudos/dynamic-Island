@@ -140,7 +140,7 @@ public sealed class FcmPhoneBlockNotifier : IPhoneBlockNotifier
 
             Attempt result = await TrySendAsync(account, fcmToken.Trim(), id, end, adultEnd, ttl, ct).ConfigureAwait(false);
             if (result.Kind == AttemptKind.Delivered)
-                return new PhoneBlockOutcome(true, $"Celular bloqueado até {end.ToLocalTime():HH:mm}");
+                return new PhoneBlockOutcome(true, $"Celular bloqueado até {end.ToLocalTime():HH:mm}", id, end);
             if (result.Kind == AttemptKind.Permanent || attempt >= RetryDelays.Length)
                 return new PhoneBlockOutcome(false, result.Detail);
 

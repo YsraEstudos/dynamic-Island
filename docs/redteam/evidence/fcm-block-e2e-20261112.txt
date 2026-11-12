@@ -1,0 +1,5 @@
+token: len=142
+access token OK
+FCM aceito em 09:04:23: projects/pomodoro-brave/messages/0:1794485083428151%67ee231af9fd7ecd
+Overlay NÃO apareceu até o limite (pode ser Modo seletivo ligado ou entrega atrasada).
+top activity: topResumedActivity=ActivityRecord{196585472 u0 com.microsoft.emmx/com.microsoft.ruby.Main t31036}

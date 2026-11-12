@@ -1,0 +1,30 @@
+dispositivo: List of devices attached ZF523QVD4J	device 
+--- 1) permissões: guardião com WRITE_SECURE_SETTINGS; app principal sem (para o ADB sobreviver ao teste)
+
+
+--- 2) aquecendo o app e a acessibilidade
+warm-up: bound=True enabled=1
+--- 3) FCM adulto (bloqueio ativo)
+FCM aceito: projects/pomodoro-brave/messages/0:1794426956848043%67ee231af9fd7ecd
+ACK: {"v":1,"id":"0:1794426956848043%67ee231af9fd7ecd","applied":true,"a11y":true,"admin":true,"level":1,"endMs":1794427115935,"ts":1794426956409,"hb":false,"reason":"fcm","adb":true,"users":1,"profiles":1,"guardian":true}
+--- 4) force-stop do app principal (com bloqueio ativo)
+antes: bound=True enabled=1
+F2 guardião: a11y bound novamente em 16 s (esperado <= 40 s)
+depois: bound=True enabled=1 list=com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService
+--- 5) logs do guardião/repair
+11-11 16:54:20.586 I/GuardianService(31323): start recebido (action=com.example.focusapp.guardian.action.START); garantindo FGS e conferindo já
+11-11 16:55:20.667 I/GuardianService(31323): start recebido (action=com.example.focusapp.guardian.action.START); garantindo FGS e conferindo já
+11-11 16:56:12.111 W/GuardianService(31323): proteção ativa, mas acessibilidade ausente (listado=false reportado=false)
+11-11 16:56:12.116 I/GuardianService(31323): revive: iniciando ciclo (ReviveService -> settings -> recheck -> activity)
+11-11 16:56:12.121 I/GuardianMainApp(31323): ReviveService iniciado explicitamente: ComponentInfo{com.example.focusapp/com.example.focusapp.guard.ReviveService}
+11-11 16:56:12.125 W/ActivityManager(26233): Foreground service started from background can not have location/camera/microphone access: service com.example.focusapp/.guard.ReviveService
+11-11 16:56:14.128 I/GuardianRepair(31323): acrescentando o serviço de acessibilidade do app principal à lista
+11-11 16:56:14.133 I/GuardianRepair(31323): settings de acessibilidade reescritos (total de serviços=1)
+11-11 16:56:17.150 I/GuardianRepair(31323): toggle: acessibilidade desligada temporariamente (outros=0)
+11-11 16:56:18.955 I/GuardianRepair(31323): toggle: acessibilidade religada (listOk=true enabledOk=true)
+
+--- 6) adb continua ligado? (anti-ADB não deve ter derrubado durante o teste)
+1
+--- 7) restaurando permissão do app principal e estado final
+
+estado final: bound=True enabled=1 list=com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService

@@ -1,0 +1,12 @@
+=== ESTADO FINAL CONFIRMADO 2026-11-11T14:11:27.3648216-03:00 ===
+keyguard: false
+wakefulness: Awake
+current_user: 0
+accessibility_enabled: 1
+enabled_accessibility_services: com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService
+package: User 0: ceDataInode=160639 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+admin: com.example.focusapp/.admin.AdminPolicyReceiver:
+admin_testOnly: testOnlyAdmin=false
+users: Users:
+	UserInfo{0:Israel:c13} running
+adb_enabled: 1

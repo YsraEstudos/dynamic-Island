@@ -36,9 +36,12 @@ public sealed class JsonSettingsStore : ISettingsStore
     public JsonSettingsStore(string? directory = null)
     {
         _directory = directory
-            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland");
-        _path = Path.Combine(_directory, FileName);
+            ?? System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DynamicIsland");
+        _path = System.IO.Path.Combine(_directory, FileName);
     }
+
+    /// <summary>Full path of settings.json (the settings tamper watch needs to poll the same file).</summary>
+    public string Path => _path;
 
     /// <summary>Returns defaults when the file is missing or unreadable. A corrupt file is moved to settings.json.bad. Never throws.</summary>
     public IslandSettings Load()

@@ -1,0 +1,9 @@
+total 30
+drwxrwx--x 2 u0_a271 u0_a271 3488 2026-11-11 14:01 .
+drwx------ 8 u0_a271 u0_a271 3488 2026-10-14 09:13 ..
+-rw-rw---- 1 u0_a271 u0_a271  364 2026-11-10 10:17 com.google.android.gms.appid.xml
+-rw-rw---- 1 u0_a271 u0_a271  190 2026-10-14 09:13 com.google.firebase.messaging.xml
+-rw-rw---- 1 u0_a271 u0_a271  548 2026-11-11 13:00 focus_daily_block.xml
+-rw-rw---- 1 u0_a271 u0_a271  136 2026-11-11 09:13 focus_display_control.xml
+-rw-rw---- 1 u0_a271 u0_a271  304 2026-10-14 09:13 focus_security_prefs.xml
+-rw-rw---- 1 u0_a271 u0_a271  209 2026-11-11 14:01 focus_tracker_prefs.xml

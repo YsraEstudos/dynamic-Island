@@ -1,0 +1,21 @@
+install app: Performing Streamed Install Success
+install guard: Performing Streamed Install Success
+pm grant WRITE_SECURE_SETTINGS app: 
+pm grant WRITE_SECURE_SETTINGS guard: 
+appops SAW guard: 
+appops SAW app: 
+dpm admin guard: Success: Active admin set to component {com.example.focusapp.guardian/com.example.focusapp.guardian.GuardianAdminReceiver}
+dpm admin app: Success: Active admin set to component {com.example.focusapp/com.example.focusapp.admin.AdminPolicyReceiver}
+a11y inicial: bound=False enabled=1 list=com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService
+guardião rodando: True
+app debuggable=|1.7.1 | versionName=1.7.1
+F1: acessibilidade religada em -1 s (esperado <= 20 s)
+F2: acessibilidade religada após force-stop em -1 s (esperado <= 40 s)
+a11y pós-F2: bound=False enabled=0 list=null
+F3: run-as falhou=True (saída: run-as: package not debuggable: com.example.focusapp)
+admins: app=True guard=True
+users: Users:
+	UserInfo{0:Israel:c13} running
+logcat guardian/focus (últimas 80):
+--------- beginning of main
+--------- beginning of system

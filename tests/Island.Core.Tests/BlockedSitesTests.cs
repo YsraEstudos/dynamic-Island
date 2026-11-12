@@ -108,6 +108,22 @@ public class BlockedSitesTests
         Assert.Equal(new[] { "Conteúdo adulto" }, BlockedSites.Default.Where(s => s.IsAdult).Select(s => s.Name));
     }
 
+    [Fact]
+    public void Only_twitter_and_instagram_are_released_at_the_end_of_a_break()
+    {
+        Assert.Equal(new[] { "Twitter/X", "Instagram" },
+            BlockedSites.Default.Where(s => s.IsReleasedOnBreak).Select(s => s.Name));
+        Assert.DoesNotContain(BlockedSites.Default, s => s.IsAdult && s.IsReleasedOnBreak);
+    }
+
+    [Fact]
+    public void Find_returns_the_site_record_for_a_matching_title()
+    {
+        Assert.Equal("Instagram", BlockedSites.Find("Reels - Instagram - Opera")?.Name);
+        Assert.True(BlockedSites.Find("Pornhub - Microsoft Edge")?.IsAdult);
+        Assert.Null(BlockedSites.Find("Gmail - Inbox"));
+    }
+
     [Theory]
     [InlineData("Free Porn Videos - XVIDEOS.COM - Google Chrome")]
     [InlineData("Pornhub - Microsoft Edge")]

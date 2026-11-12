@@ -1,0 +1,24 @@
+T0-ant es | enabled=1 | list='com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService' | pid=6968 | bound=FOCUS_BOUND
+A0 logo apos limpar lista | enabled=0 | list='' | pid=6968 | bound=NONE
+A+1s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+2s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+3s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+4s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+5s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+6s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+7s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+8s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+9s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+10s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+11s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+12s | enabled=0 | list='' | pid=6968 | bound=NONE
+A+15s | enabled=0 | pid=6968 | bound=NONE
+A+20s | enabled=0 | pid=6968 | bound=NONE
+A+25s | enabled=0 | pid=6968 | bound=NONE
+A+30s | enabled=0 | pid=6968 | bound=NONE
+A+35s | enabled=0 | pid=6968 | bound=NONE
+A+40s | enabled=0 | pid=6968 | bound=NONE
+A+45s | enabled=0 | pid=6968 | bound=NONE
+A+50s | enabled=0 | pid=6968 | bound=NONE
+A+55s | enabled=0 | pid=6968 | bound=NONE
+A+60s | enabled=0 | pid=6968 | bound=NONE

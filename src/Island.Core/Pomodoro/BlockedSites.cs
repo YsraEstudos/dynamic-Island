@@ -4,9 +4,11 @@ namespace Island.Core.Pomodoro;
 
 /// <summary>
 /// A site the angry focus guard blocks, recognised by the window titles a browser shows for it. Adult sites
-/// (<see cref="IsAdult"/>) stay blocked during the free breaks of an angry session too.
+/// (<see cref="IsAdult"/>) stay blocked through the breaks. Sites flagged <see cref="IsReleasedOnBreak"/> are
+/// released only in the final minute of a running break.
 /// </summary>
-public sealed record BlockedSite(string Name, IReadOnlyList<Regex> TitlePatterns, bool IsAdult = false);
+public sealed record BlockedSite(string Name, IReadOnlyList<Regex> TitlePatterns, bool IsAdult = false,
+    bool IsReleasedOnBreak = false);
 
 /// <summary>Sites and adult content blocked during angry focus, matched by window title, and the browser processes that can show them.</summary>
 public static class BlockedSites
@@ -29,11 +31,11 @@ public static class BlockedSites
             // so only the token boundary after "/ X" is checked.
             Pattern(@"(?:^|\s)/ X(?=\s|$)"),
             Pattern(@"\bon X:"),
-        }),
+        }, IsReleasedOnBreak: true),
         new BlockedSite("Instagram", new[]
         {
             Pattern(@"\bInstagram\b"),
-        }),
+        }, IsReleasedOnBreak: true),
         new BlockedSite("Reddit", new[]
         {
             Pattern(@"\bReddit\b"),
@@ -59,32 +61,65 @@ public static class BlockedSites
     {
         "chrome", "msedge", "firefox", "brave", "opera", "opera_gx", "vivaldi", "arc", "chromium",
         "iexplore", "zen", "librewolf", "waterfox", "thorium",
+        // Embedded browsers (PC-05): WebView2 and Steam's CEF. They are tagged for review, never blocked as a whole:
+        // a title match on a blocked site is still required.
+        "msedgewebview2", "steamwebhelper", "electron",
+    };
+
+    /// <summary>
+    /// Native window classes of browsers, checked in addition to the process name so a portable/renamed browser is still
+    /// recognized (PC-04). Chromium-based browsers, Electron apps and WebView2 share <c>Chrome_WidgetWin_1</c>, which is
+    /// why the match alone never blocks: the window title must still name a blocked site.
+    /// </summary>
+    private static readonly HashSet<string> BrowserWindowClasses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Chrome_WidgetWin_1",
+        "Chrome_WidgetWin_0",
+        "MozillaWindowClass",
+        "IEFrame",
+        "MozillaUIWindowClass",
     };
 
     public static IReadOnlyList<BlockedSite> Default { get; } = Sites;
 
-    /// <summary>Name of the first site with a title pattern matching <paramref name="windowTitle"/>, or null.</summary>
-    public static string? Match(string? windowTitle) => Match(windowTitle, adultOnly: false);
+    /// <summary>The first site with a title pattern matching <paramref name="windowTitle"/>, or null.</summary>
+    public static BlockedSite? Find(string? windowTitle) => Find(windowTitle, filter: null);
 
     /// <summary>
-    /// Name of the first site with a title pattern matching <paramref name="windowTitle"/>, or null. With
-    /// <paramref name="adultOnly"/> only adult sites are considered.
+    /// The first site accepted by <paramref name="filter"/> whose title pattern matches
+    /// <paramref name="windowTitle"/>, or null. A null filter considers every site.
     /// </summary>
-    public static string? Match(string? windowTitle, bool adultOnly)
+    public static BlockedSite? Find(string? windowTitle, Func<BlockedSite, bool>? filter)
     {
         if (string.IsNullOrWhiteSpace(windowTitle)) return null;
 
         foreach (var site in Sites)
         {
-            if (adultOnly && !site.IsAdult) continue;
+            if (filter is not null && !filter(site)) continue;
             foreach (var pattern in site.TitlePatterns)
             {
-                if (IsMatch(pattern, windowTitle)) return site.Name;
+                if (IsMatch(pattern, windowTitle)) return site;
             }
         }
 
         return null;
     }
+
+    /// <summary>
+    /// The first site with a title pattern matching <paramref name="windowTitle"/>, or null. With
+    /// <paramref name="adultOnly"/> only adult sites are considered.
+    /// </summary>
+    public static BlockedSite? Find(string? windowTitle, bool adultOnly) =>
+        Find(windowTitle, adultOnly ? site => site.IsAdult : null);
+
+    /// <summary>Name of the first site with a title pattern matching <paramref name="windowTitle"/>, or null.</summary>
+    public static string? Match(string? windowTitle) => Find(windowTitle)?.Name;
+
+    /// <summary>
+    /// Name of the first site with a title pattern matching <paramref name="windowTitle"/>, or null. With
+    /// <paramref name="adultOnly"/> only adult sites are considered.
+    /// </summary>
+    public static string? Match(string? windowTitle, bool adultOnly) => Find(windowTitle, adultOnly)?.Name;
 
     /// <summary>True for a browser's process name, with or without a ".exe" suffix, in any letter case.</summary>
     public static bool IsBrowserProcess(string? processName)
@@ -95,6 +130,21 @@ public static class BlockedSites
         if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) name = name[..^4];
         return BrowserProcesses.Contains(name);
     }
+
+    /// <summary>
+    /// True for a window class used by browsers (Chromium/Electron/WebView2, Gecko, IE). The class survives renaming a
+    /// portable browser's executable, which is the cheap bypass of a process-name allowlist. A class match alone is
+    /// weak (many apps embed Chromium), so callers always require the title to name a blocked site too.
+    /// </summary>
+    public static bool IsBrowserWindowClass(string? className)
+    {
+        if (string.IsNullOrWhiteSpace(className)) return false;
+        return BrowserWindowClasses.Contains(className.Trim());
+    }
+
+    /// <summary>True when either the process name or the window class identifies a browser window.</summary>
+    public static bool IsBrowserWindow(string? processName, string? windowClass) =>
+        IsBrowserProcess(processName) || IsBrowserWindowClass(windowClass);
 
     private static Regex Pattern(string pattern) =>
         new(pattern, Options, TimeSpan.FromMilliseconds(MatchTimeoutMs));

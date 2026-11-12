@@ -1,0 +1,238 @@
+=== VPN/proxy/remote-access processes and services ===
+--- services ---
+warp-svc => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:  The specified service does not exist as an installed service.
+Tailscale => STATE              : 4  RUNNING
+MullvadVPN => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:  The specified service does not exist as an installed service.
+WireGuardTunnel$wg0 => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:  The specified service does not exist as an installed service.
+OpenVPNService => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:  The specified service does not exist as an installed service.
+VBoxSvc => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:  The specified service does not exist as an installed service.
+vmms => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:  The specified service does not exist as an installed service.
+LxssManager => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:  The specified service does not exist as an installed service.
+LxssManagerUser => [SC] EnumQueryServicesStatus:OpenService FAILED 1060:  The specified service does not exist as an installed service.
+WslService => STATE              : 4  RUNNING
+--- Cloudflare WARP installed? ---
+
+FullName
+--------
+C:\Program Files\Cloudflare\Cloudflare WARP
+
+
+--- Tailscale ---
+
+FullName
+--------
+C:\Program Files\Tailscale\tailscale-ipn.exe
+C:\Program Files\Tailscale\tailscale.exe
+C:\Program Files\Tailscale\tailscaled.exe
+C:\Program Files\Tailscale\wintun.dll
+
+
+--- WARP/DNS proxy processes any ---
+
+
+=== Dynamic Island current process ===
+
+
+=== settings.json (token redacted) ===
+{
+  "monitorIndex": 0,
+  "compactWidth": 124,
+  "compactHeight": 36,
+  "topMargin": 8,
+  "volumeDisplaySeconds": 1.8,
+  "mediaPreviewSeconds": 3.5,
+  "hideInFullscreen": false,
+  "useCustomPosition": true,
+  "dock": 2,
+  "minimized": false,
+  "positionX": 1838,
+  "positionY": 603,
+  "gameProcesses": [],
+  "reduceAnimations": false,
+  "startWithWindows": false,
+  "showVolume": true,
+  "showMedia": true,
+  "shelfWidgets": [
+    "tasks",
+    "focussounds",
+    "timer",
+    "filetray",
+    "budget",
+    "counter",
+    "calendar",
+    "quicknotes",
+    "calculator",
+    "pomodoro",
+    "nowplaying"
+  ],
+  "shelfRows": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    3,
+    4
+  ],
+  "pomodoroFocusMinutes": 25,
+  "pomodoroBreakMinutes": 5,
+  "pomodoroCycles": 3,
+  "pomodoroSound": true,
+  "pomodoroGoal": "",
+  "pomodoroAutoAdvance": true,
+  "pomodoroProfileId": "study",
+  "pomodoroAngryDesktopId": "",
+  "pomodoroProfiles": [
+    {
+      "id": "study",
+      "name": "Estudo",
+      "focusMinutes": 25,
+      "breakMinutes": 5,
+      "focusSound": 0,
+      "breakSound": 3,
+      "autoAdvance": true
+    },
+    {
+      "id": "reading",
+      "name": "Leitura",
+      "focusMinutes": 50,
+      "breakMinutes": 10,
+      "focusSound": 1,
+      "breakSound": 3,
+      "autoAdvance": true
+    },
+    {
+      "id": "work",
+      "name": "Trabalho",
+      "focusMinutes": 45,
+      "breakMinutes": 15,
+      "focusSound": 2,
+      "breakSound": 3,
+      "autoAdvance": true
+    }
+  ],
+  "pomodoroFocusSound": 0,
+  "pomodoroBreakSound": 3,
+  "clipboardEnabled": true,
+  "clipboardMaxItems": 50,
+  "quickNotesHotkeyEnabled": true,
+  "noticeSeconds": 3,
+  "phoneBlockEnabled": true,
+  "phoneFcmToken": "<REDACTED>",
+  "updateRepository": "YsraEstudos/dynamic-Island",
+  "idleModeEnabled": true,
+  "weatherCity": ""
+}
+
+=== island logs ===
+
+Name                Length LastWriteTime
+----                ------ -------------
+island-20261111.log  37808 11/11/2026 12:41:00 PM
+island-20261110.log   1834 11/10/2026 6:14:20 PM
+island-20261109.log   8897 11/9/2026 4:30:00 PM
+island-20261108.log    110 11/8/2026 11:05:16 PM
+island-20261106.log   1519 11/6/2026 7:41:13 PM
+update-install.log    3472 11/5/2026 11:34:31 AM
+
+
+--- grep: pomodoro/angry/blocked/quit/update in island-20261111.log ---
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+2026-11-11 09:59:55.193 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:00:45.932 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:01:03.092 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:01:08.202 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:01:12.823 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:01:25.668 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:01:32.360 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:01:38.263 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:01:46.976 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at MS.Internal.Data.PropertyPathWorker.UpdateSourceValueState(Int32 k, ICollectionView collectionView, Object newValue, Boolean isASubPropertyChange)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+2026-11-11 10:02:54.105 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:03:17.964 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:03:22.707 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:03:27.626 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:03:32.381 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:06:22.819 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:06:28.389 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:06:33.325 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:07:09.424 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:07:14.529 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:07:29.213 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:07:39.380 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:07:50.995 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:07:55.903 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:08:00.919 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:08:05.205 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:08:09.868 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:08:14.050 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:08:22.666 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:08:27.523 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:08:35.598 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 10:08:42.049 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+2026-11-11 11:29:50.104 -03:00 [INF] Minimized a Twitter/X browser window during angry mode.
+   at Island.App.Shell.UnlockWindow..ctor(AngryPomodoro angry)
+   at Island.App.Shell.UnlockWindow..ctor(AngryPomodoro angry)
+   at Island.App.Shell.UnlockWindow.ShowFor(AngryPomodoro angry)
+   at Island.App.App.RequestQuit()
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at MS.Internal.Data.PropertyPathWorker.UpdateSourceValueState(Int32 k, ICollectionView collectionView, Object newValue, Boolean isASubPropertyChange)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at MS.Internal.Data.PropertyPathWorker.UpdateSourceValueState(Int32 k, ICollectionView collectionView, Object newValue, Boolean isASubPropertyChange)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.Controls.MenuItem.UpdateCanExecute()
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+
+
+=== updates dir ===
+
+=== programs dir (install) ===
+
+Name                                                      Length   LastWriteTime
+----                                                      ------   -------------
+Assets                                                             11/5/2026 11:34:29 AM
+CommunityToolkit.Mvvm.dll                                 146216   12/12/2024 4:54:40 AM
+DynamicIsland.deps.json                                   13431    11/5/2026 11:16:38 AM
+DynamicIsland.dll                                         895488   11/5/2026 11:16:38 AM
+DynamicIsland.exe                                         162304   11/5/2026 11:16:38 AM
+DynamicIsland.pdb                                         347848   11/5/2026 11:16:36 AM
+DynamicIsland.runtimeconfig.json                          586      11/5/2026 11:16:38 AM
+Island.Core.dll                                           420352   11/5/2026 11:16:24 AM
+Island.Core.pdb                                           133464   11/5/2026 11:16:24 AM
+Island.Windows.dll                                        256512   11/5/2026 11:16:26 AM
+Island.Windows.pdb                                        88736    11/5/2026 11:16:26 AM
+Magick.Native-Q8-x64.dll                                  24753328 10/10/2026 6:31:16 PM
+Magick.NET-Q8-x64.dll                                     1002672  10/10/2026 6:31:14 PM
+Magick.NET.Core.dll                                       1537712  10/10/2026 6:31:18 PM
+Microsoft.Extensions.DependencyInjection.Abstractions.dll 66312    10/23/2025 9:11:28 PM
+Microsoft.Extensions.DependencyInjection.dll              96008    10/23/2025 9:15:54 PM
+Microsoft.Extensions.Logging.Abstractions.dll             67344    10/23/2025 9:15:24 PM
+Microsoft.Extensions.Logging.dll                          52016    10/23/2025 9:16:54 PM
+Microsoft.Extensions.Options.dll                          65848    10/23/2025 9:13:16 PM
+Microsoft.Extensions.Primitives.dll                       45328    10/23/2025 9:11:28 PM
+Microsoft.Windows.SDK.NET.dll                             24877600 11/11/2024 2:23:04 PM
+NAudio.Core.dll                                           187904   9/4/2023 4:49:42 PM
+NAudio.Wasapi.dll                                         179200   9/4/2023 4:49:44 PM
+PdfSharp.BarCodes.dll                                     35840    9/22/2025 8:26:40 AM
+PdfSharp.Charting.dll                                     88064    9/22/2025 8:26:40 AM
+PdfSharp.Cryptography.dll                                 15360    9/22/2025 8:26:26 AM
+PdfSharp.dll                                              793600   9/22/2025 8:26:34 AM
+PdfSharp.Quality.dll                                      40448    9/22/2025 8:26:42 AM
+PdfSharp.Shared.dll                                       23040    9/22/2025 8:26:20 AM
+PdfSharp.Snippets.dll                                     154624   9/22/2025 8:26:50 AM
+PdfSharp.System.dll                                       7680     9/22/2025 8:26:22 AM
+PdfSharp.WPFonts.dll                                      421376   9/22/2025 8:26:20 AM
+Serilog.dll                                               161280   12/6/2024 1:11:52 AM
+Serilog.Extensions.Logging.dll                            27648    12/8/2024 9:18:50 PM
+Serilog.Sinks.File.dll                                    30720    6/22/2024 7:44:08 PM
+WinRT.Runtime.dll                                         528944   11/11/2024 2:23:04 PM
+
+

@@ -23,9 +23,14 @@ using Island.Core.GameNotes;
 using Island.Core.Models;
 using Island.Core.Notes;
 using Island.Core.Performance;
+using Island.Core.Phone;
+using Island.Windows.Configuration;
 using Island.Windows.Display;
+using Island.Windows.Guardian;
+using Island.Windows.Phone;
 using Island.Windows.Shell;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Serilog;
 using MessageBox = System.Windows.MessageBox;
@@ -49,9 +54,24 @@ public partial class App : System.Windows.Application
     private SoakRunner? _soak;
     private ISystemNoticeSource[] _systemNoticeSources = [];
     private IslandCoordinator? _noticeCoordinator;
+    private AngryLiveStateWriter? _liveState;
+    private PhoneBlockAckListener? _ackListener;
+    private SettingsTamperWatch? _settingsTamperWatch;
+    private readonly PhoneBlockTracker _phoneTracker = new();
+    private string? _lastPhoneNotice;
+    private DateTime _lastPhoneNoticeAt;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
+        // --guardian <pidPai> <estado>: hidden companion process that reopens the island and keeps the browser title
+        // guard when the island is killed during Angry. Handled before any UI, logging or dependency injection, so it
+        // never creates a window and never takes the single-instance mutex (the island it watches owns that one).
+        if (GuardianHost.IsGuardianInvocation(e.Args))
+        {
+            Environment.Exit(GuardianHost.Run(e.Args));
+            return;
+        }
+
         base.OnStartup(e);
 
         // A failure anywhere in startup ends the app with a message. Without this, an exception after the first await
@@ -183,13 +203,21 @@ public partial class App : System.Windows.Application
         // Progress of the Suite: running tasks show on the capsule and in the Tasks widget; a finished or failed one raises a notice.
         ProgressWiring.Attach(sp.GetRequiredService<ProgressTracker>(), coordinator);
 
-        // Angry pomodoro: while locked, browsers on distracting sites are minimized; a blocked site raises a notice.
+        // Angry pomodoro: browsers on distracting sites are minimized for the whole session; a blocked site raises a notice.
         var angry = sp.GetRequiredService<AngryPomodoro>();
         var siteGuard = sp.GetRequiredService<ForegroundSiteGuard>();
+        var focusTimer = sp.GetRequiredService<PomodoroTimer>();
         _angry = angry;
-        // A locked focus blocks every site in the list. The free break, and any session time without a lock, blocks only adult sites.
-        angry.LockChanged += () => Dispatcher.BeginInvoke(() => siteGuard.SetMode(
-            angry.IsLocked ? SiteGuardMode.All : angry.IsSessionActive ? SiteGuardMode.AdultOnly : SiteGuardMode.Off));
+        // Twitter/X and Instagram open only in the final minute of a running break; the rest of the break keeps them
+        // blocked, and adult content is blocked throughout. The timer is observed too because that minute starts
+        // without any change to IsLocked.
+        SiteGuardMode GuardSiteMode() => angry.IsLocked ? SiteGuardMode.All
+            : angry.IsBreakReleaseOpen ? SiteGuardMode.BreakRelease
+            : angry.IsSessionActive ? SiteGuardMode.All
+            : SiteGuardMode.Off;
+        void SyncSiteGuard() => siteGuard.SetMode(GuardSiteMode());
+        angry.LockChanged += () => Dispatcher.BeginInvoke(() => SyncSiteGuard());
+        focusTimer.Changed += () => Dispatcher.BeginInvoke(() => SyncSiteGuard());
         // The scheduled start is resolved here so it exists (and is disposed with the container) from launch.
         sp.GetRequiredService<PomodoroSchedule>();
         // The chosen Angry desktop (saved in settings) is held while a focus is locked; see AngryDesktopLock.
@@ -198,14 +226,16 @@ public partial class App : System.Windows.Application
             new Notice($"{site} bloqueado", "Pomodoro raivoso ativo", "timer")));
 
         // A phone block follows each Angry focus and each timed break. With automatic advance, the focus block already
-        // covers the break up to its final minute; the break notification refreshes that deadline when the break starts.
+        // covers the break up to its final three minutes; the break notification refreshes that deadline when the break starts.
         // Manual plans start a break block only when the user starts that timer, so an indefinite wait is not counted as
-        // a break. Adult content stays blocked through each focus and its break, including the phone's final free minute.
-        // One-minute breaks have no full-phone block. Leaving Angry early never sends an unblock; the phone honors the
+        // a break. Adult content stays blocked through each focus and its break, including the phone's final free minutes.
+        // Breaks of three minutes or less have no full-phone block. Leaving Angry early never sends an unblock; the phone honors the
         // original deadline (or the phrase entered on the phone). Timer and Angry events are both observed because a
         // manually started break does not change IsLocked.
         var phone = sp.GetRequiredService<IPhoneBlockNotifier>();
-        var focusTimer = sp.GetRequiredService<PomodoroTimer>();
+        _ackListener = sp.GetService<PhoneBlockAckListener>();
+        if (_ackListener is not null) _ackListener.AckReceived += OnPhoneAckReceived;
+        bool wasActive = false;
         bool wasLocked = false;
         bool wasBreakRunning = false;
         object phoneEdgeGate = new();
@@ -213,6 +243,7 @@ public partial class App : System.Windows.Application
         {
             bool startFocus;
             bool startBreak;
+            bool stopped;
             lock (phoneEdgeGate)
             {
                 bool active = angry.IsSessionActive;
@@ -220,8 +251,18 @@ public partial class App : System.Windows.Application
                 bool breakRunning = active && focusTimer.Phase == PomodoroPhase.Break && focusTimer.IsRunning;
                 startFocus = locked && !wasLocked;
                 startBreak = breakRunning && !wasBreakRunning;
+                stopped = wasActive && !active;
+                wasActive = active;
                 wasLocked = locked;
                 wasBreakRunning = breakRunning;
+
+                // A tracker belongs to one session: an ack heartbeat for an ended session must not re-seal the island,
+                // and the stream can be closed while there is nothing to wait for.
+                if (stopped)
+                {
+                    _phoneTracker.Reset();
+                    _ackListener?.Stop();
+                }
             }
 
             IslandSettings currentSettings = holder.Current;
@@ -242,12 +283,59 @@ public partial class App : System.Windows.Application
         }
         angry.LockChanged += SyncPhoneBlock;
         focusTimer.Changed += SyncPhoneBlock;
+        // A settings edit made by hand while a focus runs (PC-02) is repaired by re-applying the in-memory settings.
+        angry.LockChanged += () =>
+        {
+            if (angry.IsSessionActive) _settingsTamperWatch?.Start();
+            else _settingsTamperWatch?.Stop();
+        };
+        // The Settings window locks the phone fields while a session is active.
+        angry.LockChanged += () => Dispatcher.BeginInvoke(() =>
+            (_settingsWindow?.DataContext as SettingsViewModel)?.NotifySecurityStateChanged());
 
         // An Angry session that was running when an update restarted the app continues from its saved time. It is restored
         // after the handlers above are wired (so the lock, phone block and desktop lock follow it) and before the weekly
         // routine checks the clock, which then does not start a second session.
-        if (!smoke && angryResume.Take(DateTimeOffset.Now, AngryResumeMaxAge) is { } resume)
-            angry.RestoreSession(resume);
+        AngryLiveStateStore liveStore = sp.GetRequiredService<AngryLiveStateStore>();
+        AngryResumeState? savedForUpdate = smoke ? null : angryResume.Take(DateTimeOffset.Now, AngryResumeMaxAge);
+        if (savedForUpdate is not null)
+        {
+            angry.RestoreSession(savedForUpdate);
+        }
+        else if (!demo && !smoke && liveStore.TakeRestorable(DateTimeOffset.Now) is { } live)
+        {
+            // PC-02: settings.json is user-writable and may have been edited while the island was dead. The phone block
+            // recorded in the live snapshot is authoritative for a session that was already running. Applied BEFORE the
+            // restore below, so the LockChanged it raises starts the phone block with the flag already back on.
+            if (live.PhoneBlockEnabled && !holder.Current.PhoneBlockEnabled)
+                applier.Apply(holder.Current with { PhoneBlockEnabled = true });
+
+            // No update in flight: the live snapshot written every 5 s recovers a focus after the island was killed from
+            // the Task Manager (PC-01/PC-03). A stale or corrupted file was removed by TakeRestorable.
+            angry.RestoreSession(live.ToResumeState());
+            coordinator.Post(new IslandEvent.NoticeRaised(
+                new Notice("Foco retomado", "A sessão Angry continua de onde parou.", "timer")));
+        }
+
+        // Live state + hidden guardian: the state file is also the Angry handoff for SysGuard and the guardian process
+        // survives the island being killed. Demo/smoke runs touch neither the file nor a second process.
+        if (!demo)
+        {
+            _liveState = new AngryLiveStateWriter(angry, focusTimer, liveStore,
+                sp.GetRequiredService<IIslandScheduler>(),
+                new AngryGuardianLauncher(liveStore.Path, loggerFactory.CreateLogger<AngryGuardianLauncher>()),
+                () => holder.Current.PhoneBlockEnabled,
+                log: loggerFactory.CreateLogger<AngryLiveStateWriter>());
+            _liveState.Start();
+
+            if (sp.GetRequiredService<ISettingsStore>() is JsonSettingsStore settingsStore)
+            {
+                _settingsTamperWatch = new SettingsTamperWatch(settingsStore.Path);
+                _settingsTamperWatch.ChangedExternally += OnSettingsChangedExternally;
+                applier.Saved = () => _settingsTamperWatch?.NoteApplicationSave();
+                if (angry.IsSessionActive) _settingsTamperWatch.Start();
+            }
+        }
 
         // Pomodoro -> toast (and sound when enabled), clipboard capture -> history, global hotkey -> clipboard panel
         var pomodoro = sp.GetRequiredService<PomodoroTimer>();
@@ -368,14 +456,105 @@ public partial class App : System.Windows.Application
     private void OnSystemNoticeRaised(object? sender, Notice notice) =>
         _noticeCoordinator?.Post(new IslandEvent.NoticeRaised(notice));
 
-    /// <summary>Fire-and-forget: the notifier never throws, and a failure only raises a toast. Angry keeps running either way.</summary>
-    private static async Task BlockPhoneAsync(IPhoneBlockNotifier phone, IslandCoordinator coordinator, TimeSpan remaining,
+    /// <summary>
+    /// Fire-and-forget phone block. The FCM HTTP 2xx only proves Google accepted the message, so the island shows
+    /// "enviando…" and then waits for the phone's ntfy ack with the same message id: only <c>applied &amp;&amp; a11y</c>
+    /// becomes "Celular bloqueado ✓" (PC-11). A failed ack or the 20 s timeout says the block was NOT applied.
+    /// The notifier and the listener never throw, so Angry keeps running either way.
+    /// </summary>
+    private async Task BlockPhoneAsync(IPhoneBlockNotifier phone, IslandCoordinator coordinator, TimeSpan remaining,
         TimeSpan adultRemaining, string token)
     {
+        PostPhoneNotice(coordinator, "Enviando bloqueio ao celular…", "Aguardando a confirmação do celular", urgent: false);
+
         PhoneBlockOutcome outcome = await phone.NotifyAsync(remaining, token, adultRemaining).ConfigureAwait(false);
-        coordinator.Post(new IslandEvent.NoticeRaised(outcome.Delivered
-            ? new Notice("Celular bloqueado", outcome.Detail, "timer")
-            : new Notice("Celular não bloqueado", outcome.Detail, "timer")));
+        if (!outcome.Delivered || string.IsNullOrEmpty(outcome.MessageId))
+        {
+            PostPhoneFailure(coordinator, outcome.Detail);
+            return;
+        }
+
+        DateTimeOffset end = outcome.End ?? DateTimeOffset.Now + remaining;
+        _phoneTracker.Expect(outcome.MessageId, end);
+
+        if (_ackListener is null)
+        {
+            // Only demo/smoke reach this: there is no ack channel, so the old "sent" result is shown without the seal.
+            PostPhoneNotice(coordinator, $"Celular bloqueado até {end.ToLocalTime():HH:mm}", outcome.Detail, urgent: false);
+            return;
+        }
+
+        _ackListener.Start(token);
+        PhoneBlockAck? ack = await _ackListener
+            .WaitForAckAsync(outcome.MessageId, PhoneBlockTracker.AckTimeout).ConfigureAwait(false);
+        if (ack is null)
+        {
+            if (_phoneTracker.CheckTimeout()) PostPhoneStatus(coordinator);
+            return;
+        }
+
+        // The AckReceived handler usually already posted the status; this covers the race where the wait completed first.
+        _phoneTracker.Observe(ack, out _);
+        PostPhoneStatus(coordinator);
+    }
+
+    // Heartbeats (about every 60 s from the phone) keep the seal fresh: the notice is shown again for a confirmed block
+    // and a heartbeat that reports failure downgrades it. Acks for another block are ignored by the tracker.
+    private void OnPhoneAckReceived(PhoneBlockAck ack)
+    {
+        if (!_phoneTracker.Observe(ack, out bool changed)) return;
+        if (changed || _phoneTracker.Status == PhoneBlockStatus.Confirmed)
+            PostPhoneStatus(_noticeCoordinator);
+    }
+
+    private void PostPhoneStatus(IslandCoordinator? coordinator)
+    {
+        if (coordinator is null) return;
+        switch (_phoneTracker.Status)
+        {
+            case PhoneBlockStatus.Confirmed:
+                PostPhoneNotice(coordinator, $"Celular bloqueado ✓ {_phoneTracker.End.ToLocalTime():HH:mm}",
+                    "Confirmado pelo celular", urgent: false);
+                break;
+            case PhoneBlockStatus.Failed:
+                PostPhoneFailure(coordinator, _phoneTracker.FailureReason ?? "o celular não confirmou o bloqueio");
+                break;
+        }
+    }
+
+    private static void PostPhoneFailure(IslandCoordinator coordinator, string reason) =>
+        coordinator.Post(new IslandEvent.NoticeRaised(
+            new Notice("Bloqueio NÃO aplicado no celular", reason, "timer", Urgent: true)));
+
+    // A duplicate toast can happen when the ack arrives between the wait and the event; same text twice in a row is noise.
+    private void PostPhoneNotice(IslandCoordinator coordinator, string title, string? subtitle, bool urgent)
+    {
+        DateTime now = DateTime.UtcNow;
+        if (string.Equals(title, _lastPhoneNotice, StringComparison.Ordinal) && now - _lastPhoneNoticeAt < TimeSpan.FromSeconds(3))
+            return;
+        _lastPhoneNotice = title;
+        _lastPhoneNoticeAt = now;
+        coordinator.Post(new IslandEvent.NoticeRaised(new Notice(title, subtitle, "timer", urgent)));
+    }
+
+    /// <summary>
+    /// settings.json changed under a running app (the user edited it by hand during a focus). Put the in-memory values
+    /// back — they are what the session is running with — and tell the user instead of silently accepting the tamper.
+    /// </summary>
+    private void OnSettingsChangedExternally()
+    {
+        Dispatcher.BeginInvoke(new Action(() =>
+        {
+            if (_services?.GetService<SettingsHolder>() is not { } holder
+                || _services.GetService<SettingsApplier>() is not { } applier) return;
+
+            applier.Apply(holder.Current);
+            _noticeCoordinator?.Post(new IslandEvent.NoticeRaised(new Notice(
+                "Configuração alterada por fora",
+                "As configurações em vigor foram reaplicadas; edite pela ilha.",
+                "timer",
+                Urgent: true)));
+        }));
     }
 
     /// <summary>
@@ -390,17 +569,19 @@ public partial class App : System.Windows.Application
         return timer.Remaining + timer.PlanBreakDuration;
     }
 
-    /// <summary>Fully blocks the phone through a focus and all but the final minute of its automatically timed break.</summary>
+    private static readonly TimeSpan PhoneFreeBreakTail = TimeSpan.FromMinutes(3);
+
+    /// <summary>Fully blocks the phone through a focus and all but the final three minutes of its automatically timed break.</summary>
     private static TimeSpan PhoneSpanFromFocus(PomodoroTimer timer)
     {
         TimeSpan remaining = timer.Remaining;
         if (!timer.PlanActive || !timer.AutoAdvance) return remaining;
-        return remaining + TimeSpan.FromTicks(Math.Max(0, timer.PlanBreakDuration.Ticks - TimeSpan.FromMinutes(1).Ticks));
+        return remaining + TimeSpan.FromTicks(Math.Max(0, timer.PlanBreakDuration.Ticks - PhoneFreeBreakTail.Ticks));
     }
 
-    /// <summary>Leaves only the final minute of a running break available on the phone.</summary>
+    /// <summary>Leaves the final three minutes of a running break available on the phone.</summary>
     private static TimeSpan PhoneSpanFromBreak(TimeSpan remaining) =>
-        remaining > TimeSpan.FromMinutes(1) ? remaining - TimeSpan.FromMinutes(1) : TimeSpan.Zero;
+        remaining > PhoneFreeBreakTail ? remaining - PhoneFreeBreakTail : TimeSpan.Zero;
 
     /// <summary>Quit from the island menu or tray. An active Angry session must finish or be unlocked during a focus first.</summary>
     private async void RequestQuit()
@@ -451,6 +632,8 @@ public partial class App : System.Windows.Application
         {
             if (!launched)
             {
+                // The update did not happen: put the guard back on this still-running session.
+                _liveState?.EnsureGuardian();
                 _quickNotesWindowManager?.SetEditingEnabled(true);
                 if (_quickNotesWindowManager?.HasSaveError == true) _quickNotesWindowManager.OpenNotes();
             }
@@ -467,6 +650,11 @@ public partial class App : System.Windows.Application
     /// </summary>
     private bool PrepareForUpdate(JsonAngryResumeStore angryResume)
     {
+        // The update replaces the executable: the guardian must not reopen the old one mid-replacement (the new process
+        // starts its own guardian when it restores the session). The live state is flushed before the save so a failed
+        // update still has a fresh fallback.
+        _liveState?.StopGuardian();
+        _liveState?.Flush();
         if (_angry?.CaptureSession() is not { } session) return ConfirmNotLocked();
         return angryResume.TrySave(session, DateTimeOffset.Now) || ConfirmNotLocked();
     }
@@ -531,7 +719,10 @@ public partial class App : System.Windows.Application
             var updates = _services!.GetRequiredService<IUpdateService>();
             var svm = new SettingsViewModel(holder.Current, names, applier.Apply, (span, token) => phone.NotifyAsync(span, token),
                 () => CheckForUpdatesAsync(updates), () => holder.Current,
-                _services!.GetRequiredService<PomodoroSoundPlayer>().Play);
+                _services!.GetRequiredService<PomodoroSoundPlayer>().Play,
+                securityLocked: () => _angry?.IsSessionActive == true,
+                // Turning the phone block off outside a session needs a typed phrase (PC-02): one click is not enough.
+                confirmSecurityChange: () => SecurityConfirmWindow.Confirm(_settingsWindow, "desligar o bloqueio do celular"));
             _settingsWindow = new SettingsWindow(svm);
             // Closing really closes it, so its visual tree is freed instead of sitting hidden for the app's lifetime.
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;
@@ -641,6 +832,10 @@ public partial class App : System.Windows.Application
         SystemEvents.TimeChanged -= OnSystemTimeChanged;
         _demoTimer?.Stop();
         _soak?.Dispose();
+        _liveState?.Dispose();
+        _ackListener?.AckReceived -= OnPhoneAckReceived;
+        _ackListener?.Dispose();
+        _settingsTamperWatch?.Dispose();
         _hotkey?.Dispose();
         _quickNotesHotkey?.Dispose();
         _tray?.Dispose();

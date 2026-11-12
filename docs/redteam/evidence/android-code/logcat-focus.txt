@@ -1,0 +1,589 @@
+--------- beginning of main
+11-11 13:52:49.379 16041 16043 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:52:50.403  1867  1867 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:52:50.441 16046 16046 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:52:50.750 16058 16060 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:52:50.950 16061 16061 D ip_monitor-649: 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 PROBE
+11-11 13:52:50.976 16062 16062 D ip_monitor-649: 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 REACHABLE
+11-11 13:52:52.246 16073 16075 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+--------- beginning of system
+11-11 13:52:53.421   965   991 E Watchdog: WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:52:53.421   965   991 E Watchdog: WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:52:53.714   965   994 W ProcessCpuTracker: Failed to stat(/proc/16088): android.system.ErrnoException: stat failed: ENOENT (No such file or directory)
+11-11 13:52:53.715   965   994 W ProcessCpuTracker: Skipping unknown process pid 16088
+11-11 13:52:53.715   965   994 W ProcessCpuTracker: Failed to stat(/proc/16090): android.system.ErrnoException: stat failed: ENOENT (No such file or directory)
+11-11 13:52:53.715   965   994 W ProcessCpuTracker: Skipping unknown process pid 16090
+11-11 13:52:55.170 16103 16105 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:52:55.415  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:52:57.097 16122 16122 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:52:57.982 16133 16135 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:52:59.353 16146 16148 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:00.285  1349  1349 D BatteryMeterDrawable: Screen is off, stop charging anim
+11-11 13:53:00.285  1349  1349 I chatty  : uid=10234(com.android.systemui) identical 1 line
+11-11 13:53:00.285  1349  1349 D BatteryMeterDrawable: Screen is off, stop charging anim
+11-11 13:53:00.739 16163 16165 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:02.474 16183 16183 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router PROBE
+11-11 13:53:02.501 16184 16184 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:53:05.277 16208 16210 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:05.544 16211 16211 D ip_monitor-649: 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 STALE
+11-11 13:53:09.440 16248 16250 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:10.451  1867  1867 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:53:10.837 16261 16263 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:12.209 16275 16277 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:13.593 16288 16290 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:13.808   965   965 I JobServiceContext: Client timed out while executing (no jobFinished received), sending onStop: dd9a2d0 #u0a316/784194502 com.garageapp.alarmchallenges/com.startapp.sdk.jobs.SchedulerService
+11-11 13:53:14.822 16298 16300 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:14.949 16306 16310 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:15.072 16320 16322 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:15.179   965  2648 V UserManagerService: dumpPackageWhitelistProblems(): using mode ENFORCE|IMPLICIT_WHITELIST
+11-11 13:53:16.061  1867 15968 I ChimeraPrvdrProxy: Shutting down chimera ContentProvider com.google.android.gms.reminders.provider.RemindersChimeraProvider
+11-11 13:53:16.392 16345 16347 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:17.834 16361 16364 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:18.090 16365 16365 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:53:20.805 16389 16391 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:23.423   965   991 E Watchdog: WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:53:23.423   965   991 E Watchdog: WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:53:25.433 16428 16430 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:26.971 16441 16443 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:28.444 16454 16456 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:30.567   965  1286 D DeviceStorageMonitorService: updateStateEx oldLevel = 0, newLevel = 0
+11-11 13:53:31.278 16480 16482 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:32.706 16493 16495 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:34.117 16506 16508 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:36.942 16532 16534 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:38.054 16538 16538 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:53:39.730 16559 16561 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:44.573 16604 16606 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:46.151 16618 16620 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:48.553 16634 16634 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:53:50.522 16662 16664 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:51.977 16675 16679 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:53.424   965   991 E Watchdog: WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:53:53.424   965   991 E Watchdog: WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:53:54.818 16713 16715 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:56.140 14744 14795 I PlayCommon: [4485] Preparing logs for uploading
+11-11 13:53:56.147 14744 14795 I PlayCommon: [4485] Connecting to server for timestamp: https://play.googleapis.com/play/log/timestamp
+11-11 13:53:56.231 16729 16732 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:53:56.869 14744 14795 I PlayCommon: [4485] Connecting to server: https://play.googleapis.com/play/log?format=raw&proto_v2=true
+11-11 13:53:57.194 14744 14795 I PlayCommon: [4485] Successfully uploaded logs.
+11-11 13:53:57.247 16735 16735 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:53:57.614 16744 16746 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:00.283  1349  1349 D BatteryMeterDrawable: Screen is off, stop charging anim
+11-11 13:54:00.283  1349  1349 I chatty  : uid=10234(com.android.systemui) identical 1 line
+11-11 13:54:00.283  1349  1349 D BatteryMeterDrawable: Screen is off, stop charging anim
+11-11 13:54:00.402 16770 16772 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:01.353 16773 16773 D ip_monitor-649: 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 REACHABLE
+11-11 13:54:01.895 16784 16786 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:03.432 16803 16805 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:05.958 16823 16823 D ip_monitor-649: 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 STALE
+11-11 13:54:06.366 16833 16836 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:09.139 16862 16864 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:10.530 16877 16879 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:11.594 16886 16886 D ip_monitor-649: 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 PROBE
+11-11 13:54:11.621 16887 16887 D ip_monitor-649: 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 REACHABLE
+11-11 13:54:11.914 16896 16898 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:12.617 16899 16899 D ip_monitor-649: fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:54:13.667  1349  1349 D KeyguardStatusView: refeshFormat mClockView.getText() = 1354
+11-11 13:54:13.671  1349  1349 D KeyguardStatusView: refreshTime mClockView.getText() = 1354
+11-11 13:54:13.726  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.semanticlocationhistory.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:54:13.802 32608 32646 W fbservices-stub:NotificationDeliveryStorePreferences: [AI] Failed to deserialize notification item
+11-11 13:54:13.802 32608 32646 W fbservices-stub:NotificationDeliveryStorePreferences: [AI] Failed to deserialize notification item
+11-11 13:54:13.806  1867 16913 E WorkSourceUtil: Could not find package: com.google.android.gms.westworld
+11-11 13:54:13.889  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.scheduler.standalone.housekeeping.HousekeepingTrainTaskService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentInternalBoundBrokerService }
+11-11 13:54:13.891  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:13.920  1867 16916 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.005  1867 16918 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.011  1867 16919 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.109  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.128  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.174  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.186  1867 16919 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.253  1867 16917 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.262  1867 16918 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.306  1867 16917 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.316  1867 16919 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.462  1867 16919 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.462  1867 16919 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.494  1867 16929 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.523  1867 30909 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=IpaAppsCorpus serviceId=32
+11-11 13:54:14.546  1867 30909 I Icing   : Query from package: com.google.android.gms, component: IpaAppsCorpus, restrict package: com.google.android.gms, start: 0, num: 100
+11-11 13:54:14.553  1867 14038 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=null serviceId=30
+11-11 13:54:14.564  1867 16929 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.572  1867 16932 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.579  1867 16935 I GmscoreIpa: Starting mediastore batch index [CONTEXT service_id=255 ]
+11-11 13:54:14.584  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+11-11 13:54:14.628  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.bankscamwarning.mdd.BankScamWarningMddFileProcessingService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:14.643  1867 16933 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.643  1867 16938 I BankScamMddFileProcSvc: MDD file processing service started. [CONTEXT service_id=435 ]
+11-11 13:54:14.653  1867 16933 I BankScamMddFileProcess: Starting to process downloaded files [CONTEXT service_id=435 ]
+11-11 13:54:14.673  1867 16933 I BankScamMddFileProcess: No new version detected for bank scam warning MDD [CONTEXT service_id=435 ]
+11-11 13:54:14.676  1867 16938 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.677  1867  1867 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.bankscamwarning.mdd.BankScamWarningMddFileProcessingService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:14.677  1867 16932 I GmscoreIpa: (REDACTED) Bulk mediastore status = %b
+11-11 13:54:14.711  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.location.service.drivingmode.DrivingModeLoggerService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentInternalBoundBrokerService }
+11-11 13:54:14.712  1867 16916 I Icing   : Usage reports ok 1, Failed Usage reports 0, indexed 0, rejected 0
+11-11 13:54:14.714  1867 16932 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:14.728  1867 16916 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+11-11 13:54:14.747  1867 16937 W ChimeraUtils: Module com.google.android.gms.location__nonwearable missing resource location_module_display_name(0)
+11-11 13:54:14.775  1867 16938 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.777  1867  1867 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.location.service.drivingmode.DrivingModeLoggerService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentInternalBoundBrokerService }
+11-11 13:54:14.782  1867 16933 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:14.797   965  2660 D CompatibilityChangeReporter: Compat change id reported: 149924527; UID 10194; state: ENABLED
+11-11 13:54:14.799  1867 16937 D SQLiteOpenHelper: SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:54:14.803   965  2660 D CompatibilityChangeReporter: Compat change id reported: 132649864; UID 10194; state: DISABLED
+11-11 13:54:14.823  1867 16932 I GmscoreIpa: (REDACTED) Batch indexing status=%b
+11-11 13:54:15.103  1867  1867 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.bankscamwarning.mdd.BankScamWarningMddDownloadScheduleService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:15.103  1867  1867 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.bankscamwarning.mdd.BankScamWarningMddDownloadScheduleService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:15.114  1867 16938 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.114  1867 16938 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.116  1867 16929 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.119  1867 16933 I BankScamMddDownloadSvc: Starting MDD download schedule service. [CONTEXT service_id=435 ]
+11-11 13:54:15.123  1867 16938 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.173  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.178  1867 16915 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.180  1867  1867 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.bankscamwarning.mdd.BankScamWarningMddDownloadScheduleService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:15.184  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.278  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.324  1867 16933 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.342  1867 29004 E fwcj    : DataFileGroupValidator Group name missing in added group
+11-11 13:54:15.350  1867 29004 I chatty  : uid=10194(com.google.android.gms) highpool[244] identical 15 lines
+11-11 13:54:15.350  1867 29004 E fwcj    : DataFileGroupValidator Group name missing in added group
+11-11 13:54:15.351  1867 29004 E fwcj    : FileGroupManager: Trying to add expired group enpromo-state-config.
+11-11 13:54:15.352  1867 29004 W fwcj    : MDDManager class fvkd
+11-11 13:54:15.352  1867 29004 E fwcj    : DataFileGroupValidator Group name missing in added group
+11-11 13:54:15.353  1867 29004 E fwcj    : DataFileGroupValidator Group name missing in added group
+11-11 13:54:15.358  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.semanticlocation.mdd.MddDownloadScheduleService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:15.359  1867 16929 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.366  1867 16929 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.371  1867 16938 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.374  1867  1867 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.semanticlocation.mdd.MddDownloadScheduleService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:15.484  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.backup.transport.scheduling.RequireWifiAndChargingBackupTask.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:15.485  1867 16938 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.485  1867 16938 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.489  1867 16933 I AndroidBackupEventsLogg: (REDACTED) Logging with sampling event %s
+11-11 13:54:15.489  1867 29004 E fwcj    : DataFileGroupValidator Group name missing in added group
+11-11 13:54:15.493  1867 29004 I chatty  : uid=10194(com.google.android.gms) highpool[244] identical 15 lines
+11-11 13:54:15.493  1867 29004 E fwcj    : DataFileGroupValidator Group name missing in added group
+11-11 13:54:15.494  1867 29004 E fwcj    : FileGroupManager: Trying to add expired group enpromo-state-config.
+11-11 13:54:15.494  1867 29004 W fwcj    : MDDManager class fvkd
+11-11 13:54:15.494  1867 29004 E fwcj    : DataFileGroupValidator Group name missing in added group
+11-11 13:54:15.494  1867 29004 E fwcj    : DataFileGroupValidator Group name missing in added group
+11-11 13:54:15.501  1867 16938 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.507  1867 16933 I Backup  : [RequireWifiAndChargingBackupTask] Starting IntentOperation
+11-11 13:54:15.513  1867 16913 I Backup  : [ScheduledBackUpNowIntentOperation] Starting operation
+11-11 13:54:15.514  1867 15968 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.515  1867  1867 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.backup.transport.scheduling.RequireWifiAndChargingBackupTask.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:15.515  1867 16913 I Backup  : [ScheduledBackUpNowIntentOperation] Requesting backup
+11-11 13:54:15.554  1867 15968 I Backup  : [BackUpNowOperation] Running
+11-11 13:54:15.557  1867 15968 I AndroidBackupEventsLogg: (REDACTED) Logging with sampling event %s
+11-11 13:54:15.559  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.572  1867 15968 W ChimeraUtils: Module com.google.android.gms.backup_settings missing resource null(0)
+11-11 13:54:15.580  1867 15968 W ChimeraUtils: Module com.google.android.gms.backup_settings missing resource null(0)
+11-11 13:54:15.585  1867 16933 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.585  1867 16933 I TelephonySpamChimeraSer: Running Telephony Spam Chimera Service [CONTEXT service_id=150 ]
+11-11 13:54:15.589  1867 16933 I TelephonySpamChimeraSer: Cleaning SIP Header local table of old entries [CONTEXT service_id=150 ]
+11-11 13:54:15.591  1867 16933 I SpamListSync: Call spam module disabled. Skipping cleaning cache sip header table. [CONTEXT service_id=150 ]
+11-11 13:54:15.592  1867 16933 I TelephonySpamChimeraSer: Syncing Call Spam List [CONTEXT service_id=150 ]
+11-11 13:54:15.592  1867 16933 I SpamListSync: (REDACTED) SpamListSyncChimeraService.syncSpamList called with tag: %s, extras: %s
+11-11 13:54:15.593  1867 16933 I SpamListSync: Call spam module disabled. Skipping spam list syncing. [CONTEXT service_id=150 ]
+11-11 13:54:15.607  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.617  1867 16915 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.619  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.636  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.networkstack.tethering, it's a first party app.
+11-11 13:54:15.640  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.fmradio, it's a first party app.
+11-11 13:54:15.645  1867 15968 I Backup  : [EligibilityFilter] Checking if installed version of com.google.android.apps.subscriptions.red (677878) > min allowed (0) for full-data backup
+11-11 13:54:15.645  1867 15968 I Backup  : [EligibilityFilter] Accepting com.google.android.apps.subscriptions.red, version allowed for full-data backup.
+11-11 13:54:15.649  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.cts.priv.ctsshim, it's a first party app.
+11-11 13:54:15.654  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.inputdevices.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:15.659  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.externalstorage.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:15.663  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.apps.labs.language.tailwind, it's a first party app.
+11-11 13:54:15.667  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.display.cutout.emulation.corner, it's a first party app.
+11-11 13:54:15.676  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.ext.services, it's a first party app.
+11-11 13:54:15.685  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.display.cutout.emulation.double, it's a first party app.
+11-11 13:54:15.693  1867 15968 I Backup  : [EligibilityFilter] Checking if installed version of com.android.providers.telephony (30) > min allowed (0) for full-data backup
+11-11 13:54:15.694  1867 15968 I Backup  : [EligibilityFilter] Accepting com.android.providers.telephony, version allowed for full-data backup.
+11-11 13:54:15.697  1867 16933 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.698  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.dynsystem, it's a first party app.
+11-11 13:54:15.700  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.703  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon.pebble, it's a first party app.
+11-11 13:54:15.705  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.708  1867 15968 I Backup  : [EligibilityFilter] Checking if installed version of com.google.android.googlequicksearchbox (301832738) > min allowed (301620758) for full-data backup
+11-11 13:54:15.708  1867 15968 I Backup  : [EligibilityFilter] Accepting com.google.android.googlequicksearchbox, version allowed for full-data backup.
+11-11 13:54:15.712  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.cellbroadcastservice, it's a first party app.
+11-11 13:54:15.719  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.calendar, it's a first party app.
+11-11 13:54:15.728  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.apps.googleassistant, it's a first party app.
+11-11 13:54:15.733  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.media, it's a first party app.
+11-11 13:54:15.737  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.networkstack.tethering.overlay, it's a first party app.
+11-11 13:54:15.741  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.742  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.onetimeinitializer, it's a first party app.
+11-11 13:54:15.746  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.ext.shared, it's a first party app.
+11-11 13:54:15.747  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.756  1867 16607 I PlayCore: UID: [10194]  PID: [1867] StandardIntegrity : warmUpIntegrityToken(235659994165)
+11-11 13:54:15.756  1867  9427 I PlayCore: UID: [10194]  PID: [1867] StandardIntegrity : Initiate binding to the service.
+11-11 13:54:15.757  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.systemui.navbar.gestural_wide_back, it's a first party app.
+11-11 13:54:15.776  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.mtp.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:15.781  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.wallpapercropper, it's a first party app.
+11-11 13:54:15.782  1867 16933 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.785  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon.vessel, it's a first party app.
+11-11 13:54:15.789  1867 16933 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.789  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.color.cinnamon, it's a first party app.
+11-11 13:54:15.794  1867  1867 I PlayCore: UID: [10194]  PID: [1867] StandardIntegrity : ServiceConnectionImpl.onServiceConnected(ComponentInfo{com.android.vending/com.google.android.finsky.expressintegrityservice.ExpressIntegrityService})
+11-11 13:54:15.794  1867  9427 I PlayCore: UID: [10194]  PID: [1867] StandardIntegrity : linkToDeath
+11-11 13:54:15.798  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.rounded.systemui, it's a first party app.
+11-11 13:54:15.808  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon.taperedrect, it's a first party app.
+11-11 13:54:15.813  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.wifi.resources.overlay, it's a first party app.
+11-11 13:54:15.823  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.simappdialog.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:15.824  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.828  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.cellbroadcast.overlay, it's a first party app.
+11-11 13:54:15.834  1867 16607 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.838  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.externalstorage, it's a first party app.
+11-11 13:54:15.846  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.htmlviewer, it's a first party app.
+11-11 13:54:15.863  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.companiondevicemanager, it's a first party app.
+11-11 13:54:15.868  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.wallpaper, it's a first party app.
+11-11 13:54:15.875  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.mms.service, it's a first party app.
+11-11 13:54:15.882  1867 16933 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:15.884  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.downloads, it's a first party app.
+11-11 13:54:15.889  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.quicksearchbox, it's a first party app.
+11-11 13:54:15.889 14744 14787 W CursorWindow: Window is full: requested allocation 41 bytes, free space 18 bytes, window size 2097152 bytes
+11-11 13:54:15.889  1867 16933 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:15.898  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.bluetooth.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:15.905  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.systemui.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:15.915  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.networkstack.tethering.overlay, it's a first party app.
+11-11 13:54:15.925  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.rounded.android, it's a first party app.
+11-11 13:54:15.930  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.emergency, it's a first party app.
+11-11 13:54:15.941  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.dreams.overlay.phototable, it's a first party app.
+11-11 13:54:15.945  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.shell.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:15.956   965  1253 D performance: handleVmpressure, swap:61 pressure:0 thrashing:-1
+11-11 13:54:15.960  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.downloads.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:15.964  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.verifier, it's a first party app.
+11-11 13:54:15.972  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.dynamiciconconfig, it's a first party app.
+11-11 13:54:15.981  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.circular.themepicker, it's a first party app.
+11-11 13:54:15.986  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.configupdater, it's a first party app.
+11-11 13:54:15.990  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.providers.media.module, it's a first party app.
+11-11 13:54:15.994  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.logmanager, it's a first party app.
+11-11 13:54:15.999  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.modules.permissioncontroller, it's a first party app.
+11-11 13:54:16.002 14744 14788 I Finsky  : [4478] SCH: Received scheduling request: Id: 60-1057855350, Constraints: [{ L: 15000, D: 3600000, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:54:16.003  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.systemui.plugin.globalactions.wallet.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.009  1867  2675 I PlayCore: UID: [10194]  PID: [1867] OnWarmUpIntegrityTokenCallback : onWarmUpExpressIntegrityToken
+11-11 13:54:16.009  1867  9427 I PlayCore: UID: [10194]  PID: [1867] StandardIntegrity : Unbind from service.
+11-11 13:54:16.029  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.systemui.plugin.globalactions.wallet, it's a first party app.
+11-11 13:54:16.033  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.ar.core, it's a first party app.
+11-11 13:54:16.038  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.downloads.ui, it's a first party app.
+11-11 13:54:16.042  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.pacprocessor, it's a first party app.
+11-11 13:54:16.043 14744 14788 D SQLiteOpenHelper: SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:54:16.047  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.simappdialog, it's a first party app.
+11-11 13:54:16.052  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.calendar.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.056  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.stk.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.060  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.settings, it's a first party app.
+11-11 13:54:16.065  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.display.cutout.emulation.hole, it's a first party app.
+11-11 13:54:16.069  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.display.cutout.emulation.tall, it's a first party app.
+11-11 13:54:16.073  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.networkstack.overlay, it's a first party app.
+11-11 13:54:16.078  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.blockednumber.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.078 16971 16973 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:54:16.083  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.certinstaller, it's a first party app.
+11-11 13:54:16.085  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:16.087  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.color.black, it's a first party app.
+11-11 13:54:16.092  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.modemnotifier.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.098  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.color.green, it's a first party app.
+11-11 13:54:16.102  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.color.ocean, it's a first party app.
+11-11 13:54:16.107  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.color.space, it's a first party app.
+11-11 13:54:16.111  1867 16932 I NetworkScheduler.Stats: (REDACTED) HousekeepingTask %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:16.113  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.systemui.navbar.threebutton, it's a first party app.
+11-11 13:54:16.122  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.apps.work.oobconfig, it's a first party app.
+11-11 13:54:16.127  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.camera2, it's a first party app.
+11-11 13:54:16.132  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.cellbroadcastservice.overlay, it's a first party app.
+11-11 13:54:16.154  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.threadnetwork.credentials.firstparty.BorderRouterSyncBoundService.ACTION_TASK_READY dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+11-11 13:54:16.155  1867 16932 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:16.156  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.rounded.launcher, it's a first party app.
+11-11 13:54:16.158  1867 16944 I GmsThreadNetwork: [BorderRouterSyncBoundService] Border Router sync service run task [CONTEXT service_id=305 ]
+11-11 13:54:16.171  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.egg, it's a first party app.
+11-11 13:54:16.183  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.mtp, it's a first party app.
+11-11 13:54:16.187  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.ons, it's a first party app.
+11-11 13:54:16.190  1867 16944 I GmsThreadNetwork: [BorderRouterSynchronizer] Start syncing 1P Border Routers [CONTEXT service_id=305 ]
+11-11 13:54:16.192  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.stk, it's a first party app.
+11-11 13:54:16.197  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.phone.injection, it's a first party app.
+11-11 13:54:16.202  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.backupconfirm, it's a first party app.
+11-11 13:54:16.214  1867  1953 I MdnsServiceBrowser: (REDACTED) registering %s
+11-11 13:54:16.219  1867 16977 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:16.219  1867 16607 I GmsThreadNetwork: [BorderAgentScannerImpl] Started mDNS service browser [CONTEXT service_id=305 ]
+11-11 13:54:16.224  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.systemui.auto_generated_rro_vendor__, it's a first party app.
+11-11 13:54:16.230  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.printspooler.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.235  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.statementservice, it's a first party app.
+11-11 13:54:16.240  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.carrier, it's a first party app.
+11-11 13:54:16.244  1867 15968 I Backup  : [EligibilityFilter] Checking if installed version of com.google.android.apps.tachyon (7795081) > min allowed (0) for full-data backup
+11-11 13:54:16.245  1867 15968 I Backup  : [EligibilityFilter] Accepting com.google.android.apps.tachyon, version allowed for full-data backup.
+11-11 13:54:16.250  1867 16938 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.250  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.gmsconfig.common, it's a first party app.
+11-11 13:54:16.260   965  1253 D performance: handleVmpressure, swap:62 pressure:2 thrashing:-1
+11-11 13:54:16.262  1867 17957 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.266   965  1279 D ConnectivityService: NetworkReassignment : no changes
+11-11 13:54:16.269  1867  2077 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.278  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.settings.intelligence, it's a first party app.
+11-11 13:54:16.281   965  1223 I WifiService: acquireMulticastLock uid=10194
+11-11 13:54:16.285  1464  1669 D IpClient.wlan0: set max DTIM multiplier to 1
+11-11 13:54:16.287  1867 17957 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.287  1867 17957 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.288  1449  1449 E wpa_supplicant: Unknown driver cmd: RXFILTER-STOP
+11-11 13:54:16.289  1449  1449 E wpa_supplicant: Unknown driver cmd: RXFILTER-ADD 2
+11-11 13:54:16.289  1449  1449 E wpa_supplicant: Unknown driver cmd: RXFILTER-START
+11-11 13:54:16.290  1867 16988 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.291  1867 16988 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.291  1867 16986 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.292  1867 16986 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.292  1867 17957 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:16.292  1867  1867 I GmsThreadNetwork: (REDACTED) [BorderAgentScannerImpl] Sent Border Agent mDNS service query (transactionId = %d)
+11-11 13:54:16.296  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.systemui.navbar.gestural_extra_wide_back, it's a first party app.
+11-11 13:54:16.301  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.fmradio, it's a first party app.
+11-11 13:54:16.306  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.permissioncontroller, it's a first party app.
+11-11 13:54:16.323  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.setupwizard, it's a first party app.
+11-11 13:54:16.327  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.nfc.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.331  1867 16987 W AOSP-MdnsDiscoveryManag: Error while decoding multicast packet (284): 1 [CONTEXT service_id=168 ]
+11-11 13:54:16.332  1867 16987 W AOSP-MdnsDiscoveryManag: Error while decoding multicast packet (285): 1 [CONTEXT service_id=168 ]
+11-11 13:54:16.337  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.printspooler, it's a first party app.
+11-11 13:54:16.342  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.emergency.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.348  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.filled.settings, it's a first party app.
+11-11 13:54:16.350 14744 14777 I Finsky  : [4468] WM::SCH: Logging work initialize for 60-1057855350
+11-11 13:54:16.354  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.dreams.basic, it's a first party app.
+11-11 13:54:16.358 14744 14786 I Finsky  : [4476] SCH: Scheduling phonesky job Id: 60-1057855350, CT: 1794416056002, Constraints: [{ L: 15000, D: 3600000, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:54:16.363  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.settings.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.365 14744 14788 I Finsky  : [4478] SCH: Scheduling 1 system job(s)
+11-11 13:54:16.365 14744 14788 I Finsky  : [4478] SCH: Scheduling system job Id: 9046, L: 14637, D: 3599637, C: false, I: false, N: 1
+11-11 13:54:16.368  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.modules.ext.services, it's a first party app.
+11-11 13:54:16.373  1867  1867 I GmsThreadNetwork: (REDACTED) [BorderAgentScannerImpl] Failed to parse mDNS response (receivedPacketNumber = %d, errorCode = %d)
+11-11 13:54:16.374  1867  1867 I GmsThreadNetwork: (REDACTED) [BorderAgentScannerImpl] Failed to parse mDNS response (receivedPacketNumber = %d, errorCode = %d)
+11-11 13:54:16.374  1867 16915 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:16.379  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.se, it's a first party app.
+11-11 13:54:16.384  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.inputdevices, it's a first party app.
+11-11 13:54:16.392  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.traceur.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.397  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.messaging, it's a first party app.
+11-11 13:54:16.400  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.gmsconfig.photos, it's a first party app.
+11-11 13:54:16.408  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.bips, it's a first party app.
+11-11 13:54:16.417  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.captiveportallogin, it's a first party app.
+11-11 13:54:16.422  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.circular.settings, it's a first party app.
+11-11 13:54:16.426  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.unisoc.telephony.server, it's a first party app.
+11-11 13:54:16.431  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.gmsconfig.comms, it's a first party app.
+11-11 13:54:16.436  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.musicfx, it's a first party app.
+11-11 13:54:16.443  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.apps.bard, it's a first party app.
+11-11 13:54:16.447  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.modulemetadata, it's a first party app.
+11-11 13:54:16.451  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.partnerbookmarksoverlay, it's a first party app.
+11-11 13:54:16.454  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.settings.auto_generated_rro_vendor__, it's a first party app.
+11-11 13:54:16.458  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.cellbroadcastreceiver, it's a first party app.
+11-11 13:54:16.463  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.webview, it's a first party app.
+11-11 13:54:16.467  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon.teardrop, it's a first party app.
+11-11 13:54:16.471  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.modules.documentsui, it's a first party app.
+11-11 13:54:16.475  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.networkstack, it's a first party app.
+11-11 13:54:16.483  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.contactkeys, it's a first party app.
+11-11 13:54:16.488  1867 15968 I Backup  : [EligibilityFilter] Checking if installed version of com.google.android.apps.fitness (2027371825) > min allowed (0) for full-data backup
+11-11 13:54:16.488  1867 15968 I Backup  : [EligibilityFilter] Accepting com.google.android.apps.fitness, version allowed for full-data backup.
+11-11 13:54:16.492  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.server.telecom, it's a first party app.
+11-11 13:54:16.496  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.syncadapters.contacts, it's a first party app.
+11-11 13:54:16.503  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.rounded.themepicker, it's a first party app.
+11-11 13:54:16.505  1867 16932 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:16.509  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.keychain, it's a first party app.
+11-11 13:54:16.513  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.server.telecom.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.517  1867 15968 I Backup  : [EligibilityFilter] Checking if installed version of com.google.android.calculator (85022643) > min allowed (0) for full-data backup
+11-11 13:54:16.517  1867 15968 I Backup  : [EligibilityFilter] Accepting com.google.android.calculator, version allowed for full-data backup.
+11-11 13:54:16.530  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.htmlviewer.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.535  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.gallery3d, it's a first party app.
+11-11 13:54:16.541  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.bips.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.546  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.filled.systemui, it's a first party app.
+11-11 13:54:16.555  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.packageinstaller, it's a first party app.
+11-11 13:54:16.560   965  1253 D performance: handleVmpressure, swap:63 pressure:2 thrashing:-1
+11-11 13:54:16.568  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.gsf, it's a first party app.
+11-11 13:54:16.573  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.ims, it's a first party app.
+11-11 13:54:16.578  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.tag, it's a first party app.
+11-11 13:54:16.584  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.wifi.resources, it's a first party app.
+11-11 13:54:16.589  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.gmsintegration, it's a first party app.
+11-11 13:54:16.600  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.partnersetup, it's a first party app.
+11-11 13:54:16.610  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.localtransport, it's a first party app.
+11-11 13:54:16.620  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.gmsconfig.gsa, it's a first party app.
+11-11 13:54:16.626  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.carrierdefaultapp, it's a first party app.
+11-11 13:54:16.637  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.font.notoserifsource, it's a first party app.
+11-11 13:54:16.642  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.filled.android, it's a first party app.
+11-11 13:54:16.648  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.proxyhandler, it's a first party app.
+11-11 13:54:16.658  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.safetycenter.resources, it's a first party app.
+11-11 13:54:16.663  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.display.cutout.emulation.waterfall, it's a first party app.
+11-11 13:54:16.667  1867 16938 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:16.669  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.settings.intelligence.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.673  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.circular.systemui, it's a first party app.
+11-11 13:54:16.678  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.inputmethod.latin, it's a first party app.
+11-11 13:54:16.684  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.backupconfirm.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.689  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.connectivity.resources, it's a first party app.
+11-11 13:54:16.694  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.modules.permissioncontroller.forframework, it's a first party app.
+11-11 13:54:16.702  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.contacts.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.707  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.feedback, it's a first party app.
+11-11 13:54:16.712  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.printservice.recommendation, it's a first party app.
+11-11 13:54:16.717  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.carrierdefaultapp.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.722  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.managedprovisioning, it's a first party app.
+11-11 13:54:16.731  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.launcher3, it's a first party app.
+11-11 13:54:16.741  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.soundpicker, it's a first party app.
+11-11 13:54:16.752  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.fmradio.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.757  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.dreams.phototable, it's a first party app.
+11-11 13:54:16.763  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.dreams.basic.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.769  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.mainline.telemetry, it's a first party app.
+11-11 13:54:16.802  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.downloads.ui.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.812  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.partnerbookmarks, it's a first party app.
+11-11 13:54:16.817  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.smspush, it's a first party app.
+11-11 13:54:16.822  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.wallpaper.livepicker, it's a first party app.
+11-11 13:54:16.828  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.vpndialogs.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.834  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.camera2, it's a first party app.
+11-11 13:54:16.841  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.phone.auto_generated_rro_vendor__, it's a first party app.
+11-11 13:54:16.860   965  1253 D performance: handleVmpressure, swap:63 pressure:2 thrashing:-1
+11-11 13:54:16.862  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.companiondevicemanager.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.867  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon.squircle, it's a first party app.
+11-11 13:54:16.872  1867 16977 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:16.873  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.email, it's a first party app.
+11-11 13:54:16.878  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.music, it's a first party app.
+11-11 13:54:16.891  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.networkstack.permissionconfig, it's a first party app.
+11-11 13:54:16.900  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.storagemanager, it's a first party app.
+11-11 13:54:16.907  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.bookmarkprovider, it's a first party app.
+11-11 13:54:16.912  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.networkstack.overlay, it's a first party app.
+11-11 13:54:16.916  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.filled.launcher, it's a first party app.
+11-11 13:54:16.926  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.contacts, it's a first party app.
+11-11 13:54:16.936  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.safetycore, it's a first party app.
+11-11 13:54:16.941  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.cts.ctsshim, it's a first party app.
+11-11 13:54:16.950  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.wallpapercropper.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:16.954  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.overlay.modules.modulemetadata.forframework, it's a first party app.
+11-11 13:54:16.967  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.dreams.overlay.basic, it's a first party app.
+11-11 13:54:16.978  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.circular.launcher, it's a first party app.
+11-11 13:54:16.984  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.vpndialogs, it's a first party app.
+11-11 13:54:17.000  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.phone, it's a first party app.
+11-11 13:54:17.005  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.shell, it's a first party app.
+11-11 13:54:17.015  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.filled.themepicker, it's a first party app.
+11-11 13:54:17.021  1867 15968 I Backup  : [EligibilityFilter] Checking if installed version of com.android.wallpaperbackup (30) > min allowed (0) for full-data backup
+11-11 13:54:17.021  1867 15968 I Backup  : [EligibilityFilter] Accepting com.android.wallpaperbackup, version allowed for full-data backup.
+11-11 13:54:17.026  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.settings.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:17.033  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.emergency, it's a first party app.
+11-11 13:54:17.043  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.gallery3d, it's a first party app.
+11-11 13:54:17.049  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.camera2.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:17.063  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.hotspot2.osulogin, it's a first party app.
+11-11 13:54:17.068  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.gms.location.history, it's a first party app.
+11-11 13:54:17.073  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.systemui.navbar.gestural, it's a first party app.
+11-11 13:54:17.077  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.calendar, it's a first party app.
+11-11 13:54:17.082  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.location.fused, it's a first party app.
+11-11 13:54:17.089  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.color.orchid, it's a first party app.
+11-11 13:54:17.092  1867 16975 I m54.awnu: (REDACTED) %s: Account was not provided, skipping private sync for corpus: %s, configuration: %s
+11-11 13:54:17.094  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.color.purple, it's a first party app.
+11-11 13:54:17.098  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.bluetoothmidiservice, it's a first party app.
+11-11 13:54:17.113  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.traceur, it's a first party app.
+11-11 13:54:17.117  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.storagemanager.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:17.123  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.overlay.dialer, it's a first party app.
+11-11 13:54:17.129  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.modemnotifier, it's a first party app.
+11-11 13:54:17.134  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.phone.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:17.139  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.soundpicker.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:17.141  1867  1867 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.auth.aang.events.services.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+11-11 13:54:17.157  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.bluetooth, it's a first party app.
+11-11 13:54:17.161  1867 16980 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:17.163  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.providers.contacts, it's a first party app.
+11-11 13:54:17.165   965  1253 D performance: handleVmpressure, swap:64 pressure:2 thrashing:-1
+11-11 13:54:17.168  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon.roundedrect, it's a first party app.
+11-11 13:54:17.168  1867 16975 I m54.auyf: (REDACTED) Starting batch sync for corpora: %s
+11-11 13:54:17.172  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.internal.systemui.navbar.gestural_narrow_back, it's a first party app.
+11-11 13:54:17.178  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.dynsystem.auto_generated_rro_product__, it's a first party app.
+11-11 13:54:17.182  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.photopicker, it's a first party app.
+11-11 13:54:17.187  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.rounded.settings, it's a first party app.
+11-11 13:54:17.196  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.android.theme.icon_pack.circular.android, it's a first party app.
+11-11 13:54:17.199  1867 16937 D SQLiteOpenHelper: SPRD SQLiteOpenHelper getDatabaseLocked version =9 mNewVersion =9
+11-11 13:54:17.200  1867 15968 I Backup  : [EligibilityFilter] Rejecting com.google.android.apps.restore, it's a first party app.
+11-11 13:54:17.205  1867 16977 I PlayGamesServices[GamesSyncAdapter]: Starting sync for c8776b0b
+11-11 13:54:17.206  1867 16937 I m54.avas: (REDACTED) Setting isLegacySQLite mode to %s.
+11-11 13:54:17.213  1867 16937 I m54.avas: The GellerConfig is not present, returning null.
+11-11 13:54:17.213  1867 16937 I m54.avas: (REDACTED) The GellerConfig is not present, defaulting isUploadEnabled for corpus %s to true.
+11-11 13:54:17.220  1867 14038 I m54.auyf: (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+11-11 13:54:17.242  1867 16977 I PlayGamesServices[GamesSyncAdapter]: Sync duration for c8776b0b: 37
+11-11 13:54:17.252  1867 16916 W m54.bvhk: Failed to create JWT helper. This is unexpected
+11-11 13:54:17.252  1867 16916 W m54.bvhk: java.lang.NoSuchMethodException: m54.bfsi.getScopes []
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at java.lang.Class.getMethod(Class.java:2072)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at java.lang.Class.getMethod(Class.java:1693)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.bvhi.<init>(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):15)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.bvhk.<clinit>(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):27)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.auyf.c(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):120)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.auxj.a(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):31)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.bfpq.a(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):18)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.biay.a(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):16)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.biam.e(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):3)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.biao.run(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):36)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.qvu.d(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):50)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.qvu.c(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):5)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at m54.qvu.run(:com.google.android.gms.optional_pay@264330025@26.43.30 (100400-0):81)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at bopd.run(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):8)
+11-11 13:54:17.252  1867 16916 W m54.bvhk: 	at java.lang.Thread.run(Thread.java:923)
+11-11 13:54:17.256   965   965 I TransportClient: BackupTransportService#809: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.263  1867 16975 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:17.268   965  2674 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.292  1867  8637 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+11-11 13:54:17.293  1867  8637 I GetServiceValidatorImpl: (REDACTED) onGetService() from Client SDK version [%s], Module version [%s], PGA version [%s], Account [%s], Calling package [%s], Game package [%s]
+11-11 13:54:17.294  1867  8637 I GetGamesServiceReqFacto: (REDACTED) Parsing request with ignored arguments. signInOptionsBundle [%s], isRetryingSignIn [%s], skipWelcomePopup [%s], requireGooglePlus [%s]
+11-11 13:54:17.294  1867 16988 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:17.294  1867 16988 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:17.294  1867 16986 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:17.295  1867 17957 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:17.295  1867 16986 I AOSP-MdnsDiscoveryManag: (REDACTED) %s
+11-11 13:54:17.295  1867 16987 W AOSP-MdnsDiscoveryManag: Error while decoding multicast packet (286): 1 [CONTEXT service_id=168 ]
+11-11 13:54:17.296  1867 16987 W AOSP-MdnsDiscoveryManag: Error while decoding multicast packet (287): 1 [CONTEXT service_id=168 ]
+11-11 13:54:17.297  1867  8637 I GetGamesServiceReqFacto: Replacing request for `games` scope with `games_lite`
+11-11 13:54:17.327  1867  1867 I GmsThreadNetwork: (REDACTED) [BorderAgentScannerImpl] Sent Border Agent mDNS service query (transactionId = %d)
+11-11 13:54:17.327   965   965 I TransportClient: BackupTransportService#812: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.327  1867  1867 I GmsThreadNetwork: (REDACTED) [BorderAgentScannerImpl] Failed to parse mDNS response (receivedPacketNumber = %d, errorCode = %d)
+11-11 13:54:17.327  1867  1867 I GmsThreadNetwork: (REDACTED) [BorderAgentScannerImpl] Failed to parse mDNS response (receivedPacketNumber = %d, errorCode = %d)
+11-11 13:54:17.347  1867 17009 I SignInPerformer-15: (REDACTED) Handling request [%s], isFirstPartyCaller [%s]
+11-11 13:54:17.348   965  2648 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.349  1867 17009 I SignInPerformer-15: Successfully brokered first-party unauthenticated GamesService [CONTEXT service_id=1 ]
+11-11 13:54:17.352  1867 17009 I GetGamesServiceV2Op: (REDACTED) Successfully brokered GamesService for request %s
+11-11 13:54:17.354  1867  8637 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+11-11 13:54:17.354  1867  8637 W PlayGamesServices[UiUtils]: AppVersionName: Cannot find the installed destination app.
+11-11 13:54:17.465   965  1253 D performance: handleVmpressure, swap:64 pressure:2 thrashing:-1
+11-11 13:54:17.596   965   965 I TransportClient: BackupTransportService#815: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.624   965  2648 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.654   965   965 I TransportClient: BackupTransportService#816: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.655  1867 16977 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:17.660   965  2660 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.665  1867 16933 I PlayGamesServices[GamesSyncAdapter]: Starting sync for f4b3b7be
+11-11 13:54:17.671  1867 16916 I m54.avas: (REDACTED) Writing metadata key: %s, corpus: %s
+11-11 13:54:17.674  1867 16916 I m54.avas: (REDACTED) Writing metadata key: %s, corpus: %s
+11-11 13:54:17.689  1867 16933 I PlayGamesServices[GamesSyncAdapter]: Sync duration for f4b3b7be: 23
+11-11 13:54:17.692   965   965 I TransportClient: BackupTransportService#818: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.693  1867  8637 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+11-11 13:54:17.693  1867  8637 W PlayGamesServices[UiUtils]: AppVersionName: Cannot find the installed destination app.
+11-11 13:54:17.696  1867 16975 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+11-11 13:54:17.697   965  1460 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.716  1867 16977 I m54.awnu: (REDACTED) %s: Account was not provided, skipping private sync for corpus: %s, configuration: %s
+11-11 13:54:17.719  1867 16977 I m54.auyf: (REDACTED) Starting batch sync for corpora: %s
+11-11 13:54:17.728  1867 16977 I m54.avas: The GellerConfig is not present, returning null.
+11-11 13:54:17.728  1867 16977 I m54.avas: (REDACTED) The GellerConfig is not present, defaulting isUploadEnabled for corpus %s to true.
+11-11 13:54:17.731  1867 30909 I m54.auyf: (REDACTED) The syncToken for corpus %s is %s and the syncRequestReason is %s
+11-11 13:54:17.733   965   965 I TransportClient: BackupTransportService#819: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.743   965  1460 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.765   965  1253 D performance: handleVmpressure, swap:64 pressure:2 thrashing:-1
+11-11 13:54:17.777   965   965 I TransportClient: BackupTransportService#823: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.838   965  2674 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.850   965  2674 V UserManagerService: dumpPackageWhitelistProblems(): using mode ENFORCE|IMPLICIT_WHITELIST
+11-11 13:54:17.866  1867  1880 I gle.android.gm: Background young concurrent copying GC freed 774847(43MB) AllocSpace objects, 24(844KB) LOS objects, 44% free, 55MB/99MB, paused 166us total 100.687ms
+11-11 13:54:17.871  1867  1881 W JavaBinder: BinderProxy is being destroyed but the application did not call unlinkToDeath to unlink all of its death recipients beforehand.  Releasing leaked death recipient: m54.bfch
+11-11 13:54:17.871  1867  1881 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+11-11 13:54:17.892  1867  1882 W System  : A resource failed to call close. 
+11-11 13:54:17.894   965   965 I TransportClient: BackupTransportService#825: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.895  1867 16977 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+11-11 13:54:17.900   965  2775 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.905  1867 16916 I PlayGamesServices[GamesSyncAdapter]: Starting sync for af6440ea
+11-11 13:54:17.908  1867 16916 W PlayGamesServices[DataBroker]: No player ID found when refreshing
+11-11 13:54:17.909  1867 16916 I chatty  : uid=10194(com.google.android.gms) lowpool[1424] identical 1 line
+11-11 13:54:17.910  1867 16916 W PlayGamesServices[DataBroker]: No player ID found when refreshing
+11-11 13:54:17.915   965   965 I TransportClient: BackupTransportService#826: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.920   965  2674 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.946   965   965 I TransportClient: BackupTransportService#827: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.953   965  1223 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.978   965   965 I TransportClient: BackupTransportService#830: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:17.983   965  1223 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:17.990  1867 16933 I m54.avas: (REDACTED) Writing metadata key: %s, corpus: %s
+11-11 13:54:17.993  1867 16933 I m54.avas: (REDACTED) Writing metadata key: %s, corpus: %s
+11-11 13:54:18.015   965   965 I TransportClient: BackupTransportService#832: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:18.022   965  2775 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:18.064   965   965 I TransportClient: BackupTransportService#836: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:18.069   965  1253 D performance: handleVmpressure, swap:64 pressure:2 thrashing:-1
+11-11 13:54:18.071   965  2775 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes
+11-11 13:54:18.087  1867 16916 I GamesModuleInfoProvider: (REDACTED) Retrieved module info: %s
+11-11 13:54:18.112   965   965 I TransportClient: BackupTransportService#839: Notifying [AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport] transport = IBackupTransport
+11-11 13:54:18.119   965  2775 D BackupTransportManager: Transport com.google.android.gms/.backup.BackupTransportService updated its attributes

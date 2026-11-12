@@ -1,0 +1,18 @@
+# Estado final verificado (somente leitura) — android-code
+coletado_em: 2026-11-11 14:13:41
+
+## dumpsys accessibility (resumo)
+Bound services:{Service[label=Serviço de Foco e Proteç…, feedbackType[FEEDBACK_GENERIC], capabilities=1, eventTypes=[TYPE_VIEW_TEXT_CHANGED, TYPE_WINDOW_STATE_CHANGED, TYPE_WINDOW_CONTENT_CHANGED, TYPE_WINDOWS_CHANGED], notificationTimeout=300, requestA11yBtn=false]}
+     Enabled services:{{com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService}}
+     Crashed services:{}]
+
+## enabled_accessibility_services
+com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService
+## accessibility_enabled
+1
+## admin
+com.example.focusapp/.admin.AdminPolicyReceiver:
+## pacote
+User 0: ceDataInode=160639 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+
+Conclusao: acessibilidade LIGADA e bound; admin ATIVO; pacote instalado/habilitado (enabled=0 = DEFAULT); 1 usuario (0). Nada foi alterado por este agente.

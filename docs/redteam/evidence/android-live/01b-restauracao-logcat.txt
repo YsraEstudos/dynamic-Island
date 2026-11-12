@@ -1,0 +1,614 @@
+--------- beginning of system
+11-10 10:29:35.692 D/SSense  (  965): onTouchRateChanged: rate:0.0
+--------- beginning of main
+11-11 13:47:22.983 I/cmd     (14332): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:22.990 W/WindowManager(  965): removeWindowToken: Attempted to remove non-existing token: android.os.Binder@5865aeb
+11-11 13:47:23.001 D/AS.AudioService(  965): Accessibility volume enabled = false
+11-11 13:47:23.257 I/cmd     (14342): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:23.404 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:47:23.404 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:47:24.648 I/cmd     (14352): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:26.190 I/cmd     (14367): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:28.024 W/xample.focusap( 6968): Reducing the number of considered missed Gc histogram windows from 524 to 100
+11-11 13:47:28.030 W/System  ( 6968): A resource failed to call release. 
+11-11 13:47:28.031 I/chatty  ( 6968): uid=10271(com.example.focusapp) FinalizerDaemon identical 4 lines
+11-11 13:47:28.032 W/System  ( 6968): A resource failed to call release. 
+11-11 13:47:29.137 I/cmd     (14397): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:29.272 I/cmd     (14402): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:30.173 D/DeviceStorageMonitorService(  965): updateStateEx oldLevel = 0, newLevel = 0
+11-11 13:47:30.626 I/cmd     (14412): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:30.765 I/cmd     (14417): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:32.264 I/cmd     (14432): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:33.619 I/cmd     (14442): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:35.213 I/cmd     (14462): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:36.549 I/cmd     (14472): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:38.030 I/cmd     (14487): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:38.152 I/cmd     (14492): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:39.480 I/cmd     (14502): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:39.487 I/EntropyMixer(  965): Writing entropy...
+11-11 13:47:39.612 I/cmd     (14507): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:42.615 D/JourneyPerformanceService(  965): checkAppUsagestats -1 max_allow 3 limit_time 600000 limit_click_n 3 limit_click_lr 5
+11-11 13:47:42.616 D/JourneyPerformanceService(  965):  com.android.systemui WindowFocus Time 1:53:05
+11-11 13:47:42.616 D/JourneyPerformanceService(  965):  com.microsoft.emmx WindowFocus Time 31:12
+11-11 13:47:42.617 D/JourneyPerformanceService(  965):  com.example.focusapp WindowFocus Time 27:22
+11-11 13:47:42.617 D/JourneyPerformanceService(  965):  com.android.systemui User Click Notification 0
+11-11 13:47:42.617 D/JourneyPerformanceService(  965):  com.microsoft.emmx User Click Notification 0
+11-11 13:47:42.617 D/JourneyPerformanceService(  965):  com.example.focusapp User Click Notification 0
+11-11 13:47:42.617 D/JourneyPerformanceService(  965):  com.microsoft.emmx User Click LR 5
+11-11 13:47:42.617 D/JourneyPerformanceService(  965):  com.example.focusapp User Click LR 1
+11-11 13:47:42.617 D/JourneyPerformanceService(  965):  com.brasilsimulator.benchmark User Click LR 1
+11-11 13:47:42.617 D/JourneyPerformanceService(  965): checkAppUsagestats -5 max_allow 3 limit_time 3600000 limit_click_n 5 limit_click_lr 50
+11-11 13:47:42.618 D/JourneyPerformanceService(  965):  com.android.systemui WindowFocus Time 5:52:31
+11-11 13:47:42.618 D/JourneyPerformanceService(  965):  com.microsoft.emmx WindowFocus Time 3:03:20
+11-11 13:47:42.618 D/JourneyPerformanceService(  965):  host.exp.exponent WindowFocus Time 1:32:14
+11-11 13:47:42.619 D/JourneyPerformanceService(  965):  com.android.systemui User Click Notification 0
+11-11 13:47:42.619 D/JourneyPerformanceService(  965):  com.microsoft.emmx User Click Notification 0
+11-11 13:47:42.619 D/JourneyPerformanceService(  965):  host.exp.exponent User Click Notification 0
+11-11 13:47:42.619 D/JourneyPerformanceService(  965):  com.microsoft.emmx User Click LR 12
+11-11 13:47:42.619 D/JourneyPerformanceService(  965):  com.google.android.deskclock User Click LR 3
+11-11 13:47:42.619 D/JourneyPerformanceService(  965):  com.example.focusapp User Click LR 1
+11-11 13:47:44.611 I/UsageStatsService(  965): User[0] Flushing usage stats to disk
+11-11 13:47:46.656 W/AlarmManager( 1464): Unrecognized alarm listener com.android.networkstack.android.net.ip.IpClientLinkObserver$Dhcp6PdPreferredPrefixAlarmListener@d77b457
+11-11 13:47:46.678 D/ip_monitor-649(14544): 23: wlan0    inet6 2804:47dc:103:83fd:8c3f:e6ff:fe41:c4c3/64 scope global dynamic mngtmpaddr
+11-11 13:47:46.705 D/ip_monitor-649(14545): valid_lft 259200sec preferred_lft 172800sec
+11-11 13:47:46.731 D/ip_monitor-649(14546): 23: wlan0    inet6 2804:47dc:103:83fd:59bb:3565:cac7:75fd/64 scope global temporary dynamic
+11-11 13:47:46.757 D/ip_monitor-649(14547): valid_lft 259200sec preferred_lft 53822sec
+11-11 13:47:46.783 D/ip_monitor-649(14548): prefix 2804:47dc:103:83fd::/64dev wlan0 onlink autoconf valid 259200 preferred 172800
+11-11 13:47:53.405 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:47:53.406 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:47:58.828 I/cmd     (14556): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:00.285 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:48:00.285 I/chatty  ( 1349): uid=10234(com.android.systemui) identical 1 line
+11-11 13:48:00.285 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:48:00.746 W/TimedProcessReaper(13471): Current importance is: 200
+11-11 13:48:00.747 D/TimedProcessReaper(13471): Attempted to reap process, but was too important
+11-11 13:48:01.415 W/AlarmManager( 1464): Unrecognized alarm listener com.android.networkstack.android.net.ip.IpClientLinkObserver$Dhcp6PdPreferredPrefixAlarmListener@d77b457
+11-11 13:48:01.424 D/ip_monitor-649(14577): 23: wlan0    inet6 2804:47dc:103:83fd:8c3f:e6ff:fe41:c4c3/64 scope global dynamic mngtmpaddr
+11-11 13:48:01.450 D/ip_monitor-649(14578): valid_lft 259200sec preferred_lft 172800sec
+11-11 13:48:01.477 D/ip_monitor-649(14579): 23: wlan0    inet6 2804:47dc:103:83fd:59bb:3565:cac7:75fd/64 scope global temporary dynamic
+11-11 13:48:01.503 D/ip_monitor-649(14580): valid_lft 259200sec preferred_lft 53807sec
+11-11 13:48:01.532 D/ip_monitor-649(14581): prefix 2804:47dc:103:83fd::/64dev wlan0 onlink autoconf valid 259200 preferred 172800
+11-11 13:48:15.440 I/cmd     (14615): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:17.289 D/ip_monitor-649(14628): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:48:21.070 I/cmd     (14636): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:23.407 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:48:23.407 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:48:26.576 I/cmd     (14651): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:30.272 D/DeviceStorageMonitorService(  965): updateStateEx oldLevel = 0, newLevel = 0
+11-11 13:48:32.153 I/cmd     (14666): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:37.001 D/ip_monitor-649(14674): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:48:37.755 I/cmd     (14682): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:42.376 D/ip_monitor-649(14690): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:48:43.148 I/cmd     (14693): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:43.274 I/cmd     (14698): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:48.654 I/cmd     (14712): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:48:53.253 E/fb4a.msys( 9058): E[C MEMConnectionManager]__DisconnectIfNeededOnNetworkContextAsyncImpl(1378)=>[Critical] Call WCCConnectionMEMDisconnectImmediately with event id: 3
+11-11 13:48:53.254 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMDoDisconnect(1991)=>[INFO] connection/disconnect/[internalState=5]
+11-11 13:48:53.254 E/fb4a.msys( 9058): E[N WA]WCCXMPPStreamDisconnectImmediately(925)=>[WARNING] xmpp/disconnect/immediate in state=2 reason={stateChangeSource: 0, stateChangeReason: 0}
+11-11 13:48:53.255 E/fb4a.msys( 9058): E[N WA]_WCCXMPPStreamDisconnectHandler(347)=>xmpp/disconnect - WCIStreamStateErrorCode: 1, domain: WCIStreamState, subdomain: happyeyeballs: Error Domain=WCIStreamState Code=1 UserInfo=0xb4000072439027d0 {MCFErrorDirectUnderlyingErrorKey=0xb400007233aa9d90 "Error Domain=happyeyeballs Code=1"}
+11-11 13:48:53.255 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMLifecycleEventHandler(2273)=>[INFO] connection/xmpp/lifecycle_event/not-connected, [120.0344s]
+11-11 13:48:53.255 E/fb4a.msys( 9058): E[N WA]_WCCXMPPStreamDoDisconnect(1343)=>xmpp/disconnect - flags: 0
+11-11 13:48:53.256 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMEmitStateChange(3331)=>[INFO] connection/new_state/not-connected [connection_id=798688794, wcc_source=1, wcc_reason=0]
+11-11 13:48:53.257 E/fb4a.msys( 9058): E[C MEMConnectionManager]_MEMConnectionManagerStateChangeHandler(642)=>[Critical] MEMConnectionState updated to ID: 0 with connectionId: 798688794
+11-11 13:48:53.261 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMShouldSendOrErrorCreate(799)=>connection/send should-send error: not connected, internalState=0
+11-11 13:48:53.261 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMSendSyncWithFlags(848)=>connection/send should-send error: Error Domain=WCCConnectionSendErrorDomain Code=7 UserInfo=0xb4000072438560c0 {MCFErrorDirectDescriptionKey=not connected, }
+11-11 13:48:53.261 E/fb4a.msys( 9058): E[N WA]_WCSConnectionSendCompletion(403)=>connection/send connection-id -1 send error: Error Domain=WhatsAppCoreFoundation Code=-1062207485 UserInfo=0xb400007243869a30 {MCFErrorDirectDescriptionKey=Connection error: not connected}
+11-11 13:48:53.261 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMSendSyncWithFlags(902)=>connection/send error/7: Error Domain=WCCConnectionSendErrorDomain Code=7 UserInfo=0xb4000072438560c0 {MCFErrorDirectDescriptionKey=not connected, }
+11-11 13:48:53.261 E/fb4a.msys( 9058): E[C mem.context]_NetworkStateChangedCallbackOnExecutionContext(8204)=>[INFO]skip the network state change source=4
+11-11 13:48:53.263 E/fb4a.msys( 9058): E[C MEMConnectionManager]__ConnectIfNeededOnNetworkContextAsyncImpl(1288)=>[Critical] Call WCCConnectionConnect with event id: 11
+11-11 13:48:53.263 E/fb4a.msys( 9058): E[C 1]_MCCLogErrorInternal(317)=>8/391/1573/-1062207485
+11-11 13:48:53.264 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMEmitStateChange(3331)=>[INFO] connection/new_state/connecting [connection_id=798688795, wcc_source=0, wcc_reason=0]
+11-11 13:48:53.264 E/fb4a.msys( 9058): E[C MEMConnectionManager]_MEMConnectionManagerStateChangeHandler(642)=>[Critical] MEMConnectionState updated to ID: 1 with connectionId: 798688795
+11-11 13:48:53.269 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMDoConnectWithAuthKeys(1623)=>[INFO] connection/connect/start/[host=chat-e2ee-mini.facebook.com port=5222]/[57.144.170.8:5222]/socketAddressCount=2
+11-11 13:48:53.269 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMLifecycleEventHandler(2265)=>[INFO] connection/xmpp/lifecycle_event/will-connect
+11-11 13:48:53.269 E/fb4a.msys( 9058): E[A WA]WCCHandshakeCreate(191)=>handshake/create, pq mode:0
+11-11 13:48:53.274 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMLifecycleEventHandler(2273)=>[INFO] connection/xmpp/lifecycle_event/did-connect, [0.0044s]
+11-11 13:48:53.277 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMLifecycleEventHandler(2273)=>[INFO] connection/xmpp/lifecycle_event/did-send-initial-payload, [0.0031s]
+11-11 13:48:53.409 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:48:53.409 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:48:53.474 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMLifecycleEventHandler(2273)=>[INFO] connection/xmpp/lifecycle_event/will-handshake, [0.1964s]
+11-11 13:48:53.476 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMLifecycleEventHandler(2273)=>[INFO] connection/xmpp/lifecycle_event/did-handshake, [0.0017s]
+11-11 13:48:53.482 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMReceiveHandler(2459)=>[INFO] connection/receive/login-success
+11-11 13:48:53.482 E/fb4a.msys( 9058): E[N WCCConnectionMEM]_WCCConnectionMEMEmitStateChange(3331)=>[INFO] connection/new_state/connected [connection_id=798688795, wcc_source=0, wcc_reason=0]
+11-11 13:48:53.482 E/fb4a.msys( 9058): E[C MEMConnectionManager]_MEMConnectionManagerStateChangeHandler(642)=>[Critical] MEMConnectionState updated to ID: 2 with connectionId: 798688795
+11-11 13:48:53.486 E/fb4a.msys( 9058): E[C mem.context]_NetworkStateChangedCallbackOnExecutionContext(8204)=>[INFO]skip the network state change source=4
+11-11 13:48:54.713 I/DailyPingWorker( 2373): DailyPingWorker.<init>():45 Initialized DailyPingWorker.
+11-11 13:48:54.729 I/DailyPingWorker( 2373): DailyPingWorker.startWorkInner():63 Completed work: WORK_ID = daily_ping_work
+11-11 13:48:54.737 I/WM-WorkerWrapper( 2373): Worker result SUCCESS for Work [ id=516ea560-6b7a-440d-9d0c-6ac1eeb284e9, class=com.google.android.libraries.inputmethod.dailyping.DailyPingWorker, tags={ com.google.android.libraries.inputmethod.dailyping.DailyPingWorker,daily_ping_work } ]
+11-11 13:48:54.874 D/CompatibilityChangeReporter(  965): Compat change id reported: 135634846; UID 10195; state: DISABLED
+11-11 13:48:54.874 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10195; state: ENABLED
+11-11 13:48:54.874 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10195; state: ENABLED
+11-11 13:48:54.886 D/Zygote  (  527): Forked child process 14744
+11-11 13:48:54.892 I/ActivityManager(  965): Start proc 14744:com.android.vending/u0a195 for service {com.android.vending/com.google.android.finsky.scheduler.process.mainimpl.PhoneskyJobServiceMain}
+11-11 13:48:54.901 E/android.vendin(14744): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:48:54.923 I/android.vendin(14744): The ClassLoaderContext is a special shared library.
+11-11 13:48:54.966 D/SQLiteOpenHelper( 1867): SPRD SQLiteOpenHelper getDatabaseLocked version =42 mNewVersion =42
+11-11 13:48:55.073 W/android.vendin(14744): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:48:55.073 I/chatty  (14744): uid=10195(com.android.vending) identical 2 lines
+11-11 13:48:55.073 W/android.vendin(14744): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:48:55.122 W/putmethod.lati( 2373): Reducing the number of considered missed Gc histogram windows from 243 to 100
+11-11 13:48:55.130 D/NetworkSecurityConfig(14744): No Network Security Config specified, using platform default
+11-11 13:48:55.131 D/NetworkSecurityConfig(14744): No Network Security Config specified, using platform default
+11-11 13:48:55.323 E/RemindersSync( 1867): NetworkError [T SyncAdapterThread-122:id=4857:priority=5:group=main] [CONTEXT service_id=18 ]
+11-11 13:48:55.323 E/RemindersSync( 1867): iras: UNIMPLEMENTED: HTTP status code 404
+11-11 13:48:55.323 E/RemindersSync( 1867): invalid content-type: text/html; charset=UTF-8
+11-11 13:48:55.323 E/RemindersSync( 1867): headers: Metadata(:status=404,content-type=text/html; charset=UTF-8,referrer-policy=no-referrer,content-length=1613,date=Wed, 11 Nov 2026 16:48:56 GMT,alt-svc=h3=":443"; ma=2592000,h3-29=":443"; ma=2592000)
+11-11 13:48:55.323 E/RemindersSync( 1867): DATA-----------------------------
+11-11 13:48:55.323 E/RemindersSync( 1867): <!DOCTYPE html>
+11-11 13:48:55.323 E/RemindersSync( 1867): <html lang=en>
+11-11 13:48:55.323 E/RemindersSync( 1867):   <meta charset=utf-8>
+11-11 13:48:55.323 E/RemindersSync( 1867):   <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">
+11-11 13:48:55.323 E/RemindersSync( 1867):   <title>Error 404 (Not Found)!!1</title>
+11-11 13:48:55.323 E/RemindersSync( 1867):   <style>
+11-11 13:48:55.323 E/RemindersSync( 1867):     *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/branding/googlelogo/1x/googlelogo_color_150x54dp.png) no-repeat;margin-left:-5px}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:54px;width:150px}
+11-11 13:48:55.323 E/RemindersSync( 1867):   </style>
+11-11 13:48:55.323 E/RemindersSync( 1867):   <a href=//www.google.com/><span id=logo aria-label=Google></span></a>
+11-11 13:48:55.323 E/RemindersSync( 1867):   <p><b>404.</b> <ins>That’s an error.</ins>
+11-11 13:48:55.323 E/RemindersSync( 1867):   <p>The requested URL <code>/caribou.tasks.service.TasksApiService/GetTaskHistory</code> was not found on this server.  <ins>That’s all we know.</ins>
+11-11 13:48:55.323 E/RemindersSync( 1867): 
+11-11 13:48:55.323 E/RemindersSync( 1867): 	at bocf.s(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):37)
+11-11 13:48:55.323 E/RemindersSync( 1867): 	at bocf.g(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):87)
+11-11 13:48:55.323 E/RemindersSync( 1867): 	at eujz.i(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):27)
+11-11 13:48:55.323 E/RemindersSync( 1867): 	at eujz.k(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):390)
+11-11 13:48:55.323 E/RemindersSync( 1867): 	at eujz.b(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):29)
+11-11 13:48:55.323 E/RemindersSync( 1867): 	at boht.onPerformSync(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):25)
+11-11 13:48:55.323 E/RemindersSync( 1867): 	at android.content.AbstractThreadedSyncAdapter$SyncThread.run(AbstractThreadedSyncAdapter.java:354)
+11-11 13:48:55.385 I/Finsky  (14744): [2] Process created at version: 54.0.09-29 [0] [PR] 1014031620
+11-11 13:48:55.548 D/performance(  965): handleVmpressure, swap:60 pressure:0 thrashing:-1
+11-11 13:48:55.599 W/Finsky  (14744): [4464] Failed to get the task info for cold start.
+11-11 13:48:55.599 I/Finsky  (14744): [4464] Process started for unknown session.
+11-11 13:48:55.636 I/Finsky  (14744): [4464] Finished reading experiment flags from file [Se-xCc4LzNyh3UrKMIU2sUf-PUKz4oQEbpKZDMuaFno] numFlags=2153.
+11-11 13:48:55.638 I/Finsky  (14744): [4463] Finished reading experiment flags from file [BbohOu0Ve5UitwhMd0TLc6hkrmQx1wdNRzODqSJN38E] numFlags=2169.
+11-11 13:48:55.640 I/Finsky  (14744): [4461] Finished reading experiment flags from file [0tGUNCGIkbk4o6-fQ335kUYSKwVj4lusnHT-A5Dsy08] numFlags=2803.
+11-11 13:48:55.811 I/Finsky  (14744): [4464] aodw - Registering in memory receiver for android.intent.action.PACKAGE_ADDED and android.intent.action.PACKAGE_REMOVED
+11-11 13:48:55.836 I/Finsky  (14744): [2] Profiling: Starting up (1)
+11-11 13:48:55.848 D/performance(  965): handleVmpressure, swap:61 pressure:0 thrashing:-1
+11-11 13:48:55.864 W/CheckTime(14744): App running slow: Executing handleBindApplication : callApplicationOnCreate took 585ms
+11-11 13:48:55.891 I/Finsky  (14744): [2] This process start was not selected for Play memory metrics collection.
+11-11 13:48:55.903 I/Finsky  (14744): [2] SCH: job service start with id 9687.
+11-11 13:48:55.926 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:48:55.933 I/Finsky  (14744): [4483] SCH: Satisfied jobs for 9687 are: 34-2031
+11-11 13:48:55.938 I/GetConfigSnapshotOp( 1867): (REDACTED) Succeeded but not registered: %s
+11-11 13:48:55.950 I/Finsky  (14744): [4481] Resetting scheduler db
+11-11 13:48:55.955 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 1-1337, CT: 1794411275116, Constraints: [{ L: 43068394, D: 86268394, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:48:55.955 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 10-79, CT: 1794411274826, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:48:55.955 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 10-168, CT: 1794411274826, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:48:55.955 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 24-77777777, CT: 1794411275899, Constraints: [{ L: 1, D: 82800000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_NONE, B: BATTERY_ANY }]
+11-11 13:48:55.956 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 26-1414141414, CT: 1794411275931, Constraints: [{ L: 40503957, D: 41403957, C: CHARGING_NONE, I: IDLE_NONE, N: NET_NONE, B: BATTERY_ANY }]
+11-11 13:48:55.956 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 34-2030, CT: 1794411277304, Constraints: [{ L: 4115382, D: 1300115382, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }, { L: 4115382, D: 1300115382, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_NOT_LOW }]
+11-11 13:48:55.956 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 34-2031, CT: 1794411277305, Constraints: [{ L: 4367221, D: 1300367221, C: CHARGING_NONE, I: IDLE_NONE, N: NET_UNMETERED, B: BATTERY_NOT_LOW }]
+11-11 13:48:55.956 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 34-2032, CT: 1794411427571, Constraints: [{ L: 79199864, D: 1375199864, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:48:55.956 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 34-2033, CT: 1794411428254, Constraints: [{ L: 604800000, D: 2591999737, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:48:55.956 I/Finsky  (14744): [4478] SCH: Scheduling phonesky job Id: 44-1027, CT: 1794411282098, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_NONE, B: BATTERY_NOT_LOW }]
+11-11 13:48:55.962 I/Finsky  (14744): [4474] SCH: canceling system job 9687
+11-11 13:48:55.967 I/Finsky  (14744): [4481] SCH: Job 34-2031 starting
+11-11 13:48:55.970 I/Finsky  (14744): [2] WM::SCH: Logging work start for 34-2031
+11-11 13:48:55.991 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =4 mNewVersion =4
+11-11 13:48:55.992 I/Finsky  (14744): [2] SCH: system job 9687 received onStopJob signal.
+11-11 13:48:55.995 I/Finsky  (14744): [2] SCH: system job 9687 stopped.
+11-11 13:48:55.999 I/Finsky  (14744): [4476] SCH: Scheduling 1 system job(s)
+11-11 13:48:55.999 I/Finsky  (14744): [4476] SCH: Scheduling system job Id: 9049, L: 0, D: 1295908527, C: false, I: false, N: 2
+11-11 13:48:56.017 W/Finsky  (14744): [2] OnDeviceSearchSuggestionModelPrefetchDelegator created!
+11-11 13:48:56.018 I/Finsky  (14744): [4474] SCH: no pending jobs to schedule.
+11-11 13:48:56.034 I/Finsky  (14744): [2] Subscription detail: N/A
+11-11 13:48:56.037 I/Finsky  (14744): [2] playLoggingServerUrl: https://play.googleapis.com/play/log
+11-11 13:48:56.037 I/Finsky  (14744): [2] playLoggingServerTimestampUrl: https://play.googleapis.com/play/log/timestamp
+11-11 13:48:56.045 I/TetheringManager(14744): registerTetheringEventCallback:com.android.vending
+11-11 13:48:56.076 D/TelephonyRegistryManager(14744): onSubscriptionsChangedListener callback received.
+11-11 13:48:56.077 I/Finsky  (14744): [2] SCH: job service start with id 9049.
+11-11 13:48:56.078 I/Finsky  (14744): [2] onSubscriptionsChanged
+11-11 13:48:56.089 I/Finsky  (14744): [4483] SCH: Satisfied jobs for 9049 are: 34-2031
+11-11 13:48:56.097 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:48:56.106 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:48:56.148 D/performance(  965): handleVmpressure, swap:62 pressure:0 thrashing:-1
+11-11 13:48:56.173 I/Finsky  (14744): [4478] Created new item store.
+11-11 13:48:56.227 I/Finsky  (14744): [4462] Device is ineligible for platform Cronet and will use embedded Cronet instead.
+11-11 13:48:56.256 W/linker  (14744): Warning: "/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libcronet.157.0.8103.38.so" unused DT entry: unknown processor-specific (type 0x70000001 arg 0x0) (ignoring)
+11-11 13:48:56.260 D/ConnectivityService(  965): requestNetwork for uid/pid:10195/14744 NetworkRequest [ TRACK_DEFAULT id=984, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:48:56.261 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:48:56.261 D/ConnectivityService(  965):   984 : null → 100
+11-11 13:48:56.261 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:48:56.261 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=984, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:48:56.262 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=984, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:48:56.262 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=984, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:48:56.262 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=984, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:48:56.262 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=984, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:48:56.265 D/ConnectivityService(  965): NetworkReassignment : no changes
+11-11 13:48:56.317 I/cn_CronetLibraryLoader(14744): Cronet version: 157.0.8103.38, arch: aarch64, source: Statically Linked
+11-11 13:48:56.386 I/Finsky  (14744): [4492] ApplicationRestrictions: {}
+11-11 13:48:56.449 D/performance(  965): handleVmpressure, swap:62 pressure:0 thrashing:-1
+11-11 13:48:56.513 I/Finsky  (14744): [4474] Set UnhibernateActivity enabled state to 1
+11-11 13:48:56.515 I/Finsky  (14744): [4465] VerifyApps: Setup app restrictions monitor
+11-11 13:48:56.517 I/Finsky  (14744): [4477] SysUA: Set SystemUpdateActivity alias enabled states: v1=1, v2=2
+11-11 13:48:56.520 I/Finsky  (14744): [4465] VerifyApps: Device wide unknown source restriction updated
+11-11 13:48:56.531 I/Finsky  (14744): [4464] Finished reading experiment flags from file [zosHnz_abzUGyBF_c9yGcLKdRbctgiU3WbuaIzajt-g] numFlags=2168.
+11-11 13:48:56.542 I/Finsky  (14744): [4464] Finished reading experiment flags from file [NW-kwZKDBzwQwoMqRoFzhvMbY1u80K-KgbqFPk79jpA] numFlags=2168.
+11-11 13:48:56.553 I/Finsky  (14744): [4464] Finished reading experiment flags from file [RjQ_QIOmKY3ggwWQARJP2mgiM9yfAq9Ta3iK0SRRvGY] numFlags=2168.
+11-11 13:48:56.563 I/Finsky  (14744): [4464] Finished reading experiment flags from file [oBWVA4IumtZKDPK4ApK4xvRpdj72AikxSfes3VpINR8] numFlags=2168.
+11-11 13:48:56.574 I/Finsky  (14744): [4464] Finished reading experiment flags from file [u95ArId42uVq31seY84i7Npmhsm8JXt21o1a1eBkwhE] numFlags=2168.
+11-11 13:48:56.576 I/Finsky  (14744): [4478] SysCUA: Set {com.android.vending/com.google.android.finsky.systemcomponentupdateui.common.SystemComponentUpdateActivity} enabled state to 0
+11-11 13:48:56.576 I/Finsky  (14744): [4465] VerifyApps: Updating ADI Warn Mode activity enabled state
+11-11 13:48:56.576 I/Finsky  (14744): [4463] RECEIVER_SINGLE_USER_SETTINGS#logWorkEndAndFinishGoAsync: SUCCESS
+11-11 13:48:56.578 I/Finsky  (14744): [4476] VerifyApps: Resolving target for ADI Warn Mode activity
+11-11 13:48:56.583 I/Finsky  (14744): [4465] Enqueuing libraries load for -1711004559
+11-11 13:48:56.583 I/Finsky  (14744): [4474] Starting libraries load for -1711004559
+11-11 13:48:56.584 W/DynamiteModule(14744): Local module descriptor class for com.google.android.gms.googlecertificates not found.
+11-11 13:48:56.589 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =18 mNewVersion =18
+11-11 13:48:56.602 W/android.vendin(14744): ClassLoaderContext classpath size mismatch. expected=15, found=0 (DLC[];PCL[base.apk*3262283054:base.apk!classes2.dex*1009986317:base.apk!classes3.dex*4162999191:base.apk!classes4.dex*771355152:base.apk!classes5.dex*2060349089:base.apk!classes6.dex*3118469109:base.apk!classes7.dex*2326816997:base.apk!classes8.dex*561136266:base.apk!classes9.dex*3167056466:base.apk!classes10.dex*4186298605:base.apk!classes11.dex*4137081084:base.apk!classes12.dex*695690036:base.apk!classes13.dex*1167048985:base.apk!classes14.dex*3903986318:base.apk!classes15.dex*2239599384]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]#PCL[/system/framework/com.android.location.provider.jar*1664931834]#PCL[/system/framework/com.android.media.remotedisplay.jar*1573936315]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]} | DLC[];PCL[])
+11-11 13:48:56.607 I/DynamiteModule(14744): Considering local module com.google.android.gms.googlecertificates:0 and remote module com.google.android.gms.googlecertificates:7
+11-11 13:48:56.607 I/DynamiteModule(14744): Selected remote version of com.google.android.gms.googlecertificates, version >= 7
+11-11 13:48:56.621 W/System  (14744): ClassLoader referenced unknown path: 
+11-11 13:48:56.691 W/CursorWindow(14744): Window is full: requested allocation 41 bytes, free space 18 bytes, window size 2097152 bytes
+11-11 13:48:56.846 W/android.vendin(14744): ClassLoaderContext classpath size mismatch. expected=15, found=8 (DLC[];PCL[base.apk*3262283054:base.apk!classes2.dex*1009986317:base.apk!classes3.dex*4162999191:base.apk!classes4.dex*771355152:base.apk!classes5.dex*2060349089:base.apk!classes6.dex*3118469109:base.apk!classes7.dex*2326816997:base.apk!classes8.dex*561136266:base.apk!classes9.dex*3167056466:base.apk!classes10.dex*4186298605:base.apk!classes11.dex*4137081084:base.apk!classes12.dex*695690036:base.apk!classes13.dex*1167048985:base.apk!classes14.dex*3903986318:base.apk!classes15.dex*2239599384]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]#PCL[/system/framework/com.android.location.provider.jar*1664931834]#PCL[/system/framework/com.android.media.remotedisplay.jar*1573936315]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]} | DLC[];PCL[/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk*2428083921:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes2.dex*2471563402:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes3.dex*4182070238:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes4.dex*3981835065:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes5.dex*797201911:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes6.dex*3862907552:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes7.dex*402561270:/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes8.dex*1588336611]{PCL[/system/framework/org.apache.http.legacy.jar*1522375157]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*1727077579]})
+11-11 13:48:56.855 W/android.vendin(14744): Found duplicate classes, falling back to extracting from APK : /data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_GoogleCertificates_installtime.apk
+11-11 13:48:56.855 W/android.vendin(14744): NOTE: This wastes RAM and hurts startup performance.
+11-11 13:48:56.855 W/android.vendin(14744): Found duplicated class when checking oat files: 'Landroid/app/AppComponentFactory;' in /data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/base.apk!classes2.dex and /data/app/~~ksWwvLM-JgkpXKol1GbCFw==/com.google.android.gms-5pPtDCfpCuUV9B8ak87ZSg==/split_GoogleCertificates_installtime.apk!classes2.dex
+11-11 13:48:56.887 I/Finsky  (14744): [4474] Loaded library for account: [OSkyDwimIGxV4cF3rS_S_kIbgWeMimOa9r9ddhlVEsU]
+11-11 13:48:56.887 I/Finsky  (14744): [4474] Loaded library for account: [TXkxcwQbvv04dShiWcXXcrCCzTiMpXWrNGBLqcV4lYw]
+11-11 13:48:56.888 I/Finsky  (14744): [4474] Loaded library for account: [QBgFKDB0dufn045wMJx7GtbECOcDEe87UYF_f_5UO3g]
+11-11 13:48:56.888 I/Finsky  (14744): [4474] Loaded library for account: [vW9nz23H9hlV9J3t16ruHQQxJW0SDS7uwFhUPTTEhpM]
+11-11 13:48:56.888 I/Finsky  (14744): [4474] Loaded library for account: [e6TtaLQAmyR8Kh8FfFn3s1ZtQHjdDAPEXzTJQYPuBEM]
+11-11 13:48:56.888 I/Finsky  (14744): [4474] Loaded library for account: [SG__FDwIle1a2R_OS--VoxQ1r7mgtQp_u-_VLcmvi3c]
+11-11 13:48:56.889 I/Finsky  (14744): [4474] Finished loading 6 libraries.
+11-11 13:48:56.897 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =3 mNewVersion =3
+11-11 13:48:56.905 I/android.vendin(14744): Waiting for a blocking GC ClassLinker
+11-11 13:48:57.056 I/android.vendin(14744): WaitForGcToComplete blocked ClassLinker on ClassLinker for 151.424ms
+11-11 13:48:57.060 W/android.vendin(14744): Verification of m5.dh com.google.android.gms.common.GoogleCertificatesImpl.e(java.lang.String, m5.dm, boolean) took 155.720ms (4251.21 bytecodes/s) (21824B approximate peak alloc)
+11-11 13:48:57.154 I/Finsky  (14744): [4476] VerifyApps: Successfully updated the ADI Warn Mode activity to enabled
+11-11 13:48:57.155 I/Finsky  (14744): [4476] VerifyApps: Successfully updated Oppo ADI Warn Mode aliases to default
+11-11 13:48:57.430 I/Finsky  (14744): [2] SCH: jobFinished: 34-2031. TimeElapsed: 1462ms.
+11-11 13:48:57.430 I/Finsky  (14744): [2] WM::SCH: Logging work end for 34-2031
+11-11 13:48:57.433 I/Finsky  (14744): [4483] SCH: Attempting to reschedule job: Id: 34-2031, Constraints: [{ L: 604799976, D: 1900799976, C: CHARGING_NONE, I: IDLE_NONE, N: NET_UNMETERED, B: BATTERY_NOT_LOW }]
+11-11 13:48:57.443 I/Finsky  (14744): [4476] SCH: no pending jobs to schedule.
+11-11 13:48:57.444 I/Finsky  (14744): [4481] SCH: job service finished with id 9049.
+11-11 13:48:57.707 I/Finsky  (14744): [4467] WM::SCH: Logging work initialize for 34-2031
+11-11 13:48:57.713 I/Finsky  (14744): [4477] SCH: Scheduling phonesky job Id: 34-2031, CT: 1794415737434, Constraints: [{ L: 604799976, D: 1900799976, C: CHARGING_NONE, I: IDLE_NONE, N: NET_UNMETERED, B: BATTERY_NOT_LOW }]
+11-11 13:48:57.721 I/Finsky  (14744): [4478] SCH: Scheduling 1 system job(s)
+11-11 13:48:57.722 I/Finsky  (14744): [4478] SCH: Scheduling system job Id: 9060, L: 604799689, D: 1900799689, C: false, I: false, N: 2
+11-11 13:48:58.249 D/ip_monitor-649(14825): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:48:58.502 D/ip_monitor-649(14826): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 REACHABLE
+11-11 13:49:00.285 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:49:00.285 I/chatty  ( 1349): uid=10234(com.android.systemui) identical 1 line
+11-11 13:49:00.285 D/BatteryMeterDrawable( 1349): Screen is off, stop charging anim
+11-11 13:49:05.804 I/Finsky  (14744): [4474] CronetEngine is present. Using Cronet for the networking stack.
+11-11 13:49:05.807 I/Finsky  (14744): [4478] CronetEngine is present. Using Cronet for the networking stack.
+11-11 13:49:05.809 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =42 mNewVersion =42
+11-11 13:49:05.882 W/Settings(14744): Setting download_manager_max_bytes_over_mobile has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+11-11 13:49:05.883 I/Finsky  (14744): [4464] SettingNotFoundException for download_manager_max_bytes_over_mobile
+11-11 13:49:05.883 W/Settings(14744): Setting download_manager_recommended_max_bytes_over_mobile has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+11-11 13:49:05.884 I/Finsky  (14744): [4464] SettingNotFoundException for download_manager_recommended_max_bytes_over_mobile
+11-11 13:49:05.897 I/Finsky  (14744): [4464] registerListener
+11-11 13:49:05.901 I/Finsky  (14744): [4464] DFS: Listener added for uyd@e385de9
+11-11 13:49:05.901 I/Finsky  (14744): [4464] registerListener
+11-11 13:49:05.904 D/BoundBrokerSvc( 1867): onRebind: Intent { act=com.google.android.gms.potokens.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:49:05.905 I/Finsky  (14744): [4474] Component class com.google.android.finsky.wearsupport.WearSupportService disabled via PackageManager.
+11-11 13:49:05.905 I/Finsky  (14744): [4522] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:49:05.906 I/Finsky  (14744): [4474] Component class com.google.android.finsky.wearsupport.WearChangeListenerService disabled via PackageManager.
+11-11 13:49:05.940 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:49:06.052 I/Finsky  (14744): [4465] Initializing pausers from value store.
+11-11 13:49:06.071 I/Finsky  (14744): [4465] IQ::HLD: Callers (Pausers) in PauseUpdatesCallersValueStore: []
+11-11 13:49:06.081 I/Finsky  (14744): [4522] Already at the latest configurations for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.081 I/Finsky  (14744): [4523] Triggered update for experiment package com.google.android.finsky.stable_new.
+11-11 13:49:06.094 D/CompatibilityChangeReporter(  965): Compat change id reported: 135634846; UID 10195; state: DISABLED
+11-11 13:49:06.095 D/CompatibilityChangeReporter(  965): Compat change id reported: 135754954; UID 10195; state: ENABLED
+11-11 13:49:06.095 D/CompatibilityChangeReporter(  965): Compat change id reported: 143937733; UID 10195; state: ENABLED
+11-11 13:49:06.107 D/Zygote  (  527): Forked child process 14879
+11-11 13:49:06.109 I/ActivityManager(  965): Start proc 14879:com.android.vending:background/u0a195 for service {com.android.vending/com.google.frameworks.client.data.android.server.play.BackgroundProcessEndpointService}
+11-11 13:49:06.118 E/ding:backgroun(14879): Not starting debugger since process cannot load the jdwp agent.
+11-11 13:49:06.144 I/ding:backgroun(14879): The ClassLoaderContext is a special shared library.
+11-11 13:49:06.231 I/Finsky  (14744): [4523] Already at the latest configurations for experiment package com.google.android.finsky.stable_new.
+11-11 13:49:06.231 I/Finsky  (14744): [4522] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.242 W/ding:backgroun(14879): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:49:06.242 I/chatty  (14879): uid=10195 com.android.vending:background identical 2 lines
+11-11 13:49:06.242 W/ding:backgroun(14879): JIT profile information will not be recorded: profile file does not exist.
+11-11 13:49:06.255 D/NetworkSecurityConfig(14879): No Network Security Config specified, using platform default
+11-11 13:49:06.256 D/NetworkSecurityConfig(14879): No Network Security Config specified, using platform default
+11-11 13:49:06.265 I/Finsky:background(14879): [2] Process created at version: 54.0.09-29 [0] [PR] 1014031620
+11-11 13:49:06.283 I/Finsky:background(14879): [2] [BGP] Initializing early flags...
+11-11 13:49:06.284 I/Finsky:background(14879): [2] [BGP] Initializing Gservices...
+11-11 13:49:06.286 I/Finsky:background(14879): [2] [BGP] Initializing flags...
+11-11 13:49:06.308 I/Finsky:background(14879): [2] Finished reading experiment flags from file [0tGUNCGIkbk4o6-fQ335kUYSKwVj4lusnHT-A5Dsy08] numFlags=2803.
+11-11 13:49:06.317 I/Finsky  (14744): [4522] Regular flags synced
+11-11 13:49:06.319 I/Finsky  (14744): [4522] Writing flags config, size 1.
+11-11 13:49:06.320 I/Finsky  (14744): [4522] Started writing experiment flags into file [4AmV18xSHkTIKlPnnhjjT6zFd9VwFbIBzVlOE7f57pE].
+11-11 13:49:06.341 I/Finsky  (14744): [4522] Finished writing experiment flags into file [4AmV18xSHkTIKlPnnhjjT6zFd9VwFbIBzVlOE7f57pE], numFlags=2168.
+11-11 13:49:06.343 I/Finsky  (14744): [4522] Successfully applied new configurations for package com.google.android.finsky.regular.
+11-11 13:49:06.344 I/Finsky  (14744): [4522] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.348 I/Finsky:background(14879): [2] Finished reading experiment flags from file [BbohOu0Ve5UitwhMd0TLc6hkrmQx1wdNRzODqSJN38E] numFlags=2169.
+11-11 13:49:06.356 I/Finsky:background(14879): [2] Finished reading experiment flags from file [zosHnz_abzUGyBF_c9yGcLKdRbctgiU3WbuaIzajt-g] numFlags=2168.
+11-11 13:49:06.364 I/Finsky:background(14879): [2] Finished reading experiment flags from file [NW-kwZKDBzwQwoMqRoFzhvMbY1u80K-KgbqFPk79jpA] numFlags=2168.
+11-11 13:49:06.371 I/Finsky:background(14879): [2] Finished reading experiment flags from file [RjQ_QIOmKY3ggwWQARJP2mgiM9yfAq9Ta3iK0SRRvGY] numFlags=2168.
+11-11 13:49:06.379 I/Finsky:background(14879): [2] Finished reading experiment flags from file [oBWVA4IumtZKDPK4ApK4xvRpdj72AikxSfes3VpINR8] numFlags=2168.
+11-11 13:49:06.387 I/Finsky:background(14879): [2] Finished reading experiment flags from file [u95ArId42uVq31seY84i7Npmhsm8JXt21o1a1eBkwhE] numFlags=2168.
+11-11 13:49:06.391 I/Finsky:background(14879): [2] [BGP] Initializing crash detector...
+11-11 13:49:06.393 I/Finsky  (14744): [4522] Regular flags synced
+11-11 13:49:06.393 I/Finsky  (14744): [4522] Writing flags config, size 1.
+11-11 13:49:06.394 I/Finsky  (14744): [4522] Started writing experiment flags into file [02lmRld71YjuahQls3W9w14yDH8nObeG5Z-UEBnDdEw].
+11-11 13:49:06.395 I/Finsky:background(14879): [2] aodl - Registering in memory receiver for android.intent.action.PACKAGE_ADDED and android.intent.action.PACKAGE_REMOVED
+11-11 13:49:06.401 I/Finsky  (14744): [4522] Finished writing experiment flags into file [02lmRld71YjuahQls3W9w14yDH8nObeG5Z-UEBnDdEw], numFlags=2168.
+11-11 13:49:06.402 I/Finsky  (14744): [4522] Successfully applied new configurations for package com.google.android.finsky.regular.
+11-11 13:49:06.403 I/Finsky  (14744): [4522] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.422 I/Finsky:background(14879): [2] This process start was not selected for Play memory metrics collection.
+11-11 13:49:06.436 I/TetheringManager(14879): registerTetheringEventCallback:com.android.vending
+11-11 13:49:06.437 W/Settings(14879): Setting download_manager_max_bytes_over_mobile has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+11-11 13:49:06.438 I/Finsky:background(14879): [4478] SettingNotFoundException for download_manager_max_bytes_over_mobile
+11-11 13:49:06.438 W/Settings(14879): Setting download_manager_recommended_max_bytes_over_mobile has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+11-11 13:49:06.439 I/Finsky:background(14879): [4478] SettingNotFoundException for download_manager_recommended_max_bytes_over_mobile
+11-11 13:49:06.439 I/Finsky:background(14879): [4478] registerListener
+11-11 13:49:06.440 I/Finsky  (14744): [4522] Already at the latest configurations for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.440 I/Finsky  (14744): [4522] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.444 I/Finsky:background(14879): [4478] DFS: Listener added for uyd@956f9bf
+11-11 13:49:06.444 I/Finsky:background(14879): [4478] registerListener
+11-11 13:49:06.447 I/Finsky:background(14879): [4478] registerListener
+11-11 13:49:06.447 I/Finsky:background(14879): [4478] DFS: Listener added for asyw@9e430b6
+11-11 13:49:06.470 D/SQLiteOpenHelper(14879): SPRD SQLiteOpenHelper getDatabaseLocked version =2 mNewVersion =2
+11-11 13:49:06.483 I/Finsky  (14744): [4522] Already at the latest configurations for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.484 I/Finsky  (14744): [4522] Triggered update for experiment package com.google.android.finsky.stable.
+11-11 13:49:06.489 I/Finsky:background(14879): [4478] IV2: IQv2 is disabled. Recovering all active installs: []
+11-11 13:49:06.499 D/ConnectivityService(  965): requestNetwork for uid/pid:10195/14879 NetworkRequest [ TRACK_DEFAULT id=986, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:49:06.500 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:49:06.500 D/ConnectivityService(  965):   986 : null → 100
+11-11 13:49:06.500 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:49:06.500 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=986, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:49:06.500 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=986, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:49:06.500 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=986, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:49:06.500 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=986, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:49:06.501 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=986, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:49:06.504 I/Finsky:background(14879): [4475] IQ: start evaluating install requests.
+11-11 13:49:06.504 I/Finsky:background(14879): [4475] IQ: no jobs active. Skipping
+11-11 13:49:06.505 I/Finsky:background(14879): [4482] Device is ineligible for platform Cronet and will use embedded Cronet instead.
+11-11 13:49:06.507 D/SQLiteOpenHelper(14879): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:49:06.510 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:49:06.520 W/linker  (14879): Warning: "/data/app/~~679P2557iDu5QL5UYMENZw==/com.android.vending-FnpFJp92zYbfn_8y69Tgzg==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libcronet.157.0.8103.38.so" unused DT entry: unknown processor-specific (type 0x70000001 arg 0x0) (ignoring)
+11-11 13:49:06.523 D/ConnectivityService(  965): requestNetwork for uid/pid:10195/14879 NetworkRequest [ TRACK_DEFAULT id=987, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:49:06.524 D/ConnectivityService(  965): NetworkReassignment :
+11-11 13:49:06.524 D/ConnectivityService(  965):   987 : null → 100
+11-11 13:49:06.524 D/ConnectivityService(  965):    accepting network in place of null
+11-11 13:49:06.524 D/ConnectivityService(  965): sending new Min Network Score(60): NetworkRequest [ TRACK_DEFAULT id=987, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ]
+11-11 13:49:06.524 D/PhoneSwitcherNetworkRequstListener( 1320): got request NetworkRequest [ TRACK_DEFAULT id=987, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:49:06.525 I/cn_CronetLibraryLoader(14879): Cronet version: 157.0.8103.38, arch: aarch64, source: Statically Linked
+11-11 13:49:06.525 D/Ethernet(  965): got request NetworkRequest [ TRACK_DEFAULT id=987, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:49:06.525 D/UntrustedWifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=987, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:49:06.525 D/WifiNetworkFactory(  965): got request NetworkRequest [ TRACK_DEFAULT id=987, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10195 AdministratorUids: [] RequestorUid: 10195 RequestorPackageName: com.android.vending] ] with score 60 and providerId 5
+11-11 13:49:06.528 D/ConnectivityService(  965): NetworkReassignment : no changes
+11-11 13:49:06.535 I/Finsky:background(14879): [4482] CronetEngine is present. Using Cronet for the networking stack.
+11-11 13:49:06.536 I/Finsky  (14744): [4522] Already at the latest configurations for experiment package com.google.android.finsky.stable.
+11-11 13:49:06.537 I/Finsky  (14744): [4522] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.547 I/Finsky:background(14879): [4485] IQ: Pruning inactive install requests
+11-11 13:49:06.548 I/Finsky:background(14879): [4482] Finished reading experiment flags from file [Se-xCc4LzNyh3UrKMIU2sUf-PUKz4oQEbpKZDMuaFno] numFlags=2153.
+11-11 13:49:06.562 I/Finsky:background(14879): [4475] IQ: 0 scheduled install statuses found to proceed. 
+11-11 13:49:06.564 I/Finsky:background(14879): [4482] Subscription detail: N/A
+11-11 13:49:06.566 D/TelephonyRegistryManager(14879): onSubscriptionsChangedListener callback received.
+11-11 13:49:06.566 I/Finsky:background(14879): [2] onSubscriptionsChanged
+11-11 13:49:06.575 I/Finsky:background(14879): [4482] PlayInstallAPI: Registering Play install service listener.
+11-11 13:49:06.578 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =2 mNewVersion =2
+11-11 13:49:06.585 I/Finsky  (14744): [4522] Regular flags synced
+11-11 13:49:06.586 I/Finsky  (14744): [4522] Writing flags config, size 1.
+11-11 13:49:06.586 I/Finsky  (14744): [4522] Started writing experiment flags into file [CN_yDmv4y_aIEctmitwy0IG3Lu2HVJhNLXXP4ZIzLZg].
+11-11 13:49:06.587 I/Finsky  (14744): [4532] SM: There are no stale sessions to be pruned
+11-11 13:49:06.593 I/Finsky  (14744): [4522] Finished writing experiment flags into file [CN_yDmv4y_aIEctmitwy0IG3Lu2HVJhNLXXP4ZIzLZg], numFlags=2169.
+11-11 13:49:06.594 I/Finsky  (14744): [4522] Successfully applied new configurations for package com.google.android.finsky.regular.
+11-11 13:49:06.594 I/Finsky  (14744): [4522] [EExp] Exporting experiments for package com.google.android.finsky.regular.
+11-11 13:49:06.594 I/Finsky  (14744): [4522] [EExp] Exporting experiments for namespace com.google.android.finsky.regular.
+11-11 13:49:06.600 I/Finsky  (14744): [2] Connecting InstallListener to SplitInstallService broadcaster...
+11-11 13:49:06.608 I/Finsky  (14744): [4522] [EExp] Successfully exported experiments for package com.google.android.finsky.regular.
+11-11 13:49:06.609 I/Finsky  (14744): [4522] Triggered update for experiment package com.google.android.finsky.regular.
+11-11 13:49:06.614 I/Finsky:background(14879): [4485] Resetting scheduler db
+11-11 13:49:06.619 D/SQLiteOpenHelper(14879): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:49:06.626 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11932, CT: 1794411270871, Constraints: [{ L: 44729149, D: 55529149, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.626 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11933, CT: 1794411270871, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:49:06.626 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11934, CT: 1794411270871, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.626 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11935, CT: 1794411270872, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.626 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11936, CT: 1794411270872, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.627 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11937, CT: 1794411270872, Constraints: [{ L: 44729147, D: 55529147, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.627 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11939, CT: 1794411270873, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.627 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11941, CT: 1794411270874, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.628 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11942, CT: 1794411270959, Constraints: [{ L: 44729044, D: 55529044, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.628 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11943, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:49:06.628 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11944, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.628 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11945, CT: 1794411270960, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.628 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11946, CT: 1794411270960, Constraints: [{ L: 44729043, D: 55529043, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.628 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11948, CT: 1794411270960, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.629 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.629 I/Finsky:background(14879): [4474] SCH: Scheduling phonesky job Id: 47-15, CT: 1794411279483, Constraints: [{ L: 0, D: 21464024, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_NONE, B: BATTERY_ANY }]
+11-11 13:49:06.643 I/Finsky:background(14879): [4482] SCH: Scheduling 0 system job(s)
+11-11 13:49:06.647 I/Finsky  (14744): [4522] Regular flags synced
+11-11 13:49:06.647 I/Finsky  (14744): [4522] Writing flags config, size 1.
+11-11 13:49:06.648 I/Finsky  (14744): [4522] Started writing experiment flags into file [4dEVOh7DlClE42ly_19Hs7FqnnFOj9O0dm-zzWqGxeo].
+11-11 13:49:06.650 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11932
+11-11 13:49:06.651 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11932
+11-11 13:49:06.655 I/Finsky  (14744): [4522] Finished writing experiment flags into file [4dEVOh7DlClE42ly_19Hs7FqnnFOj9O0dm-zzWqGxeo], numFlags=2153.
+11-11 13:49:06.655 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11934, CT: 1794411270871, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.655 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11935, CT: 1794411270872, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.656 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11937, CT: 1794411270872, Constraints: [{ L: 44729147, D: 55529147, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.656 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11941, CT: 1794411270874, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.656 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11942, CT: 1794411270959, Constraints: [{ L: 44729044, D: 55529044, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.656 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11944, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.656 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11946, CT: 1794411270960, Constraints: [{ L: 44729043, D: 55529043, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.656 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.657 I/Finsky  (14744): [4522] Successfully applied new configurations for package com.google.android.finsky.regular.
+11-11 13:49:06.687 I/Finsky:background(14879): [4474] SCH: Scheduling 1 system job(s)
+11-11 13:49:06.688 I/Finsky:background(14879): [4474] SCH: Scheduling system job Id: 10633, L: 0, D: 51053316, C: false, I: true, N: 2
+11-11 13:49:06.706 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11933
+11-11 13:49:06.706 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11933
+11-11 13:49:06.709 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11943, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:49:06.741 I/Finsky:background(14879): [4474] SCH: Scheduling 1 system job(s)
+11-11 13:49:06.742 I/Finsky:background(14879): [4474] SCH: Scheduling system job Id: 10641, L: 0, D: 81924217, C: false, I: true, N: 1
+11-11 13:49:06.754 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11934
+11-11 13:49:06.754 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11934
+11-11 13:49:06.758 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11935, CT: 1794411270872, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.758 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11937, CT: 1794411270872, Constraints: [{ L: 44729147, D: 55529147, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.758 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11941, CT: 1794411270874, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.759 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11942, CT: 1794411270959, Constraints: [{ L: 44729044, D: 55529044, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.759 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11944, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.759 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11946, CT: 1794411270960, Constraints: [{ L: 44729043, D: 55529043, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.759 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.814 I/Finsky:background(14879): [4482] SCH: Scheduling 1 system job(s)
+11-11 13:49:06.814 I/Finsky:background(14879): [4482] SCH: Scheduling system job Id: 10642, L: 0, D: 51053189, C: false, I: true, N: 2
+11-11 13:49:06.836 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11935
+11-11 13:49:06.837 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11935
+11-11 13:49:06.841 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11937, CT: 1794411270872, Constraints: [{ L: 44729147, D: 55529147, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.841 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11941, CT: 1794411270874, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.842 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11942, CT: 1794411270959, Constraints: [{ L: 44729044, D: 55529044, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.842 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11944, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.842 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11946, CT: 1794411270960, Constraints: [{ L: 44729043, D: 55529043, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.842 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.882 I/Finsky:background(14879): [4482] SCH: Scheduling 1 system job(s)
+11-11 13:49:06.882 I/Finsky:background(14879): [4482] SCH: Scheduling system job Id: 10649, L: 0, D: 51053121, C: false, I: true, N: 2
+11-11 13:49:06.899 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11936
+11-11 13:49:06.900 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11936
+11-11 13:49:06.903 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11939, CT: 1794411270873, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.904 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11945, CT: 1794411270960, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.904 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11948, CT: 1794411270960, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.943 E/RemindersSync( 1867): NetworkError [T SyncAdapterThread-123:id=4858:priority=5:group=main] [CONTEXT service_id=18 ]
+11-11 13:49:06.943 E/RemindersSync( 1867): iras: UNIMPLEMENTED: HTTP status code 404
+11-11 13:49:06.943 E/RemindersSync( 1867): invalid content-type: text/html; charset=UTF-8
+11-11 13:49:06.943 E/RemindersSync( 1867): headers: Metadata(:status=404,content-type=text/html; charset=UTF-8,referrer-policy=no-referrer,content-length=1613,date=Wed, 11 Nov 2026 16:49:07 GMT,alt-svc=h3=":443"; ma=2592000,h3-29=":443"; ma=2592000)
+11-11 13:49:06.943 E/RemindersSync( 1867): DATA-----------------------------
+11-11 13:49:06.943 E/RemindersSync( 1867): <!DOCTYPE html>
+11-11 13:49:06.943 E/RemindersSync( 1867): <html lang=en>
+11-11 13:49:06.943 E/RemindersSync( 1867):   <meta charset=utf-8>
+11-11 13:49:06.943 E/RemindersSync( 1867):   <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">
+11-11 13:49:06.943 E/RemindersSync( 1867):   <title>Error 404 (Not Found)!!1</title>
+11-11 13:49:06.943 E/RemindersSync( 1867):   <style>
+11-11 13:49:06.943 E/RemindersSync( 1867):     *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/branding/googlelogo/1x/googlelogo_color_150x54dp.png) no-repeat;margin-left:-5px}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:54px;width:150px}
+11-11 13:49:06.943 E/RemindersSync( 1867):   </style>
+11-11 13:49:06.943 E/RemindersSync( 1867):   <a href=//www.google.com/><span id=logo aria-label=Google></span></a>
+11-11 13:49:06.943 E/RemindersSync( 1867):   <p><b>404.</b> <ins>That’s an error.</ins>
+11-11 13:49:06.943 E/RemindersSync( 1867):   <p>The requested URL <code>/caribou.tasks.service.TasksApiService/GetTaskHistory</code> was not found on this server.  <ins>That’s all we know.</ins>
+11-11 13:49:06.943 E/RemindersSync( 1867): 
+11-11 13:49:06.943 E/RemindersSync( 1867): 	at bocf.s(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):37)
+11-11 13:49:06.943 E/RemindersSync( 1867): 	at bocf.g(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):87)
+11-11 13:49:06.943 E/RemindersSync( 1867): 	at eujz.i(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):27)
+11-11 13:49:06.943 E/RemindersSync( 1867): 	at eujz.k(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):390)
+11-11 13:49:06.943 E/RemindersSync( 1867): 	at eujz.b(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):29)
+11-11 13:49:06.943 E/RemindersSync( 1867): 	at boht.onPerformSync(:com.google.android.gms@264330022@26.43.30 (150400-1006944126):25)
+11-11 13:49:06.943 E/RemindersSync( 1867): 	at android.content.AbstractThreadedSyncAdapter$SyncThread.run(AbstractThreadedSyncAdapter.java:354)
+11-11 13:49:06.952 I/Finsky:background(14879): [4482] SCH: Scheduling 1 system job(s)
+11-11 13:49:06.952 I/Finsky:background(14879): [4482] SCH: Scheduling system job Id: 10655, L: 0, D: 81923921, C: true, I: true, N: 2
+11-11 13:49:06.970 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11937
+11-11 13:49:06.970 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11937
+11-11 13:49:06.974 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11941, CT: 1794411270874, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.974 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11942, CT: 1794411270959, Constraints: [{ L: 44729044, D: 55529044, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.975 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11944, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.975 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11946, CT: 1794411270960, Constraints: [{ L: 44729043, D: 55529043, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:06.975 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.058 I/Finsky:background(14879): [4482] SCH: Scheduling 1 system job(s)
+11-11 13:49:07.058 I/Finsky:background(14879): [4482] SCH: Scheduling system job Id: 10658, L: 0, D: 51052945, C: false, I: true, N: 2
+11-11 13:49:07.073 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11939
+11-11 13:49:07.074 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11939
+11-11 13:49:07.078 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11945, CT: 1794411270960, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.078 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11948, CT: 1794411270960, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.106 I/Finsky:background(14879): [4474] SCH: Scheduling 1 system job(s)
+11-11 13:49:07.106 I/Finsky:background(14879): [4474] SCH: Scheduling system job Id: 10663, L: 0, D: 81923854, C: true, I: true, N: 2
+11-11 13:49:07.117 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11941
+11-11 13:49:07.118 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11941
+11-11 13:49:07.121 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11942, CT: 1794411270959, Constraints: [{ L: 44729044, D: 55529044, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.122 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11944, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.122 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11946, CT: 1794411270960, Constraints: [{ L: 44729043, D: 55529043, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.122 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.150 I/Finsky:background(14879): [4474] SCH: Scheduling 1 system job(s)
+11-11 13:49:07.151 I/Finsky:background(14879): [4474] SCH: Scheduling system job Id: 10665, L: 0, D: 51052853, C: false, I: true, N: 2
+11-11 13:49:07.165 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11942
+11-11 13:49:07.165 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11942
+11-11 13:49:07.168 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11944, CT: 1794411270959, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.169 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11946, CT: 1794411270960, Constraints: [{ L: 44729043, D: 55529043, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.169 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.196 I/Finsky:background(14879): [4482] SCH: Scheduling 1 system job(s)
+11-11 13:49:07.196 I/Finsky:background(14879): [4482] SCH: Scheduling system job Id: 10669, L: 0, D: 51052807, C: false, I: true, N: 2
+11-11 13:49:07.216 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11943
+11-11 13:49:07.216 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11943
+11-11 13:49:07.220 I/Finsky:background(14879): [4475] SCH: no pending jobs to schedule.
+11-11 13:49:07.224 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11944
+11-11 13:49:07.225 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11944
+11-11 13:49:07.227 I/Finsky:background(14879): [4477] SCH: Scheduling phonesky job Id: 3-11946, CT: 1794411270960, Constraints: [{ L: 44729043, D: 55529043, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.227 I/Finsky:background(14879): [4477] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.256 I/Finsky:background(14879): [4474] SCH: Scheduling 1 system job(s)
+11-11 13:49:07.256 I/Finsky:background(14879): [4474] SCH: Scheduling system job Id: 10672, L: 0, D: 51052747, C: false, I: true, N: 2
+11-11 13:49:07.271 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11945
+11-11 13:49:07.271 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11945
+11-11 13:49:07.274 I/Finsky:background(14879): [4477] SCH: Scheduling phonesky job Id: 3-11948, CT: 1794411270960, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.301 I/Finsky:background(14879): [4474] SCH: Scheduling 1 system job(s)
+11-11 13:49:07.301 I/Finsky:background(14879): [4474] SCH: Scheduling system job Id: 10674, L: 0, D: 81923659, C: true, I: true, N: 2
+11-11 13:49:07.315 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11946
+11-11 13:49:07.315 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11946
+11-11 13:49:07.318 I/Finsky:background(14879): [4477] SCH: Scheduling phonesky job Id: 3-11950, CT: 1794411270961, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.345 I/Finsky:background(14879): [4474] SCH: Scheduling 1 system job(s)
+11-11 13:49:07.346 I/Finsky:background(14879): [4474] SCH: Scheduling system job Id: 10675, L: 0, D: 81923616, C: false, I: true, N: 2
+11-11 13:49:07.359 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11948
+11-11 13:49:07.360 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11948
+11-11 13:49:07.362 I/Finsky:background(14879): [4477] SCH: no pending jobs to schedule.
+11-11 13:49:07.366 I/Finsky:background(14879): [4499] SCH: Canceling job 3-11950
+11-11 13:49:07.367 I/Finsky:background(14879): [4499] WM::SCH: Logging work end for 3-11950
+11-11 13:49:07.369 I/Finsky:background(14879): [4482] SCH: no pending jobs to schedule.
+11-11 13:49:07.405 I/Finsky:background(14879): [4485] IQ: Creating job 11951, for (REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, MIN_BATTERY=20, SHOULD_APPLY_BUDGET=true, IGNORE_HOLDOFF=true, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, TIME=[2026-11-12T04:00:00Z-2026-11-12T07:00:00Z], AUTHENTICATION_REQUIRED)
+11-11 13:49:07.406 I/Finsky:background(14879): [4485] IQ: Creating job 11952, for (REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, NETWORK=ANY, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, AUTHENTICATION_REQUIRED)
+11-11 13:49:07.407 I/Finsky:background(14879): [4485] IQ: Creating job 11953, for (REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, MIN_BATTERY=20, SHOULD_APPLY_BUDGET=true, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, AUTHENTICATION_REQUIRED)
+11-11 13:49:07.408 I/Finsky:background(14879): [4485] IQ: Creating job 11954, for (REQ_CHARGING, REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, AUTHENTICATION_REQUIRED)
+11-11 13:49:07.408 I/Finsky:background(14879): [4485] IQ: Creating job 11955, for (REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, MIN_BATTERY=20, SHOULD_APPLY_BUDGET=true, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, TIME=[2026-11-12T04:00:00Z-2026-11-12T07:00:00Z], AUTHENTICATION_REQUIRED)
+11-11 13:49:07.409 I/Finsky:background(14879): [4485] IQ: Creating job 11956, for (REQ_CHARGING, REQ_DEVICE_IDLE, REQ_GEARHEAD_PROJECTION_OFF, IGNORE_HOLDOFF=true, NETWORK=UNMETERED, PROVISIONING_STATE=PROVISIONED, BACKUP_MANAGER_STATE=BACKUP_READY, AUTHENTICATION_REQUIRED)
+11-11 13:49:07.409 I/Finsky:background(14879): [4485] IQ: Bulk scheduling created jobs
+11-11 13:49:07.413 I/Finsky:background(14879): [4485] SCH: Received scheduling request: Id: 3-11951, Constraints: [{ L: 40252595, D: 51052595, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.414 I/Finsky:background(14879): [4485] SCH: Received scheduling request: Id: 3-11952, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:49:07.414 I/Finsky:background(14879): [4485] SCH: Received scheduling request: Id: 3-11953, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.415 I/Finsky:background(14879): [4485] SCH: Received scheduling request: Id: 3-11954, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.415 I/Finsky:background(14879): [4485] SCH: Received scheduling request: Id: 3-11955, Constraints: [{ L: 40252592, D: 51052592, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.415 I/Finsky:background(14879): [4485] SCH: Received scheduling request: Id: 3-11956, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.421 I/Finsky:background(14879): [4475] IQ: start evaluating install requests.
+11-11 13:49:07.421 I/Finsky:background(14879): [4475] IQ: no jobs active. Skipping
+11-11 13:49:07.423 I/Finsky:background(14879): [4477] SSM: Start staged session task with 0 tracked staged sessions
+11-11 13:49:07.431 I/Finsky:background(14879): [4475] IQ: 0 scheduled install statuses found to proceed. 
+11-11 13:49:07.687 I/Finsky:background(14879): [4467] WM::SCH: Logging work initialize for 3-11951
+11-11 13:49:07.687 I/Finsky:background(14879): [4467] WM::SCH: Logging work initialize for 3-11952
+11-11 13:49:07.688 I/Finsky:background(14879): [4467] WM::SCH: Logging work initialize for 3-11953
+11-11 13:49:07.688 I/Finsky:background(14879): [4467] WM::SCH: Logging work initialize for 3-11954
+11-11 13:49:07.688 I/Finsky:background(14879): [4467] WM::SCH: Logging work initialize for 3-11955
+11-11 13:49:07.688 I/Finsky:background(14879): [4467] WM::SCH: Logging work initialize for 3-11956
+11-11 13:49:07.698 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11951, CT: 1794415747413, Constraints: [{ L: 40252595, D: 51052595, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.698 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11952, CT: 1794415747414, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_ANY, B: BATTERY_ANY }]
+11-11 13:49:07.699 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11953, CT: 1794415747414, Constraints: [{ L: 0, D: 86400000, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.699 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11954, CT: 1794415747415, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.699 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11955, CT: 1794415747415, Constraints: [{ L: 40252592, D: 51052592, C: CHARGING_NONE, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.700 I/Finsky:background(14879): [4475] SCH: Scheduling phonesky job Id: 3-11956, CT: 1794415747415, Constraints: [{ L: 0, D: 86400000, C: CHARGING_REQUIRED, I: IDLE_REQUIRED, N: NET_UNMETERED, B: BATTERY_ANY }]
+11-11 13:49:07.708 I/Finsky:background(14879): [4482] SCH: Scheduling 1 system job(s)
+11-11 13:49:07.709 I/Finsky:background(14879): [4482] SCH: Scheduling system job Id: 10675, L: 0, D: 51052299, C: false, I: true, N: 2
+11-11 13:49:13.468 I/Finsky:background(14879): [4505] playLoggingServerUrl: https://play.googleapis.com/play/log
+11-11 13:49:13.468 I/Finsky:background(14879): [4505] playLoggingServerTimestampUrl: https://play.googleapis.com/play/log/timestamp
+11-11 13:49:15.987 W/android.vendin(14744): Accessing hidden method Landroid/view/ScrollCaptureTarget;-><init>(Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;Landroid/view/ScrollCaptureCallback;)V (blacklist, linking, denied)
+11-11 13:49:16.049 W/Finsky  (14744): [4478] PreloadClasses: Unable to load [androidx.compose.ui.platform.ViewCompositionStrategy$DisposeOnViewTreeLifecycleDestroyed$installFor$1, androidx.compose.ui.platform.AndroidUiDispatcher$Companion$Main$2, androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$LocalConfiguration$1, androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$LocalContext$1, androidx.compose.ui.platform.AndroidCompositionLocals_androidKt$LocalView$1, androidx.compose.ui.platform.DisposableSaveableStateRegistry_androidKt$DisposableSaveableStateRegistry$saveableStateRegistry$1, androidx.compose.ui.platform.DisposableSaveableStateRegistry_androidKt$DisposableSaveableStateRegistry$1, androidx.compose.ui.platform.InspectableValueKt$NoInspectorInfo$1, androidx.compose.ui.node.ComposeUiNode$Companion$SetModifier$1, androidx.compose.ui.node.ComposeUiNode$Companion$SetLayoutDirection$1, androidx.compose.ui.semantics.SemanticsProperties$ContentDescription$1, androidx.compose.ui.semantics.SemanticsPropertyKey$1, androidx.compose.ui.semantics.SemanticsProperties$PaneTitle$1, androidx.compose.ui.semantics.SemanticsProperties$InvisibleToUser$1, androidx.compose.ui.semantics.SemanticsProperties$IsPopup$1, androidx.compose.ui.semantics.SemanticsProperties$IsDialog$1, androidx.compose.ui.semantics.SemanticsProperties$Role$1, androidx.compose.ui.semantics.SemanticsProperties$TestTag$1, androidx.compose.ui.semantics.SemanticsProperties$Text$1, androidx.compose.ui.platform.ComposeView$Content$1, androidx.compose.ui.platform.CompositionLocalsKt$ProvideCommonCompositionLocals$1, androidx.compose.ui.layout.RootMeasurePolicy$measure$2, androidx.compose.ui.input.pointer.PointerInteropFilter_androidKt$pointerInteropFilter$2, androidx.compose.ui.graphics.painter.Painter$drawLambda$1, androidx.compose.ui.graphics.SimpleGraphicsLayerModifier$layerBlock$1, androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher$calculateNestedScrollScope$1, androidx.compose.animation.TransitionData, androidx.compose.animation.Fade, androidx.compose.ui.layout.SubcomposeLayoutState$setRoot$1, androidx.compose.ui.layout.SubcomposeLayoutState$setMeasurePolicy$1, androidx.compose.runtime.saveable.SaveableStateRegistryImpl$registerProvider$3, androidx.compose.ui.graphics.BlockGraphicsLayerModifier$measure$1, androidx.compose.ui.text.platform.AndroidParagraphIntrinsics, androidx.compose.ui.graphics.SimpleGraphicsLayerModifier$measure$1, androidx.compose.ui.layout.SubcomposeLayoutKt$SubcomposeLayout$2, androidx.compose.ui.platform.ViewCompositionStrategy$DisposeOnDetachedFromWindowOrReleasedFromPool$installFor$1, androidx.navigation.NavControllerViewModel, androidx.navigation.NavControllerViewModel$Companion]
+11-11 13:49:16.558 I/Finsky  (14744): [2] setup::RES: shouldRecoverRestoredPackages: versionCodeSystem 82542010
+11-11 13:49:16.572 I/Finsky  (14744): [2] Detected restoreservicev2://recovery not needed, will not run
+11-11 13:49:16.641 I/Finsky  (14744): [4535] registerListener
+11-11 13:49:16.642 I/Finsky  (14744): [4535] DSC: queryDownloads()
+11-11 13:49:16.647 I/Finsky  (14744): [4535] Initialized AssetModuleDownloader.
+11-11 13:49:16.648 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =7 mNewVersion =7
+11-11 13:49:16.649 D/SQLiteOpenHelper(14744): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:49:16.651 I/Finsky:background(14879): [4481] DS: queryDownloads()
+11-11 13:49:16.657 D/SQLiteOpenHelper(14879): SPRD SQLiteOpenHelper getDatabaseLocked version =1 mNewVersion =1
+11-11 13:49:17.010 D/AS.AudioService(  965): Accessibility volume enabled = false
+11-11 13:49:17.028 D/AS.AudioService(  965): Accessibility volume enabled = false
+11-11 13:49:17.962 D/ip_monitor-649(15001): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router STALE
+11-11 13:49:18.282 I/cmd     (15004): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:19.836 I/cmd     (15023): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:19.974 I/cmd     (15028): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:20.454 I/servicemanager(  316): Notifying apexservice they have clients: 0
+11-11 13:49:20.455 I/BpBinder(  316): onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+11-11 13:49:21.012 D/BoundBrokerSvc( 1867): onUnbind: Intent { act=com.google.android.gms.potokens.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.GmsApiService }
+11-11 13:49:21.504 I/cmd     (15044): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:22.884 I/cmd     (15054): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:23.411 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:49:23.411 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:49:24.505 I/cmd     (15074): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:26.666 D/ip_monitor-649(15097): 192.168.200.1 dev wlan0 lladdr c0:3e:50:b7:2c:12 STALE
+11-11 13:49:27.429 I/cmd     (15100): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:30.354 D/DeviceStorageMonitorService(  965): updateStateEx oldLevel = 0, newLevel = 0
+11-11 13:49:32.220 I/cmd     (15146): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:32.370 I/cmd     (15151): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:33.776 I/cmd     (15161): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:33.960 I/cmd     (15166): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:35.324 I/cmd     (15180): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:35.462 I/cmd     (15185): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:36.945 I/ChimeraPrvdrProxy( 1867): Shutting down chimera ContentProvider com.google.android.gms.reminders.provider.RemindersChimeraProvider
+11-11 13:49:36.988 I/cmd     (15200): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:49:37.160 D/ip_monitor-649(15205): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:49:38.357 I/cmd     (15211): oneway function results will be dropped but finished with status OK and parcel size 4

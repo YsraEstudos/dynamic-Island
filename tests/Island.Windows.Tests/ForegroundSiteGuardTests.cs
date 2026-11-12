@@ -62,7 +62,7 @@ public sealed class ForegroundSiteGuardTests
     [InlineData("msedge", "Pornhub - Microsoft Edge", "Conteúdo adulto")]
     public void ShouldBlock_AdultOnly_BlocksAdultSites(string processName, string title, string expectedSite)
     {
-        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, true, out string? siteName);
+        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, SiteGuardMode.AdultOnly, out string? siteName);
 
         Assert.True(blocked);
         Assert.Equal(expectedSite, siteName);
@@ -74,10 +74,57 @@ public sealed class ForegroundSiteGuardTests
     [InlineData("firefox", "Lo-fi - YouTube - Firefox")]
     public void ShouldBlock_AdultOnly_LeavesOtherSitesAlone(string processName, string title)
     {
-        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, true, out string? siteName);
+        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, SiteGuardMode.AdultOnly, out string? siteName);
 
         Assert.False(blocked);
         Assert.Null(siteName);
+    }
+
+    [Theory]
+    [InlineData("msedge", "Home / X - Microsoft Edge")]
+    [InlineData("msedge", "(3) Página Inicial / X - Microsoft Edge")]
+    [InlineData("chrome", "Instagram - Google Chrome")]
+    [InlineData("chrome", "Reels - Instagram - Opera")]
+    public void ShouldBlock_BreakRelease_LeavesTwitterAndInstagramOpen(string processName, string title)
+    {
+        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, SiteGuardMode.BreakRelease, out string? siteName);
+
+        Assert.False(blocked);
+        Assert.Null(siteName);
+    }
+
+    [Theory]
+    [InlineData("firefox", "Lo-fi - YouTube - Firefox", "YouTube")]
+    [InlineData("firefox", "r/dotnet - Reddit", "Reddit")]
+    [InlineData("chrome", "Pornhub - Google Chrome", "Conteúdo adulto")]
+    public void ShouldBlock_BreakRelease_StillBlocksEverythingElse(string processName, string title, string expectedSite)
+    {
+        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, SiteGuardMode.BreakRelease, out string? siteName);
+
+        Assert.True(blocked);
+        Assert.Equal(expectedSite, siteName);
+    }
+
+    [Theory]
+    [InlineData("chrome", "Lo-fi - YouTube - Google Chrome")]
+    [InlineData("chrome", "Home / X - Google Chrome")]
+    [InlineData("chrome", "Instagram - Google Chrome")]
+    public void ShouldBlock_Off_BlocksNothing(string processName, string title)
+    {
+        bool blocked = ForegroundSiteGuard.ShouldBlock(processName, title, SiteGuardMode.Off, out string? siteName);
+
+        Assert.False(blocked);
+        Assert.Null(siteName);
+    }
+
+    [Fact]
+    public void ShouldBlock_BreakRelease_NamedWindow_UsesActiveBrowserTitle()
+    {
+        Assert.False(ForegroundSiteGuard.ShouldBlock("msedge", "FIscal", "Home / X - Microsoft Edge",
+            SiteGuardMode.BreakRelease, out _));
+        Assert.True(ForegroundSiteGuard.ShouldBlock("msedge", "FIscal", "Lo-fi - YouTube - Microsoft Edge",
+            SiteGuardMode.BreakRelease, out string? siteName));
+        Assert.Equal("YouTube", siteName);
     }
 
     [Fact]

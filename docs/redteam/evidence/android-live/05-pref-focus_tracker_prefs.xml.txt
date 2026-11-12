@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <string name="key_allowance_tracking_start_date">2026-10-14</string>
+    <boolean name="key_main_activity_foreground" value="false" />
+</map>

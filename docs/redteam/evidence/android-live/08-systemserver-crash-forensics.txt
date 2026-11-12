@@ -1,0 +1,40 @@
+Drop box contents: 89 entries
+Max entries: 1000
+Low priority rate limit period: 2000 ms
+Low priority tags: {data_app_wtf, keymaster, system_server_wtf, system_app_strictmode, system_app_wtf, system_server_strictmode, data_app_strictmode, netstats}
+Searching for: system_server_crash
+
+========================================
+2026-11-11 14:05:27 system_server_crash (text, 803833 bytes)
+Process: system_server
+Build: motorola/java_retail/java:11/RTAS31.68-66-3/66-3:user/release-keys
+
+java.lang.IllegalStateException: No UserInfo for 10
+	at com.android.server.SystemServiceManager.getUserInfo(SystemServiceManager.java:249)
+	at com.android.server.SystemServiceManager.onUser(SystemServiceManager.java:311)
+	at com.android.server.SystemServiceManager.switchUser(SystemServiceManager.java:279)
+	at com.android.server.am.UserController.handleMessage(UserController.java:2541)
+	at android.os.Handler.dispatchMessage(Handler.java:102)
+	at android.os.Looper.loop(Looper.java:240)
+	at android.os.HandlerThread.run(HandlerThread.java:67)
+	at com.android.server.ServiceThread.run(ServiceThread.java:44)
+--------- beginning of system
+11-11 14:05:20.983   965   985 E ArtManagerService: Failed to prepare profile for com.android.systemui.plugin.globalactions.wallet.auto_generated_rro_product__:/product/overlay/QuickAccessWallet__auto_generated_rro_product.apk
+--------- beginning of main
+11-11 14:05:20.984   630 26947 E cutils  : Failed to mkdir(/data/user_de/10/com.motorola.ccc.ota/cache): Required key not available
+11-11 14:05:20.984   630 26947 E installd: Failed to prepare /data/user_de/10/com.motorola.ccc.ota/cache: Required key not available
+11-11 14:05:20.984   630 26947 E installd: Failed to prepare /data/user_de/10/com.motorola.ccc.ota: Required key not available
+11-11 14:05:20.984   965   985 E PackageManager: Failed to create app data for com.motorola.ccc.ota, but trying to recover: com.android.server.pm.Installer$InstallerException: android.os.ServiceSpecificException: Failed to prepare /data/user_de/10/com.motorola.ccc.ota (code 126)
+--------- beginning of events
+11-11 14:05:20.984   965   985 I pm_critical_info: Failed to create app data for com.motorola.ccc.ota, but trying to recover: com.android.server.pm.Installer$InstallerException: android.os.ServiceSpecificException: Failed to prepare /data/user_de/10/com.motorola.ccc.ota (code 126)
+11-11 14:05:20.989   630 26947 E cutils  : Failed to mkdir(/data/user_de/10/com.motorola.ccc.ota/cache): Required key not available
+11-11 14:05:20.989   630 26947 E installd: Failed to prepare /data/user_de/10/com.motorola.ccc.ota/cache: Required key not available
+11-11 14:05:20.989   630 26947 E installd: Failed to prepare /data/user_de/10/com.motorola.ccc.ota: Required key not available
+11-11 14:05:20.989   965   985 D PackageManager: Recovery failed!
+11-11 14:05:20.989   965   985 I pm_critical_info: Recovery failed!
+11-11 14:05:20.991   630 26947 E cutils  : Failed to open(/data/misc/profiles/cur/10/com.motorola.ccc.ota/primary.prof): No such file or directory
+11-11 14:05:20.991   630 26947 E installd: Failed to prepare /data/misc/profiles/cur/10/com.motorola.ccc.ota/primary.prof: No such file or directory
+11-11 14:05:20.991   965   985 E ArtManagerService: Failed to prepare profile for com.motorola.ccc.ota:/system/priv-app/MotoOta/MotoOta.apk
+11-11 14:05:20.991   630 26947 E cutils  : Failed to mkdir(/data/user_de/10/com.motorola.ccc.notification/cache): Required key not available
+11-11 14:05:20.991   630 26947 E installd: Failed to prepare /data/user_de/10/com.motorola.ccc.notification/cache: Required key not available
+11-11 14:05:20.991   630 26947 E installd: Failed to prepare /data/user_de/10/com.motorola.ccc.notification: Required key not available

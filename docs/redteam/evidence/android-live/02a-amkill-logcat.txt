@@ -1,0 +1,9 @@
+--------- beginning of system
+11-10 10:29:35.692 D/SSense  (  965): onTouchRateChanged: rate:0.0
+--------- beginning of main
+11-11 13:50:36.558 D/ip_monitor-649(15351): fe80::1 dev wlan0 lladdr c0:3e:50:b7:2c:12 router REACHABLE
+11-11 13:50:36.866 I/cmd     (15357): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:50:38.055 I/servicemanager(  316): Since 'apexservice' could not be found, trying to start it as a lazy AIDL service
+11-11 13:50:38.107 I/BpBinder(  316): onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+11-11 13:50:38.107 I/servicemanager(  316): Tried to unregister apexservice, but there is about to be a client.
+11-11 13:50:38.340 I/ChimeraPrvdrProxy( 1867): Shutting down chimera ContentProvider com.google.android.gms.reminders.provider.RemindersChimeraProvider

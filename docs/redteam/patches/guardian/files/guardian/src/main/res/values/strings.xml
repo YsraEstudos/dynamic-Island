@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Guardião Foco</string>
+    <string name="guardian_admin_description">Mantém a proteção do Foco &amp; Bem-Estar ativa e religa a acessibilidade se o app principal for forçado a parar. Não apaga dados nem controla o aparelho.</string>
+    <string name="guardian_admin_disable_warning">Desativar o administrador reduz a proteção contra desinstalação do guardião. O bloqueio continua ativo enquanto o app principal estiver de pé.</string>
+</resources>

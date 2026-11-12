@@ -1,0 +1,17 @@
+# Porte do regex/lista de FocusBlockRules.isAdultWebAddress para PowerShell (apoio estatico; nao e o codigo Kotlin)
+regex: porn|hentai|nsfw|putaria|\bxxx\b|sexo\s+expl[ií]cito|\bmilf\b|\bcamgirl\b|\bcamsex\b|\bsexcam\b|onlyfans|rule34|\bfap\b|\bnudes\b|\bsextape\b|brazzers|xvideos
+
+brasileirinhas.com.br => keyword=False host=brasileirinhas.com.br host_lista=False bloqueado=False
+sexlog.com => keyword=False host=sexlog.com host_lista=False bloqueado=False
+missav.com => keyword=False host=missav.com host_lista=False bloqueado=False
+javdb.com => keyword=False host=javdb.com host_lista=False bloqueado=False
+fatalmodel.com => keyword=False host=fatalmodel.com host_lista=False bloqueado=False
+coelhinhas.tv => keyword=False host=coelhinhas.tv host_lista=False bloqueado=False
+xvideos.es => keyword=True host=xvideos.es host_lista=False bloqueado=True
+twitter.com.br => keyword=False host=twitter.com.br host_lista=False bloqueado=False
+notx.com => keyword=False host=notx.com host_lista=False bloqueado=False
+reddit.com/r/gonewild => keyword=False host=reddit.com host_lista=False bloqueado=False
+reddit.com/r/aww => keyword=False host=reddit.com host_lista=False bloqueado=False
+instagram.com/perfil => keyword=False host=instagram.com host_lista=False bloqueado=False
+google.com/search?tbm=isch&q=brasileirinhas => keyword=False host=google.com host_lista=False bloqueado=False
+http://m.brasileirinhas.com.br/video => keyword=False host=m.brasileirinhas.com.br host_lista=False bloqueado=False

@@ -1,0 +1,29 @@
+--------- beginning of system
+11-10 10:29:35.692 D/SSense  (  965): onTouchRateChanged: rate:0.0
+--------- beginning of main
+11-11 13:47:22.983 I/cmd     (14332): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:22.990 W/WindowManager(  965): removeWindowToken: Attempted to remove non-existing token: android.os.Binder@5865aeb
+11-11 13:47:23.001 D/AS.AudioService(  965): Accessibility volume enabled = false
+11-11 13:47:23.257 I/cmd     (14342): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:23.404 E/Watchdog(  965): WDT_Monitor: checkSFStatus sfBlocked=false
+11-11 13:47:23.404 E/Watchdog(  965): WDT_Monitor: writeWDTMonitor duration=50,shutdowning=false
+11-11 13:47:24.648 I/cmd     (14352): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:26.190 I/cmd     (14367): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:28.024 W/xample.focusap( 6968): Reducing the number of considered missed Gc histogram windows from 524 to 100
+11-11 13:47:28.030 W/System  ( 6968): A resource failed to call release. 
+11-11 13:47:28.031 I/chatty  ( 6968): uid=10271(com.example.focusapp) FinalizerDaemon identical 4 lines
+11-11 13:47:28.032 W/System  ( 6968): A resource failed to call release. 
+11-11 13:47:29.137 I/cmd     (14397): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:29.272 I/cmd     (14402): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:30.173 D/DeviceStorageMonitorService(  965): updateStateEx oldLevel = 0, newLevel = 0
+11-11 13:47:30.626 I/cmd     (14412): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:30.765 I/cmd     (14417): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:32.264 I/cmd     (14432): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:33.619 I/cmd     (14442): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:35.213 I/cmd     (14462): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:36.549 I/cmd     (14472): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:38.030 I/cmd     (14487): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:38.152 I/cmd     (14492): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:39.480 I/cmd     (14502): oneway function results will be dropped but finished with status OK and parcel size 4
+11-11 13:47:39.487 I/EntropyMixer(  965): Writing entropy...
+11-11 13:47:39.612 I/cmd     (14507): oneway function results will be dropped but finished with status OK and parcel size 4

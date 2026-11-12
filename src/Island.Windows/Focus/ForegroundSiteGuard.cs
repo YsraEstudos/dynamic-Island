@@ -13,6 +13,11 @@ public enum SiteGuardMode
     Off,
     /// <summary>Only adult sites are blocked (<see cref="BlockedSite.IsAdult"/>).</summary>
     AdultOnly,
+    /// <summary>
+    /// Every site in <see cref="BlockedSites"/> is blocked except the ones released at the end of a break
+    /// (<see cref="BlockedSite.IsReleasedOnBreak"/>: Twitter/X and Instagram).
+    /// </summary>
+    BreakRelease,
     /// <summary>Every site in <see cref="BlockedSites"/> is blocked.</summary>
     All,
 }
@@ -63,7 +68,7 @@ public sealed class ForegroundSiteGuard : IDisposable
     /// <summary>
     /// Sets what is blocked. <see cref="SiteGuardMode.Off"/> removes the hooks. Any other mode installs them and checks
     /// the window already in front, because the user may be on a blocked site when the mode starts. Switching between
-    /// AdultOnly and All keeps the hooks and checks the foreground window again. Idempotent.
+    /// the other modes keeps the hooks and checks the foreground window again. Idempotent.
     /// </summary>
     public void SetMode(SiteGuardMode mode)
     {
@@ -84,34 +89,64 @@ public sealed class ForegroundSiteGuard : IDisposable
 
     /// <summary>
     /// The single block decision, kept pure so the rule can be tested without hooks. Only browsers are
-    /// considered, so a Notepad file titled "YouTube notes" is not blocked.
+    /// considered, so a Notepad file titled "YouTube notes" is not blocked. This overload blocks every site.
     /// </summary>
     public static bool ShouldBlock(string? processName, string? windowTitle,
         [NotNullWhen(true)] out string? siteName) =>
-        ShouldBlock(processName, windowTitle, false, out siteName);
+        ShouldBlock(processName, windowTitle, SiteGuardMode.All, out siteName);
 
-    /// <summary><see cref="ShouldBlock(string?, string?, out string?)"/>, limited to adult sites when <paramref name="adultOnly"/> is true.</summary>
-    public static bool ShouldBlock(string? processName, string? windowTitle, bool adultOnly,
-        [NotNullWhen(true)] out string? siteName)
-    {
-        siteName = BlockedSites.IsBrowserProcess(processName) ? BlockedSites.Match(windowTitle, adultOnly) : null;
-        return siteName is not null;
-    }
+    /// <summary><see cref="ShouldBlock(string?, string?, SiteGuardMode, out string?)"/> for the window title only.</summary>
+    public static bool ShouldBlock(string? processName, string? windowTitle, SiteGuardMode mode,
+        [NotNullWhen(true)] out string? siteName) =>
+        ShouldBlock(processName, windowTitle, null, mode, out siteName);
 
     /// <summary>The accessible browser client names the active page even when the window was renamed.</summary>
     public static bool ShouldBlock(string? processName, string? windowTitle, string? browserTitle,
         [NotNullWhen(true)] out string? siteName) =>
-        ShouldBlock(processName, windowTitle, browserTitle, false, out siteName);
+        ShouldBlock(processName, windowTitle, browserTitle, SiteGuardMode.All, out siteName);
 
-    /// <summary><see cref="ShouldBlock(string?, string?, string?, out string?)"/>, limited to adult sites when <paramref name="adultOnly"/> is true.</summary>
-    public static bool ShouldBlock(string? processName, string? windowTitle, string? browserTitle, bool adultOnly,
-        [NotNullWhen(true)] out string? siteName)
+    /// <summary>
+    /// Same decision with the native window class, so a portable/renamed browser (which the process name allowlist
+    /// misses) is still recognized by <c>Chrome_WidgetWin_1</c>/<c>MozillaWindowClass</c> (PC-04). A class alone never
+    /// blocks: the window title (or accessible client title) must still name a blocked site.
+    /// </summary>
+    public static bool ShouldBlockWithWindowClass(string? processName, string? windowClass, string? windowTitle,
+        SiteGuardMode mode, [NotNullWhen(true)] out string? siteName) =>
+        ShouldBlock(processName, windowClass, windowTitle, browserTitle: null, mode, out siteName);
+
+    /// <summary>
+    /// <see cref="SiteGuardMode"/> decides which matched sites block: <see cref="SiteGuardMode.BreakRelease"/>
+    /// leaves the sites released at the end of a break alone.
+    /// </summary>
+    public static bool ShouldBlock(string? processName, string? windowTitle, string? browserTitle, SiteGuardMode mode,
+        [NotNullWhen(true)] out string? siteName) =>
+        ShouldBlock(processName, windowClass: null, windowTitle, browserTitle, mode, out siteName);
+
+    /// <summary>
+    /// The block decision with process name, window class, native title and accessible client title. Only browser
+    /// windows are considered, so a Notepad file titled "YouTube notes" is not blocked, and the title must still name a
+    /// site that <paramref name="mode"/> blocks.
+    /// </summary>
+    public static bool ShouldBlock(string? processName, string? windowClass, string? windowTitle, string? browserTitle,
+        SiteGuardMode mode, [NotNullWhen(true)] out string? siteName)
     {
-        siteName = BlockedSites.IsBrowserProcess(processName)
-            ? BlockedSites.Match(windowTitle, adultOnly) ?? BlockedSites.Match(browserTitle, adultOnly)
-            : null;
-        return siteName is not null;
+        siteName = null;
+        if (mode == SiteGuardMode.Off || !BlockedSites.IsBrowserWindow(processName, windowClass)) return false;
+
+        var site = FindBlocked(windowTitle, mode) ?? FindBlocked(browserTitle, mode);
+        if (site is null) return false;
+
+        siteName = site.Name;
+        return true;
     }
+
+    // Matches the title against the sites this mode blocks, so a page named after another site still blocks.
+    private static BlockedSite? FindBlocked(string? title, SiteGuardMode mode) => mode switch
+    {
+        SiteGuardMode.AdultOnly => BlockedSites.Find(title, site => site.IsAdult),
+        SiteGuardMode.BreakRelease => BlockedSites.Find(title, site => !site.IsReleasedOnBreak),
+        _ => BlockedSites.Find(title),
+    };
 
     internal static bool IsBrowserTitleChange(int objectId, int childId) =>
         (objectId == NativeMethods.OBJID_WINDOW && childId == NativeMethods.CHILDID_SELF)
@@ -172,20 +207,21 @@ public sealed class ForegroundSiteGuard : IDisposable
 
         string title = NativeMethods.GetWindowTitle(hwnd);
         string? processName = TryGetProcessName(hwnd);
-        if (!BlockedSites.IsBrowserProcess(processName)) return;
+        string windowClass = NativeMethods.GetWindowClass(hwnd);
+        if (!BlockedSites.IsBrowserWindow(processName, windowClass)) return;
 
         if (foregroundChanged) StartForegroundGracePeriod(hwnd);
         if (IsInForegroundGracePeriod(hwnd)) return;
 
-        if (ShouldBlock(processName, title, _mode == SiteGuardMode.AdultOnly, out string? siteName)) MinimizeWindow(hwnd, siteName);
+        if (ShouldBlockWithWindowClass(processName, windowClass, title, _mode, out string? siteName)) MinimizeWindow(hwnd, siteName);
         else _browserTitles.Queue(hwnd, SynchronizationContext.Current);
     }
 
     private void OnBrowserTitleRead(IntPtr hwnd, string? browserTitle)
     {
         if (_mode == SiteGuardMode.Off || hwnd != NativeMethods.GetForegroundWindow() || IsInForegroundGracePeriod(hwnd)) return;
-        if (ShouldBlock(TryGetProcessName(hwnd), NativeMethods.GetWindowTitle(hwnd), browserTitle,
-                _mode == SiteGuardMode.AdultOnly, out string? siteName))
+        if (ShouldBlock(TryGetProcessName(hwnd), NativeMethods.GetWindowClass(hwnd), NativeMethods.GetWindowTitle(hwnd),
+                browserTitle, _mode, out string? siteName))
             MinimizeWindow(hwnd, siteName);
     }
 

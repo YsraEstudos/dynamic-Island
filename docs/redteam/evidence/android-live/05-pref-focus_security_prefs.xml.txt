@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <string name="key_pbkdf2_hash">8HbfqjntXllEyjnoyVazSuDBzeo7IAWlgr4DkkcoSmE=</string>
+    <string name="key_pbkdf2_salt">U7dm0DTdHa3nr5azgLpGEoHvGohMLGFTB0fu4vN++90=</string>
+    <int name="key_pbkdf2_iterations" value="310000" />
+</map>
+

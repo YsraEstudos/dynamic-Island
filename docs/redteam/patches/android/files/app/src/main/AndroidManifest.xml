@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permissões de Foco, Live Updates e Monitoramento de Tela -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
+    <!-- Watchdog: pede isenção de otimização de bateria para não ser suspenso em Doze -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Fase 2: permissão para acionar o guardião (app separado, mesma assinatura). Se ele não estiver
+         instalado, o start é ignorado em try/catch e o ack reporta "guardian":false. -->
+    <uses-permission android:name="com.example.focusapp.guardian.permission.GUARDIAN_CONTROL" />
+
+    <!-- Permissão de assinatura dos componentes que o guardião da Fase 2 usa (provider/ReviveService).
+         Nenhum app de terceiros (nem o shell do ADB) consegue chamar sem a mesma assinatura. -->
+    <permission
+        android:name="com.example.focusapp.permission.PROTECTION_CONTROL"
+        android:protectionLevel="signature" />
+
+    <!-- Atualização do app pelas Releases do GitHub (ver update/) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!-- Permissões de Sistema / Protegidas -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:windowSoftInputMode="adjustResize"
+        android:theme="@style/Theme.FocusApp">
+
+        <!-- Entrega o APK baixado ao instalador do Android (só a pasta de cache updates/). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.updates"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/update_file_paths" />
+        </provider>
+
+        <receiver android:name=".schedule.DailyBlockAlarmReceiver" android:exported="false" />
+
+        <!-- Recebe do PC (Dynamic Island) o bloqueio do pomodoro Angry. Só reage a mensagens FCM de dados. -->
+        <service android:name=".push.PomodoroPushService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Samsung One UI Ongoing Activity / Now Bar Support -->
+        <meta-data
+            android:name="com.samsung.android.support.ongoing_activity"
+            android:value="true" />
+
+        <!-- Tela Principal -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".widget.TaskWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/task_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.TaskWidgetActionReceiver"
+            android:exported="false" />
+
+        <service
+            android:name=".widget.TaskWidgetRemoteViewsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <!-- Receptor de Reinicialização (Boot & Update) -->
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Receptor de Descarte da Now Bar Esgotada -->
+        <receiver
+            android:name=".receiver.NowBarDismissReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.focusapp.ACTION_DISMISS_NOWBAR_TODAY" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Serviço de Monitoramento de Tempo de Tela e Escala de Cinza -->
+        <service
+            android:name=".service.ScreenTimeTrackerService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Screen time tracker and display controller" />
+        </service>
+
+        <!-- Watchdog da blindagem (v1.7): mantém a acessibilidade viva, admin/ADB/perfis sob vigilância.
+             Loop de 10 s com bloqueio ativo / 60 s ocioso; notificação persistente própria. -->
+        <service
+            android:name=".service.GuardWatchdogService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Focus protection watchdog: keeps the accessibility blocker alive" />
+        </service>
+
+        <!-- Fase 2: serviço de revive chamado pelo guardião (outro pacote, mesma assinatura). Funciona
+             mesmo com o app force-stopped: o guardião faz o launch explícito para limpar o estado stopped. -->
+        <service
+            android:name=".guard.ReviveService"
+            android:exported="true"
+            android:permission="com.example.focusapp.permission.PROTECTION_CONTROL"
+            android:foregroundServiceType="specialUse"
+            android:stopWithTask="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Focus protection revive: restores accessibility/admin after force-stop" />
+            <intent-filter>
+                <action android:name="com.example.focusapp.action.REVIVE" />
+            </intent-filter>
+        </service>
+
+        <!-- Fase 2: estado da proteção para o guardião (permissão signature). O fcmToken é sensível;
+             o provider não é legível por apps sem a mesma assinatura. -->
+        <provider
+            android:name=".guard.ProtectionStateProvider"
+            android:authorities="com.example.focusapp.protection"
+            android:exported="true"
+            android:permission="com.example.focusapp.permission.PROTECTION_CONTROL" />
+
+        <!-- Serviço de Acessibilidade: Bloqueio do Twitter/Instagram/Reddit e Proteção Anti-Desinstalação -->
+        <service
+            android:name=".service.FocusAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:label="@string/accessibility_service_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- Receptor de Administrador do Dispositivo: Proteção de Desinstalação -->
+        <receiver
+            android:name=".admin.AdminPolicyReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:description="@string/device_admin_description"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_sample" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

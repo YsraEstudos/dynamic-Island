@@ -1,0 +1,120 @@
+# Estado observado do Moto G20 (leitura ADB, sem mutacao) — android-code
+coletado_em: 2026-11-11 14:05:41
+
+## accessibility
+\$ adb shell dumpsys accessibility
+ACCESSIBILITY MANAGER (dumpsys accessibility)
+
+currentUserId=0
+User state[
+     attributes:{id=0, touchExplorationEnabled=false, serviceHandlesDoubleTap=false, requestMultiFingerGestures=false, displayMagnificationEnabled=false, autoclickEnabled=false, nonInteractiveUiTimeout=0, interactiveUiTimeout=0, installedServiceCount=6}
+     shortcut key:{com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService}
+     button:{}
+     button target:{null}
+     Bound services:{Service[label=Serviço de Foco e Proteç…, feedbackType[FEEDBACK_GENERIC], capabilities=1, eventTypes=[TYPE_VIEW_TEXT_CHANGED, TYPE_WINDOW_STATE_CHANGED, TYPE_WINDOW_CONTENT_CHANGED, TYPE_WINDOWS_CHANGED], notificationTimeout=300, requestA11yBtn=false]}
+     Enabled services:{{com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService}}
+     Binding services:{}
+     Crashed services:{}]
+Display[0] : 
+Window[AccessibilityWindowInfo[title=null, displayId=0, id=6, type=TYPE_SYSTEM, layer=1, region=SkRegion((0,0,720,50)), bounds=Rect(0, 0 - 720, 50), focused=false, active=false, pictureInPicture=false, hasParent=false, isAnchored=false, hasChildren=false]],
+Window[AccessibilityWindowInfo[title=Moto App Launcher, displayId=0, id=9, type=TYPE_APPLICATION, layer=0, region=SkRegion((0,0,720,1600)), bounds=Rect(0, 0 - 720, 1600), focused=true, active=true, pictureInPicture=false, hasParent=false, isAnchored=false, hasChildren=false]]
+
+## enabled_accessibility_services
+\$ adb shell settings get secure enabled_accessibility_services
+com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService
+
+## accessibility_enabled
+\$ adb shell settings get secure accessibility_enabled
+1
+
+## accessibility_shortcut_target_service
+\$ adb shell settings get secure accessibility_shortcut_target_service
+com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService
+
+## adb_enabled
+\$ adb shell settings get global adb_enabled
+1
+
+## development_settings_enabled
+\$ adb shell settings get global development_settings_enabled
+1
+
+## private_dns
+\$ adb shell settings get global private_dns_mode; settings get global private_dns_specifier
+opportunistic
+ea3637ae.d.adguard-dns.com
+
+## users
+\$ adb shell dumpsys user | head -n 34
+Current user: 0
+Users:
+  UserInfo{0:Israel:c13} serialNo=0 isPrimary=true
+    Type: android.os.usertype.full.SYSTEM
+    Flags: 3091 (ADMIN|FULL|INITIALIZED|PRIMARY|SYSTEM)
+    State: RUNNING_UNLOCKED
+    Created: <unknown>
+    Last logged in: +13s864ms ago
+    Last logged in fingerprint: motorola/java_retail/java:11/RTAS31.68-66-3/66-3:user/release-keys
+    Start time: +18s221ms ago
+    Unlock time: +14s39ms ago
+    Has profile owner: false
+    Restrictions:
+      none
+    Device policy global restrictions:
+      null
+    Device policy local restrictions:
+      none
+    Effective restrictions:
+      none
+    Ignore errors preparing storage: false
+
+  Device owner id:-10000
+
+  Guest restrictions:
+    no_sms
+    no_install_unknown_sources
+    no_config_wifi
+    no_outgoing_calls
+
+  Device managed: false
+  Started users state: {0=3}
+
+  Max users: 4 (limit reached: false)
+
+## device_policy
+\$ adb shell dumpsys device_policy | head -n 6
+Current Device Policy Manager state:
+  
+  
+  
+  Enabled Device Admins (User 0, provisioningState: 0):
+    com.example.focusapp/.admin.AdminPolicyReceiver:
+
+## package_flags
+\$ adb shell dumpsys package com.example.focusapp | grep -E 'flags=|versionCode|versionName|stopped=' | head -n 6
+versionCode=7 minSdk=30 targetSdk=35
+    versionName=1.6
+    flags=[ DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=160639 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=1 instant=false virtual=false
+
+## process
+\$ adb shell ps -A -o PID,S,NAME | grep -i focusapp
+27587 S com.example.focusapp
+
+## browsers_instalados
+\$ adb shell pm list packages | grep -iE 'chrome|firefox|opera|brave|edge|duckduck|vivaldi|kiwi|yandex|mozilla'
+package:com.android.chrome
+package:com.motorola.android.providers.chromehomepageoverlay
+package:com.ninjakiwi.bloonstd6
+package:org.mozilla.firefox
+
+## apps_com_webview_relevantes
+\$ adb shell pm list packages | grep -iE 'telegram|discord|facebook.katana|googlequicksearchbox|youtube|vending'
+package:com.google.android.youtube
+package:com.google.android.googlequicksearchbox
+package:org.telegram.messenger
+package:com.discord
+package:com.android.vending
+package:com.facebook.katana
+package:com.google.android.apps.youtube.music
+

@@ -1,0 +1,26 @@
+=== FCM credentials at rest: can the PC user itself read them? (DPAPI CurrentUser) ===
+settings.json ACL: S-1-5-21-1217533577-1584313439-3942643068-414999786 Allow  DeleteSubdirectoriesAndFiles, Modify, Synchronize
+S-1-15-3-2968813833-811790644-2202111208-3784096404-1081847329-2708967783-1438471679 Allow  FullControl
+Ysr-PC\israe Allow  FullControl
+Ysr-PC\CodexSandboxUsers Allow  DeleteSubdirectoriesAndFiles, Modify, Synchronize
+S-1-5-21-1451824861-2886271624-2884081830-3376510685 Allow  DeleteSubdirectoriesAndFiles, Modify, Synchronize
+AUTORIDADE NT\SISTEMA Allow  FullControl
+BUILTIN\Administradores Allow  FullControl
+fcm-service-account.json ACL: S-1-5-21-1217533577-1584313439-3942643068-414999786 Allow  DeleteSubdirectoriesAndFiles, Modify, Synchronize
+S-1-15-3-2968813833-811790644-2202111208-3784096404-1081847329-2708967783-1438471679 Allow  FullControl
+Ysr-PC\israe Allow  FullControl
+Ysr-PC\CodexSandboxUsers Allow  DeleteSubdirectoriesAndFiles, Modify, Synchronize
+S-1-5-21-1451824861-2886271624-2884081830-3376510685 Allow  DeleteSubdirectoriesAndFiles, Modify, Synchronize
+AUTORIDADE NT\SISTEMA Allow  FullControl
+BUILTIN\Administradores Allow  FullControl
+fcm key file size: 3468
+phoneFcmToken stored length (DPAPI blob, base64): 489
+service account fields: client_email present=True project_id present=True private_key startsWith protected marker=dpapi:v1:AQAAANCMnd8BFdERjHoAw
+private_key stored length: 2577
+DPAPI unprotect phoneFcmToken: FAIL RuntimeException
+DPAPI unprotect service-account private_key: FAIL RuntimeException
+logs containing 'token': 24
+=== DPAPI CurrentUser unprotect from the same user session (format: dpapi:v1:<base64>) ===
+phoneFcmToken: FAIL RuntimeException
+service-account private_key: FAIL RuntimeException
+=== conclusion: both are readable by the same Windows user, by design (DPAPI user scope is not a secret from the user) ===

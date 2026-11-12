@@ -1,0 +1,8 @@
+token do settings: len=142 prefixo cwo6DV...
+access token do FCM obtido.
+tópico de ack: di-ack-392cee8edcc0844cd39c3da221c73c69
+FCM aceito: name=projects/pomodoro-brave/messages/0:1794484716088257%67ee231af9fd7ecd
+ACK NÃO recebido em 30 s.
+logcat do app no celular (FCM/watchdog/Ack):
+11-12 08:59:07.322 I/adbd    ( 5770): adbd service requested 'shell,v2,raw:logcat -d -v time -t 500 | grep -E "PomodoroPush|AckClient|FirebaseMessaging|FocusAccessibility|GuardWatchdog"'
+

@@ -1,0 +1,8 @@
+=== 2026-11-11T13:46:11.2583299-03:00 ===
+accessibility_enabled: 1
+enabled_accessibility_services: com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService
+adb_enabled(global): 1
+development_settings_enabled: 1
+current_user: 0
+pidof: 6968
+uptime: 103165.35 223803.32

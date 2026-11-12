@@ -1,0 +1,5 @@
+token no PC: len=142 prefixo cwo6DVfq
+access token OK
+FCM aceito 09:28:21 id=7822555af2874547bca99fc609ad9b7d endMs=1794486621453: projects/pomodoro-brave/messages/0:1794486522038128%67ee231af9fd7ecd
+[09:28:31] provider blockEndMs=1794488268624 | ack=ACK webhook (1 POST): {"v":1,"id":"7822555af2874547bca99fc609ad9b7d","applied":true,"a11y":true,"admin":true,"level":2,"endMs":1794488268624,"ts":1794486522233,"gapMs":20780,"hb":false,"reason":"fcm","adb":true,"users":1,"profiles":2,"guardian":true}
+RESULTADO: aplicado=True ackRecebido=True

@@ -48,6 +48,8 @@ public sealed class SettingsViewModel : ObservableObject
 
     private readonly Func<TimeSpan, string, Task<PhoneBlockOutcome>>? _sendPhoneBlock;
     private readonly Func<Task<string>>? _checkForUpdates;
+    private readonly Func<bool>? _securityLocked;
+    private readonly Func<bool>? _confirmSecurityChange;
     private string _updateStatus = string.Empty;
     private bool _checkingForUpdates;
 
@@ -58,7 +60,9 @@ public sealed class SettingsViewModel : ObservableObject
         Func<TimeSpan, string, Task<PhoneBlockOutcome>>? sendPhoneBlock = null,
         Func<Task<string>>? checkForUpdates = null,
         Func<IslandSettings>? getCurrent = null,
-        Func<PomodoroSoundKind, bool>? previewPomodoroSound = null)
+        Func<PomodoroSoundKind, bool>? previewPomodoroSound = null,
+        Func<bool>? securityLocked = null,
+        Func<bool>? confirmSecurityChange = null)
     {
         ArgumentNullException.ThrowIfNull(initial);
         ArgumentNullException.ThrowIfNull(monitorNames);
@@ -69,6 +73,8 @@ public sealed class SettingsViewModel : ObservableObject
         _sendPhoneBlock = sendPhoneBlock;
         _checkForUpdates = checkForUpdates;
         _previewPomodoroSound = previewPomodoroSound;
+        _securityLocked = securityLocked;
+        _confirmSecurityChange = confirmSecurityChange;
         ResetToDefaultsCommand = new RelayCommand(ResetToDefaults);
 
         // Construction does not push to apply: the store already holds `initial`.
@@ -318,11 +324,26 @@ public sealed class SettingsViewModel : ObservableObject
         }
     }
 
+    /// <summary>True while a security setting may be edited: no Angry session is protecting it.</summary>
+    public bool SecuritySettingsEditable => !(_securityLocked?.Invoke() ?? false);
+
     public bool PhoneBlockEnabled
     {
         get => _phoneBlockEnabled;
         set
         {
+            if (value == _phoneBlockEnabled) return;
+            if (_securityLocked?.Invoke() == true)
+            {
+                // The phone link is a protection, not a preference: during an Angry session it cannot be turned off.
+                RejectSecurityChange("As configurações de segurança ficam travadas durante o foco.");
+                return;
+            }
+            if (!value && _confirmSecurityChange is not null && !_confirmSecurityChange())
+            {
+                RejectSecurityChange("Desligar o bloqueio do celular exige a confirmação por frase.");
+                return;
+            }
             if (SetProperty(ref _phoneBlockEnabled, value))
             {
                 Commit(s => s with { PhoneBlockEnabled = value });
@@ -336,12 +357,35 @@ public sealed class SettingsViewModel : ObservableObject
         set
         {
             string next = (value ?? string.Empty).Trim();
+            if (next == _phoneFcmToken) return;
+            if (_securityLocked?.Invoke() == true)
+            {
+                RejectSecurityChange("As configurações de segurança ficam travadas durante o foco.");
+                return;
+            }
             if (SetProperty(ref _phoneFcmToken, next))
             {
                 Commit(s => s with { PhoneFcmToken = next });
                 OnPropertyChanged(nameof(CanSendPhoneTest));
             }
         }
+    }
+
+    /// <summary>Re-reads the security lock (Angry session started or ended) and refreshes the phone controls.</summary>
+    public void NotifySecurityStateChanged()
+    {
+        OnPropertyChanged(nameof(SecuritySettingsEditable));
+        OnPropertyChanged(nameof(PhoneBlockEnabled));
+        OnPropertyChanged(nameof(PhoneFcmToken));
+    }
+
+    // The two-way binding already wrote the new value into the control; announcing the property makes WPF read the
+    // unchanged value back, so the control returns to the protected state.
+    private void RejectSecurityChange(string message)
+    {
+        OnPropertyChanged(nameof(PhoneBlockEnabled));
+        OnPropertyChanged(nameof(PhoneFcmToken));
+        PhoneStatus = message;
     }
 
     /// <summary>Result of the last test, shown under the token. Empty until a test is sent.</summary>
@@ -409,9 +453,11 @@ public sealed class SettingsViewModel : ObservableObject
 
     private void ResetToDefaults()
     {
-        // One apply call for the whole reset, not one per property. The phone link is a credential, not a preference: keep it.
+        // One apply call for the whole reset, not one per property. The phone link is a credential/protection, not a
+        // preference: neither the token nor the enabled flag is reset (PC-02: "Reset to defaults" must not weaken it).
         var defaults = new IslandSettings();
-        _current = Normalize(_getCurrent() with
+        IslandSettings current = _getCurrent();
+        _current = Normalize(current with
         {
             MonitorIndex = defaults.MonitorIndex,
             CompactWidth = defaults.CompactWidth,
@@ -424,7 +470,7 @@ public sealed class SettingsViewModel : ObservableObject
             StartWithWindows = defaults.StartWithWindows,
             ShowVolume = defaults.ShowVolume,
             ShowMedia = defaults.ShowMedia,
-            PhoneBlockEnabled = defaults.PhoneBlockEnabled,
+            PhoneBlockEnabled = current.PhoneBlockEnabled,
             QuickNotesHotkeyEnabled = defaults.QuickNotesHotkeyEnabled,
             IdleModeEnabled = defaults.IdleModeEnabled,
             WeatherCity = defaults.WeatherCity,

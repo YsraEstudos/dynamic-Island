@@ -1,0 +1,301 @@
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        c50bf94 com.example.focusapp/.MainActivity filter 938da3d
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED:
+        92c6d2c com.example.focusapp/.admin.AdminPolicyReceiver filter d3613f5
+          Action: "android.app.action.DEVICE_ADMIN_ENABLED"
+          Action: "android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED"
+          Action: "android.app.action.DEVICE_ADMIN_DISABLED"
+      android.intent.action.QUICKBOOT_POWERON:
+        c444100 com.example.focusapp/.receiver.BootReceiver filter adddd39
+          Action: "android.intent.action.BOOT_COMPLETED"
+          Action: "android.intent.action.MY_PACKAGE_REPLACED"
+          Action: "android.intent.action.QUICKBOOT_POWERON"
+      androidx.profileinstaller.action.SAVE_PROFILE:
+        3893018 com.example.focusapp/androidx.profileinstaller.ProfileInstallReceiver filter 20cc8d7
+          Action: "androidx.profileinstaller.action.SAVE_PROFILE"
+      android.app.action.DEVICE_ADMIN_DISABLED:
+        92c6d2c com.example.focusapp/.admin.AdminPolicyReceiver filter d3613f5
+          Action: "android.app.action.DEVICE_ADMIN_ENABLED"
+          Action: "android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED"
+          Action: "android.app.action.DEVICE_ADMIN_DISABLED"
+      android.app.action.DEVICE_ADMIN_ENABLED:
+        92c6d2c com.example.focusapp/.admin.AdminPolicyReceiver filter d3613f5
+          Action: "android.app.action.DEVICE_ADMIN_ENABLED"
+          Action: "android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED"
+          Action: "android.app.action.DEVICE_ADMIN_DISABLED"
+      androidx.profileinstaller.action.INSTALL_PROFILE:
+        3893018 com.example.focusapp/androidx.profileinstaller.ProfileInstallReceiver filter 8a0fa71
+          Action: "androidx.profileinstaller.action.INSTALL_PROFILE"
+      com.google.android.c2dm.intent.RECEIVE:
+        e99558a com.example.focusapp/com.google.firebase.iid.FirebaseInstanceIdReceiver filter 215a7fb
+          Action: "com.google.android.c2dm.intent.RECEIVE"
+      android.intent.action.TIMEZONE_CHANGED:
+        7e1b232 com.example.focusapp/.widget.TaskWidgetProvider filter 4104b83
+          Action: "android.appwidget.action.APPWIDGET_UPDATE"
+          Action: "android.intent.action.DATE_CHANGED"
+          Action: "android.intent.action.TIME_SET"
+          Action: "android.intent.action.TIMEZONE_CHANGED"
+      android.intent.action.TIME_SET:
+        7e1b232 com.example.focusapp/.widget.TaskWidgetProvider filter 4104b83
+          Action: "android.appwidget.action.APPWIDGET_UPDATE"
+          Action: "android.intent.action.DATE_CHANGED"
+          Action: "android.intent.action.TIME_SET"
+          Action: "android.intent.action.TIMEZONE_CHANGED"
+      androidx.profileinstaller.action.SKIP_FILE:
+        3893018 com.example.focusapp/androidx.profileinstaller.ProfileInstallReceiver filter d3f4056
+          Action: "androidx.profileinstaller.action.SKIP_FILE"
+      androidx.profileinstaller.action.BENCHMARK_OPERATION:
+        3893018 com.example.focusapp/androidx.profileinstaller.ProfileInstallReceiver filter 1ed35c4
+          Action: "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+      android.intent.action.BOOT_COMPLETED:
+        c444100 com.example.focusapp/.receiver.BootReceiver filter adddd39
+          Action: "android.intent.action.BOOT_COMPLETED"
+          Action: "android.intent.action.MY_PACKAGE_REPLACED"
+          Action: "android.intent.action.QUICKBOOT_POWERON"
+      android.intent.action.DATE_CHANGED:
+        7e1b232 com.example.focusapp/.widget.TaskWidgetProvider filter 4104b83
+          Action: "android.appwidget.action.APPWIDGET_UPDATE"
+          Action: "android.intent.action.DATE_CHANGED"
+          Action: "android.intent.action.TIME_SET"
+          Action: "android.intent.action.TIMEZONE_CHANGED"
+      android.appwidget.action.APPWIDGET_UPDATE:
+        7e1b232 com.example.focusapp/.widget.TaskWidgetProvider filter 4104b83
+          Action: "android.appwidget.action.APPWIDGET_UPDATE"
+          Action: "android.intent.action.DATE_CHANGED"
+          Action: "android.intent.action.TIME_SET"
+          Action: "android.intent.action.TIMEZONE_CHANGED"
+      android.intent.action.MY_PACKAGE_REPLACED:
+        c444100 com.example.focusapp/.receiver.BootReceiver filter adddd39
+          Action: "android.intent.action.BOOT_COMPLETED"
+          Action: "android.intent.action.MY_PACKAGE_REPLACED"
+          Action: "android.intent.action.QUICKBOOT_POWERON"
+      com.example.focusapp.ACTION_DISMISS_NOWBAR_TODAY:
+        cf4bf7e com.example.focusapp/.receiver.NowBarDismissReceiver filter 21cdf
+          Action: "com.example.focusapp.ACTION_DISMISS_NOWBAR_TODAY"
+
+Service Resolver Table:
+  Non-Data Actions:
+      com.google.firebase.MESSAGING_EVENT:
+        1f9ccad com.example.focusapp/.push.PomodoroPushService filter e870be2
+          Action: "com.google.firebase.MESSAGING_EVENT"
+        69386a9 com.example.focusapp/com.google.firebase.messaging.FirebaseMessagingService filter f8e042e
+          Action: "com.google.firebase.MESSAGING_EVENT"
+          mPriority=-500, mOrder=0, mHasStaticPartialTypes=false, mHasDynamicPartialTypes=false
+      android.accessibilityservice.AccessibilityService:
+        7eb1b73 com.example.focusapp/.service.FocusAccessibilityService filter f69ea30 permission android.permission.BIND_ACCESSIBILITY_SERVICE
+          Action: "android.accessibilityservice.AccessibilityService"
+
+Permissions:
+  Permission [com.example.focusapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION] (2e30f33):
+    sourcePackage=com.example.focusapp
+    uid=10271 gids=null type=0 prot=signature
+    perm=Permission{fdaf3f5 com.example.focusapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION}
+
+Registered ContentProviders:
+  com.example.focusapp/androidx.core.content.FileProvider:
+    Provider{b0cb58a com.example.focusapp/androidx.core.content.FileProvider}
+  com.example.focusapp/com.google.firebase.provider.FirebaseInitProvider:
+    Provider{67587fb com.example.focusapp/com.google.firebase.provider.FirebaseInitProvider}
+  com.example.focusapp/androidx.startup.InitializationProvider:
+    Provider{69b9018 com.example.focusapp/androidx.startup.InitializationProvider}
+
+ContentProvider Authorities:
+  [com.example.focusapp.updates]:
+    Provider{b0cb58a com.example.focusapp/androidx.core.content.FileProvider}
+      applicationInfo=ApplicationInfo{c04ff90 com.example.focusapp}
+  [com.example.focusapp.androidx-startup]:
+    Provider{69b9018 com.example.focusapp/androidx.startup.InitializationProvider}
+      applicationInfo=ApplicationInfo{d5ee089 com.example.focusapp}
+  [com.example.focusapp.firebaseinitprovider]:
+    Provider{67587fb com.example.focusapp/com.google.firebase.provider.FirebaseInitProvider}
+      applicationInfo=ApplicationInfo{cc5888e com.example.focusapp}
+
+Key Set Manager:
+  [com.example.focusapp]
+      Signing KeySets: 95
+
+Packages:
+  Package [com.example.focusapp] (b09d286):
+    userId=10271
+    pkg=Package{3c595c4 com.example.focusapp}
+    codePath=/data/app/~~tv8sCXaRNXP91TtW18BIqQ==/com.example.focusapp-xngVHR-QlHC5G5Y4pZDXQw==
+    resourcePath=/data/app/~~tv8sCXaRNXP91TtW18BIqQ==/com.example.focusapp-xngVHR-QlHC5G5Y4pZDXQw==
+    legacyNativeLibraryDir=/data/app/~~tv8sCXaRNXP91TtW18BIqQ==/com.example.focusapp-xngVHR-QlHC5G5Y4pZDXQw==/lib
+    primaryCpuAbi=arm64-v8a
+    secondaryCpuAbi=null
+    versionCode=7 minSdk=30 targetSdk=35
+    versionName=1.6
+    splits=[base]
+    apkSigningVersion=2
+    applicationInfo=ApplicationInfo{3c595c4 com.example.focusapp}
+    flags=[ DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE PARTIALLY_DIRECT_BOOT_AWARE PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    queriesPackages=[]
+    dataDir=/data/user/0/com.example.focusapp
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesOptionalLibraries:
+      androidx.window.extensions
+      androidx.window.sidecar
+    timeStamp=2026-11-10 10:31:39
+    firstInstallTime=2026-10-14 09:13:09
+    lastUpdateTime=2026-11-10 10:31:42
+    signatures=PackageSignatures{7947008 version:2, signatures:[640dad10], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    declared permissions:
+      com.example.focusapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: prot=signature, INSTALLED
+    requested permissions:
+      android.permission.POST_PROMOTED_NOTIFICATIONS
+      android.permission.SYSTEM_ALERT_WINDOW
+      android.permission.FOREGROUND_SERVICE
+      android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+      android.permission.POST_NOTIFICATIONS
+      android.permission.RECEIVE_BOOT_COMPLETED
+      android.permission.SCHEDULE_EXACT_ALARM
+      android.permission.REQUEST_DELETE_PACKAGES
+      android.permission.INTERNET
+      android.permission.REQUEST_INSTALL_PACKAGES
+      android.permission.PACKAGE_USAGE_STATS
+      android.permission.WRITE_SECURE_SETTINGS
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.WAKE_LOCK
+      com.google.android.c2dm.permission.RECEIVE
+      com.example.focusapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+    install permissions:
+      com.google.android.c2dm.permission.RECEIVE: granted=true
+      com.example.focusapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: granted=true
+      android.permission.FOREGROUND_SERVICE: granted=true
+      android.permission.RECEIVE_BOOT_COMPLETED: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.REQUEST_DELETE_PACKAGES: granted=true
+      android.permission.WAKE_LOCK: granted=true
+    User 0: ceDataInode=160639 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+    overlay paths:
+      /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk
+      gids=[3003]
+      runtime permissions:
+
+Queries:
+  system apps queryable: false
+  queries via package name:
+  queries via intent:
+    [com.motorola.ccc.devicemanagement,com.motorola.ccc.notification,com.motorola.ccc.ota]:
+      com.example.focusapp
+    com.facebook.katana:
+      com.example.focusapp
+    com.openai.chatgpt:
+      com.example.focusapp
+    com.tranzmate:
+      com.example.focusapp
+    com.garageapp.alarmchallenges:
+      com.example.focusapp
+  queryable via interaction:
+    User 0:
+      [com.android.localtransport,com.android.settings,com.sprd.linkturbo,com.android.wallpaperbackup,com.android.dynsystem,com.ape.camfaccalibration,com.android.keychain,com.android.location.fused,android,com.android.providers.settings,com.android.server.telecom,com.motorola.android.providers.settings,com.android.fmradio,com.android.inputdevices]:
+        com.example.focusapp
+      [com.google.android.gsf,com.google.android.gms]:
+        com.example.focusapp
+      com.google.android.inputmethod.latin:
+        com.example.focusapp
+      com.example.focusapp:
+        [com.android.localtransport,com.android.settings,com.sprd.linkturbo,com.android.wallpaperbackup,com.android.dynsystem,com.ape.camfaccalibration,com.android.keychain,com.android.location.fused,android,com.android.providers.settings,com.android.server.telecom,com.motorola.android.providers.settings,com.android.fmradio,com.android.inputdevices]
+
+Package Changes:
+  Sequence number=900
+  User 0:
+    seq=83, package=com.motorola.brapps
+    seq=125, package=com.google.android.ext.services
+    seq=160, package=com.google.android.gms
+    seq=335, package=com.example.focusapp
+    seq=441, package=org.telegram.messenger
+    seq=442, package=com.google.android.projection.gearhead
+    seq=443, package=com.google.android.contacts
+    seq=444, package=com.google.android.apps.tachyon
+    seq=445, package=com.ubercab.driver
+    seq=446, package=org.readera
+    seq=548, package=com.facebook.services
+    seq=794, package=com.facebook.appmanager
+    seq=890, package=com.google.android.apps.docs
+    seq=891, package=com.apps.adrcotfas.goodtime
+    seq=895, package=com.android.vending
+    seq=897, package=com.microsoft.emmx
+    seq=898, package=com.waze
+    seq=899, package=com.google.android.apps.docs.editors.sheets
+
+
+Dexopt state:
+  [com.example.focusapp]
+    path: /data/app/~~tv8sCXaRNXP91TtW18BIqQ==/com.example.focusapp-xngVHR-QlHC5G5Y4pZDXQw==/base.apk
+      arm64: [status=run-from-apk] [reason=unknown]
+
+
+Compiler stats:
+  [com.example.focusapp]
+     base.apk - 4649
+
+APEX session state:
+  Session ID: 429794630
+    State: SUCCESS
+  Session ID: 7381021
+    State: SUCCESS
+  Session ID: 432301416
+    State: SUCCESS
+  Session ID: 514660669
+    State: SUCCESS
+  Session ID: 926390120
+    State: SUCCESS
+  Session ID: 698757815
+    State: SUCCESS
+  Session ID: 817981090
+    State: SUCCESS
+  Session ID: 1525738565
+    State: SUCCESS
+  Session ID: 783252683
+    State: SUCCESS
+  Session ID: 1616349990
+    State: SUCCESS
+  Session ID: 241213585
+    State: SUCCESS
+  Session ID: 450910921
+    State: SUCCESS
+  Session ID: 720109684
+    State: SUCCESS
+  Session ID: 1739441841
+    State: SUCCESS
+  Session ID: 739875145
+    State: SUCCESS
+  Session ID: 1542599820
+    State: SUCCESS
+  Session ID: 1387728245
+    State: SUCCESS
+  Session ID: 1354437034
+    State: SUCCESS
+  Session ID: 1632367663
+    State: SUCCESS
+  Session ID: 1857148231
+    State: SUCCESS
+  Session ID: 250369011
+    State: SUCCESS
+  Session ID: 2121693405
+    State: SUCCESS
+  Session ID: 537848031
+    State: SUCCESS
+
+Active APEX packages:
+
+
+Inactive APEX packages:
+
+
+Factory APEX packages:
+
+

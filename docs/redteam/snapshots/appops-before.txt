@@ -1,0 +1,6 @@
+WRITE_CLIPBOARD: allow; time=+1d3h23m39s969ms ago
+WAKE_LOCK: allow; time=+41m12s826ms ago; duration=+65ms
+GET_USAGE_STATS: allow; time=+1h44m6s379ms ago
+BIND_ACCESSIBILITY_SERVICE: allow; time=+9m57s762ms ago
+START_FOREGROUND: allow; time=+1h33m12s906ms ago; duration=+3ms
+ACCESS_ACCESSIBILITY: allow; time=+9m52s721ms ago

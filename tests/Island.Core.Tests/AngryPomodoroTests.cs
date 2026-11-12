@@ -97,7 +97,7 @@ public class AngryPomodoroTests
     }
 
     [Fact]
-    public void Focus_end_starts_a_free_break_and_keeps_the_session()
+    public void Focus_end_starts_a_free_break_and_keeps_the_session_controls_locked()
     {
         using var rig = new Rig(Minutes(focus: 1, breakMinutes: 2));
         rig.Angry.Engage(3);
@@ -108,7 +108,7 @@ public class AngryPomodoroTests
         Assert.True(rig.Timer.IsRunning);
         Assert.False(rig.Angry.IsLocked);
         Assert.True(rig.Angry.IsSessionActive);
-        Assert.False(rig.Timer.ControlsLocked);
+        Assert.True(rig.Timer.ControlsLocked);
         Assert.Equal(new[] { (true, true), (false, true) }, rig.LockEvents);
     }
 
@@ -177,38 +177,43 @@ public class AngryPomodoroTests
     }
 
     [Fact]
-    public void Reset_during_a_free_break_ends_the_session()
+    public void Pause_and_reset_during_a_free_break_do_not_end_or_change_the_session()
     {
         using var rig = new Rig(Minutes(focus: 1, breakMinutes: 2));
         rig.Angry.Engage(3);
         rig.Advance(60);
         Assert.True(rig.Angry.IsSessionActive);
 
+        rig.Timer.Pause();
         rig.Timer.Reset();
 
-        Assert.False(rig.Angry.IsSessionActive);
+        Assert.True(rig.Angry.IsSessionActive);
         Assert.False(rig.Angry.IsLocked);
-        Assert.False(rig.Timer.PlanActive);
-        Assert.Equal(new[] { (true, true), (false, true), (false, false) }, rig.LockEvents);
+        Assert.True(rig.Timer.PlanActive);
+        Assert.True(rig.Timer.IsRunning);
+        Assert.Equal(PomodoroPhase.Break, rig.Timer.Phase);
+        Assert.True(rig.Timer.ControlsLocked);
+        Assert.Equal(new[] { (true, true), (false, true) }, rig.LockEvents);
     }
 
     [Fact]
-    public void TryUnlock_during_a_break_ends_the_session_and_resets_the_timer()
+    public void TryUnlock_during_a_break_does_not_end_the_session_or_reset_the_timer()
     {
         using var rig = new Rig(Minutes(focus: 1, breakMinutes: 2));
         rig.Angry.Engage(3);
         rig.Advance(60);
         rig.Angry.NewPhrase();
 
-        Assert.True(rig.Angry.TryUnlock(Phrase));
+        Assert.False(rig.Angry.TryUnlock(Phrase));
 
-        Assert.False(rig.Angry.IsSessionActive);
+        Assert.True(rig.Angry.IsSessionActive);
         Assert.False(rig.Angry.IsLocked);
-        Assert.False(rig.Timer.PlanActive);
-        Assert.False(rig.Timer.IsRunning);
-        Assert.Equal(PomodoroPhase.Focus, rig.Timer.Phase);
-        Assert.Equal(TimeSpan.FromMinutes(1), rig.Timer.Remaining);
-        Assert.Equal(new[] { (true, true), (false, true), (false, false) }, rig.LockEvents);
+        Assert.True(rig.Timer.PlanActive);
+        Assert.True(rig.Timer.IsRunning);
+        Assert.Equal(PomodoroPhase.Break, rig.Timer.Phase);
+        Assert.Equal(TimeSpan.FromMinutes(2), rig.Timer.Remaining);
+        Assert.True(rig.Timer.ControlsLocked);
+        Assert.Equal(new[] { (true, true), (false, true) }, rig.LockEvents);
     }
 
     [Fact]
@@ -223,7 +228,7 @@ public class AngryPomodoroTests
 
         Assert.True(rig.Angry.IsSessionActive);
         Assert.False(rig.Angry.IsLocked);
-        Assert.False(rig.Timer.ControlsLocked);
+        Assert.True(rig.Timer.ControlsLocked);
         Assert.True(rig.Timer.IsRunning);
         Assert.Equal(2, rig.Timer.TotalCycles);
 
@@ -382,6 +387,70 @@ public class AngryPomodoroTests
 
         rig.Angry.TryUnlock(Phrase);
         Assert.Null(rig.Angry.CurrentPhrase);
+    }
+
+    [Fact]
+    public void Social_release_stays_closed_during_a_focus()
+    {
+        using var rig = new Rig(Minutes(focus: 25, breakMinutes: 5));
+        rig.Angry.Engage(2);
+
+        Assert.False(rig.Angry.IsBreakReleaseOpen);
+
+        rig.Advance(60);
+
+        Assert.False(rig.Angry.IsBreakReleaseOpen);
+    }
+
+    [Fact]
+    public void Break_release_opens_only_in_the_final_minute_and_closes_at_the_next_focus()
+    {
+        using var rig = new Rig(Minutes(focus: 1, breakMinutes: 5));
+        rig.Angry.Engage(2);
+
+        rig.Advance(60);
+        Assert.Equal(PomodoroPhase.Break, rig.Timer.Phase);
+        Assert.Equal(TimeSpan.FromMinutes(5), rig.Timer.Remaining);
+        Assert.False(rig.Angry.IsBreakReleaseOpen);
+
+        rig.Advance(239);
+        Assert.Equal(TimeSpan.FromSeconds(61), rig.Timer.Remaining);
+        Assert.False(rig.Angry.IsBreakReleaseOpen);
+
+        rig.Advance(1);
+        Assert.Equal(TimeSpan.FromMinutes(1), rig.Timer.Remaining);
+        Assert.True(rig.Angry.IsBreakReleaseOpen);
+
+        rig.Advance(60);
+        Assert.Equal(PomodoroPhase.Focus, rig.Timer.Phase);
+        Assert.True(rig.Angry.IsLocked);
+        Assert.False(rig.Angry.IsBreakReleaseOpen);
+    }
+
+    [Fact]
+    public void Break_waiting_for_manual_Start_releases_nothing_until_its_final_minute()
+    {
+        var settings = new IslandSettings
+        {
+            PomodoroFocusMinutes = 1,
+            PomodoroBreakMinutes = 5,
+            PomodoroAutoAdvance = false,
+        };
+        using var rig = new Rig(settings);
+        rig.Angry.Engage(2);
+
+        rig.Advance(60);
+
+        Assert.Equal(PomodoroPhase.Break, rig.Timer.Phase);
+        Assert.False(rig.Timer.IsRunning);
+        Assert.False(rig.Angry.IsBreakReleaseOpen);
+
+        rig.Timer.Start();
+        Assert.False(rig.Angry.IsBreakReleaseOpen);
+
+        rig.Advance(240);
+
+        Assert.True(rig.Angry.IsBreakReleaseOpen);
     }
 
     [Fact]

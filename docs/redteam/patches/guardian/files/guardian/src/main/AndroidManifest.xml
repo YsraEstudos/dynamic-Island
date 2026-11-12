@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Guardião (Fase 2): segundo APK, package com.example.focusapp.guardian, assinado com o mesmo
+    app/debug.keystore do app principal.
+
+    Ele não tem activity de launcher. A tela .GuardianStatusActivity é só diagnóstico/setup e é aberta
+    por ADB (`am start -n com.example.focusapp.guardian/.GuardianStatusActivity`) ou pela notificação.
+    Contrato com o app principal em ProtectionContract.kt (nomes/ações NÃO podem divergir).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permissão de assinatura definida pelo app principal (provider de estado + ReviveService). -->
+    <uses-permission android:name="com.example.focusapp.permission.PROTECTION_CONTROL" />
+
+    <!-- Ack do estado para o PC pelo ntfy.sh. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Overlay de aviso quando a proteção cai (também isenta o app de restrições de BAL/FGS em Android 12+). -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Foreground service de longa duração (o sistema exige notificação persistente; é o preço da sobrevivência). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Reerguer depois de reboot/atualização e de Doze. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Enxergar o app principal apesar do filtro de visibilidade de pacotes do Android 11+. -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
+    <!-- Permissão protegida, concedida uma única vez por ADB (pm grant). Sem ela o guardião não religa nada. -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- Permissão de assinatura do próprio guardião: só o app principal (mesma chave) pode iniciar o serviço. -->
+    <permission
+        android:name="com.example.focusapp.guardian.permission.GUARDIAN_CONTROL"
+        android:protectionLevel="signature" />
+
+    <queries>
+        <package android:name="com.example.focusapp" />
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+
+        <!-- Serviço principal do guardião. Nome/ação/permissão fazem parte do contrato com o app principal. -->
+        <service
+            android:name=".GuardianService"
+            android:exported="true"
+            android:permission="com.example.focusapp.guardian.permission.GUARDIAN_CONTROL"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps the personal focus/protection app alive and revives its accessibility service after a force-stop" />
+            <intent-filter>
+                <action android:name="com.example.focusapp.guardian.action.START" />
+            </intent-filter>
+        </service>
+
+        <!-- Boot e atualização do próprio APK: reergue o serviço e o alarme. -->
+        <receiver
+            android:name=".GuardianBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Alarme exato de 10 min: START_STICKY sozinho não garante processo em Doze/OEM. -->
+        <receiver
+            android:name=".GuardianAlarmReceiver"
+            android:exported="false" />
+
+        <!-- Administrador de dispositivo próprio: atrito extra para desinstalar/desativar o guardião. -->
+        <receiver
+            android:name=".GuardianAdminReceiver"
+            android:description="@string/guardian_admin_description"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/guardian_device_admin" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Tela mínima de status/setup (sem ícone de launcher). exportada para o ADB conseguir abrir. -->
+        <activity
+            android:name=".GuardianStatusActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.DeviceDefault" />
+
+    </application>
+
+</manifest>

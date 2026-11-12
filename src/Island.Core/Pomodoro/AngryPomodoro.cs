@@ -2,12 +2,16 @@ namespace Island.Core.Pomodoro;
 
 /// <summary>
 /// Locks the focus phases of a pomodoro plan so they cannot be paused, reset or re-timed. A session covers the whole
-/// plan: distractions are blocked during each focus, and that lock lifts during breaks and manual waits while the
-/// timer controls and cycle count stay protected. The next focus locks on Start. An early exit is available only during
-/// a locked focus by typing an <see cref="UnlockPhrases"/> phrase. Without a plan, a session lasts for one focus.
+/// plan: distractions are blocked during each focus and through each break, except that Twitter/X and Instagram open
+/// in the final minute of a running break, while the timer controls and cycle count stay protected. The next focus
+/// locks on Start. An early exit is available only during a locked focus by typing an <see cref="UnlockPhrases"/>
+/// phrase. Without a plan, a session lasts for one focus.
 /// </summary>
 public sealed class AngryPomodoro : IDisposable
 {
+    /// <summary>How long Twitter/X and Instagram stay open at the end of each running break.</summary>
+    public static readonly TimeSpan BreakReleaseWindow = TimeSpan.FromMinutes(1);
+
     private readonly PomodoroTimer _timer;
     private readonly Func<string> _phrasePicker;
 
@@ -34,6 +38,24 @@ public sealed class AngryPomodoro : IDisposable
         get
         {
             lock (_gate) return _locked;
+        }
+    }
+
+    /// <summary>
+    /// True in the final minute of a running break, when Twitter/X and Instagram are released while every other
+    /// blocked site, including adult content, stays blocked. A break waiting for Start is not running and opens nothing.
+    /// </summary>
+    public bool IsBreakReleaseOpen
+    {
+        get
+        {
+            lock (_gate)
+            {
+                if (!_session || _locked || _disposed) return false;
+                if (_timer.Phase != PomodoroPhase.Break || !_timer.IsRunning) return false;
+                var remaining = _timer.Remaining;
+                return remaining > TimeSpan.Zero && remaining <= BreakReleaseWindow;
+            }
         }
     }
 
@@ -68,9 +90,10 @@ public sealed class AngryPomodoro : IDisposable
     public event Action? LockChanged;
 
     /// <summary>
-    /// Starts an angry session, protects its timer controls and locks distractions during focus phases. A fresh focus starts a plan of
-    /// <paramref name="cycles"/> pomodoros; a paused single focus resumes without a plan; a plan already in progress
-    /// keeps running. A running single focus keeps its remaining time. The optional lengths apply to a new plan only.
+    /// Starts an angry session, protects its timer controls and locks distractions during the focus phases. A fresh
+    /// focus starts a plan of <paramref name="cycles"/> pomodoros; a paused single focus resumes without a plan; a plan
+    /// already in progress keeps running. A running single focus keeps its remaining time. The optional lengths apply
+    /// to a new plan only.
     /// </summary>
     public void Engage(int cycles, int? focusMinutes = null, int? breakMinutes = null)
         => EngageCore(cycles, sessionName: null, scheduled: false, focusMinutes, breakMinutes);

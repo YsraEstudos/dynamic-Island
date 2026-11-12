@@ -2,6 +2,10 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <!-- The testhost watches the parent process; when it runs at a lower integrity level (sandbox), that query
+         fails with "Access is denied" and crashes the testhost (microsoft/vstest#16457). Skipping the watchdog
+         keeps dotnet test working; vstest still terminates the host at the end of the run. -->
+    <_MSTestEnableParentProcessQuery>false</_MSTestEnableParentProcessQuery>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />

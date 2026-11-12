@@ -662,10 +662,11 @@
                             <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
                                 <TextBlock Style="{StaticResource SettingsRowLabel}" Text="Block phone during Angry"/>
                                 <TextBlock Style="{StaticResource SettingsRowDescription}"
-                                           Text="The phone stays blocked through focus and until the final minute of each timed break. Adult content stays blocked through the whole break."/>
+                                           Text="The phone stays blocked through focus and until the final three minutes of each timed break. The Foco app needs its accessibility service on (Nível 2 recommended), or nothing is applied. Adult content stays blocked through the whole break."/>
                             </StackPanel>
                             <ToggleButton Grid.Column="1" Style="{StaticResource SettingsSwitch}"
                                           VerticalAlignment="Center"
+                                          IsEnabled="{Binding SecuritySettingsEditable}"
                                           IsChecked="{Binding PhoneBlockEnabled, Mode=TwoWay}"/>
                         </Grid>
 
@@ -683,6 +684,7 @@
                                      CaretBrush="{StaticResource SettingsTextBrush}"
                                      FontFamily="Consolas"
                                      FontSize="11.5"
+                                     IsEnabled="{Binding SecuritySettingsEditable}"
                                      Text="{Binding PhoneFcmToken, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                             <Button x:Name="PhoneTestButton"
                                     Margin="0,10,0,0"

@@ -50,8 +50,22 @@ internal static class AtomicJsonFile
 
     private static void Replace(string source, string target)
     {
-        if (File.Exists(target)) File.Replace(source, target, null);
-        else File.Move(source, target);
+        if (File.Exists(target))
+        {
+            try
+            {
+                File.Replace(source, target, null);
+                return;
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException or PlatformNotSupportedException)
+            {
+                // Some filesystems (and sandboxed/redirected user folders) refuse File.Replace. MoveFileEx with overwrite
+                // still swaps the file atomically on the same volume, so the store keeps working instead of failing the
+                // save: the live Angry state in particular must keep being written for the guardian to see it.
+            }
+        }
+
+        File.Move(source, target, overwrite: true);
     }
 
     private static void TryDelete(string path)

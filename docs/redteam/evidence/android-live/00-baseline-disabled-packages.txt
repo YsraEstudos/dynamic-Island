@@ -1,0 +1,7 @@
+package:com.google.android.youtube
+package:com.android.nfc
+package:com.motorola.motosignature.app
+package:com.android.chrome
+package:com.google.android.ims
+package:com.android.inputmethod.latin
+package:com.google.android.apps.youtube.music

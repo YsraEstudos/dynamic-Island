@@ -1,0 +1,138 @@
+=== identity / groups (quick) ===
+USER: israe / YSR-PC
+Groups (token): Group Name                                                     Attributes
+----------                                                     ----------
+AUTORIDADE NT\Conta local e membro do grupo de Administradores Group used for deny only
+Ysr-PC\docker-users                                            Mandatory group, Enabled by default, Enabled group
+BUILTIN\Administradores                                        Group used for deny only
+BUILTIN\Usuários                                               Mandatory group, Enabled by default, Enabled group
+BUILTIN\Usuários de log de desempenho                          Mandatory group, Enabled by default, Enabled group
+AUTORIDADE NT\Usuários autenticados                            Mandatory group, Enabled by default, Enabled group
+
+=== ipconfig /all (trimmed) ===
+
+   Primary Dns Suffix  . . . . . . . : 
+Ethernet adapter Ethernet:
+   Connection-specific DNS Suffix  . : 
+Unknown adapter Tailscale:
+   Connection-specific DNS Suffix  . : 
+   Autoconfiguration IPv4 Address. . : 169.254.83.107(Preferred) 
+   Default Gateway . . . . . . . . . : 
+Unknown adapter Conex�o Local:
+   Connection-specific DNS Suffix  . : 
+Wireless LAN adapter Conex�o Local* 1:
+   Connection-specific DNS Suffix  . : 
+   Description . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter
+Wireless LAN adapter Conex�o Local* 2:
+   Connection-specific DNS Suffix  . : 
+   Description . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter #2
+Wireless LAN adapter Wi-Fi:
+   Connection-specific DNS Suffix  . : 
+   IPv4 Address. . . . . . . . . . . : 192.168.200.30(Preferred) 
+   Default Gateway . . . . . . . . . : fe80::1%20
+   DNS Servers . . . . . . . . . . . : ::ffff:127.0.2.2
+Ethernet adapter Conex�o de Rede Bluetooth:
+   Connection-specific DNS Suffix  . : 
+
+
+
+=== netsh dns show ===
+
+Configuration for interface "Ethernet"
+    DNS servers configured through DHCP:  1.1.1.1
+                                          1.0.0.1
+    Register with which suffix:           Primary only
+
+Configuration for interface "Tailscale"
+    Statically Configured DNS Servers:    None
+    Register with which suffix:           None
+
+Configuration for interface "Conexão Local"
+    Statically Configured DNS Servers:    None
+    Register with which suffix:           Primary only
+
+Configuration for interface "Conexão Local* 1"
+    DNS servers configured through DHCP:  None
+    Register with which suffix:           Primary only
+
+Configuration for interface "Conexão Local* 2"
+    DNS servers configured through DHCP:  None
+    Register with which suffix:           Primary only
+
+Configuration for interface "Wi-Fi"
+    Statically Configured DNS Servers:    127.0.2.2
+                                          127.0.2.3
+    Register with which suffix:           Primary only
+
+Configuration for interface "Conexão de Rede Bluetooth"
+    DNS servers configured through DHCP:  None
+    Register with which suffix:           Primary only
+
+Configuration for interface "Loopback Pseudo-Interface 1"
+    Statically Configured DNS Servers:    None
+    Register with which suffix:           Primary only
+
+
+
+=== sc query SysGuardSvc ===
+[SC] EnumQueryServicesStatus:OpenService FAILED 1060:
+
+The specified service does not exist as an installed service.
+
+
+sc query exit: 1060
+
+=== services relevant (SCM read) ===
+
+> SERVICE_NAME: Dnscache
+  DISPLAY_NAME: DNS Client
+> SERVICE_NAME: vmcompute
+  DISPLAY_NAME: Hyper-V Host Compute Service
+> SERVICE_NAME: WdNisSvc
+  DISPLAY_NAME: Microsoft Defender Antivirus Network Inspection Service
+> SERVICE_NAME: WinDefend
+  DISPLAY_NAME: Microsoft Defender Antivirus Service
+
+
+--- explicit getsvc ---
+WinDefend => STATE              : 4  RUNNING
+WdNisSvc => STATE              : 1  STOPPED
+vmcompute => STATE              : 4  RUNNING
+SharedAccess => STATE              : 4  RUNNING
+WinHttpAutoProxySvc => STATE              : 4  RUNNING
+
+=== SysGuard release binaries ===
+
+Name          : SysGuard.exe
+Length        : 49176229
+LastWriteTime : 11/10/2026 5:04:28 PM
+VersionInfo   : File:             C:\Users\israe\OneDrive\Desktop\Projetos\Dynamic Island\release-out\SysGuard\SysGuard.exe
+                InternalName:     SysGuard.dll
+                OriginalFilename: SysGuard.dll
+                FileVersion:      1.0.0.0
+                FileDescription:  SysGuard
+                Product:          SysGuard
+                ProductVersion:   1.0.0
+                Debug:            False
+                Patched:          False
+                PreRelease:       False
+                PrivateBuild:     False
+                SpecialBuild:     False
+                Language:         Language Neutral
+                
+
+
+release-out SysGuard.exe version: 1.0.0.0 size 49176229
+dist SysGuard.exe version: 1.0.0.0 size 49176229
+
+=== human user accounts (net user) ===
+
+User accounts for \\YSR-PC
+
+-------------------------------------------------------------------------------
+Administrador            CodexSandboxOffline      CodexSandboxOnline       
+Convidado                DefaultAccount           israe                    
+WDAGUtilityAccount       WsiAccount               
+The command completed successfully.
+
+

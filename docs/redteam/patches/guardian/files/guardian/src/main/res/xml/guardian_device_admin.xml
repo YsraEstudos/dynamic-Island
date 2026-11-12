@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Administrador de dispositivo do guardião: sem políticas (não gerencia senha/tela/câmera).
+     O admin serve só como atrito contra desinstalação/desativação acidental e para o sistema
+     mostrar o guardião na lista de "Apps de administração". -->
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies />
+</device-admin>

@@ -14,6 +14,7 @@ public sealed class FakePhoneBlockNotifier : IPhoneBlockNotifier
         Calls++;
         LastDuration = duration;
         LastAdultDuration = adultDuration;
-        return Task.FromResult(new PhoneBlockOutcome(true, "demo"));
+        return Task.FromResult(new PhoneBlockOutcome(true, "demo", "demo-" + Guid.NewGuid().ToString("N"),
+            DateTimeOffset.Now + duration));
     }
 }

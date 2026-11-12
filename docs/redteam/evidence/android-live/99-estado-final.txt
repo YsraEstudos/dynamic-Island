@@ -1,0 +1,25 @@
+=== VERIFICACAO FINAL 2026-11-11T14:10:49.8068197-03:00 ===
+current-user: 0
+users: Users:
+	UserInfo{0:Israel:c13} running
+
+accessibility_enabled: 1
+enabled_accessibility_services: com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService
+adb_enabled: 1
+development_settings_enabled: 1
+pid: 27587
+currentUserId=0
+Bound services:{Service[label=Serviço de Foco e Proteç…, feedbackType[FEEDBACK_GENERIC], capabilities=1, eventTypes=[TYPE_VIEW_TEXT_CHANGED, TYPE_WINDOW_STATE_CHANGED, TYPE_WINDOW_CONTENT_CHANGED, TYPE_WINDOWS_CHANGED], notificationTimeout=300, requestA11yBtn=false]}
+Enabled services:{{com.example.focusapp/com.example.focusapp.service.FocusAccessibilityService}}
+Crashed services:{}]
+Enabled Device Admins (User 0, provisioningState: 0):
+com.example.focusapp/.admin.AdminPolicyReceiver:
+testOnlyAdmin=false
+mUserControlDisabledPackages=[]
+User 0: ceDataInode=160639 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=1 instant=false virtual=false
+WRITE_CLIPBOARD: allow; time=+1d3h53m27s757ms ago
+WAKE_LOCK: allow; time=+1h11m0s614ms ago; duration=+65ms
+GET_USAGE_STATS: allow; time=+2m26s397ms ago
+BIND_ACCESSIBILITY_SERVICE: allow; time=+4m45s686ms ago
+START_FOREGROUND: allow; time=+2m25s158ms ago (running)
+ACCESS_ACCESSIBILITY: allow; time=+2s876ms ago
